@@ -24,7 +24,7 @@ class MealOptimizer {
     required List<Food> selectedFoods,
     required List<double> targets,
     required List<int> preferences,
-    required Map<String, dynamic> settings, // מקבל את ההגדרות
+    required Map<String, dynamic> settings,
   }) {
     if (selectedFoods.isEmpty) return null;
 
@@ -32,17 +32,17 @@ class MealOptimizer {
     List<double>? bestWeights;
     double bestCal = 0, bestPro = 0, bestCarb = 0, bestFat = 0;
 
-    for (int i = 0; i < 5000; i++) {
-      List<double> testWeights = List.generate(selectedFoods.length, (_) => _random.nextDouble() * 400);
+    // חיפוש ראשוני (כמו שהיה)
+    for (int i = 0; i < 2000; i++) {
+      List<double> testWeights = List.generate(selectedFoods.length, (_) => _random.nextDouble() * 300);
 
-      for (int step = 0; step < 20; step++) {
+      for (int step = 0; step < 30; step++) {
         int idx = _random.nextInt(selectedFoods.length);
-        double change = (_random.nextDouble() - 0.5) * 100;
+        double change = (_random.nextDouble() - 0.5) * 50;
         testWeights[idx] = (testWeights[idx] + change).clamp(0, 1000);
       }
 
       final res = _evaluate(testWeights, selectedFoods, targets, preferences.map((e) => e.toDouble()).toList(), settings);
-
       if (res != null && res.score > bestScore) {
         bestScore = res.score;
         bestWeights = List.from(testWeights);
@@ -54,7 +54,7 @@ class MealOptimizer {
       for (int iter = 0; iter < 100; iter++) {
         for (int i = 0; i < selectedFoods.length; i++) {
           List<double> testW = List.from(bestWeights!);
-          testW[i] = (testW[i] + (_random.nextDouble() - 0.5) * 10).clamp(0, 1000);
+          testW[i] = (testW[i] + (_random.nextDouble() - 0.5) * 5).clamp(0, 1000);
           final res = _evaluate(testW, selectedFoods, targets, preferences.map((e) => e.toDouble()).toList(), settings);
           if (res != null && res.score > bestScore) {
             bestScore = res.score;
@@ -83,60 +83,75 @@ class MealOptimizer {
     );
   }
 
+  // --- פונקציית השינוי החכמה והשמרנית ---
   static OptimizationResult? adjustWeight({
     required List<Food> selectedFoods,
     required List<double> targets,
     required List<int> preferences,
     required Map<String, dynamic> settings,
     required int lockedFoodId,
-    required double currentWeight,
+    required List<double> currentWeights,
     required double changeAmount,
   }) {
-    double newTargetWeight = (currentWeight + changeAmount).clamp(0, 2000);
     int lockedIndex = selectedFoods.indexWhere((f) => f.id == lockedFoodId);
     if (lockedIndex == -1) return null;
 
+    // 1. משנים את המוצר הנעול בדיוק בכמות שביקשו
+    List<double> testWeights = List.from(currentWeights);
+    testWeights[lockedIndex] = (testWeights[lockedIndex] + changeAmount).clamp(0, 2000);
+
+    // 2. נבדוק אם השינוי הזה כבר חוקי בפני עצמו
+    final directRes = _evaluate(testWeights, selectedFoods, targets, preferences.map((e) => e.toDouble()).toList(), settings);
+    if (directRes != null) {
+      // אם הוא חוקי, נחזיר אותו מיד! (זה מה שהמשתמש ביקש)
+      Map<int, double> finalWeights = {};
+      for (int i = 0; i < selectedFoods.length; i++) {
+        if (testWeights[i] > 0.1) finalWeights[selectedFoods[i].id!] = testWeights[i];
+      }
+      return OptimizationResult(weights: finalWeights, totalCalories: directRes.cal, totalProtein: directRes.pro, totalCarbs: directRes.carb, totalFat: directRes.fat);
+    }
+
+    // 3. אם השינוי הישיר לא חוקי, נחפש מוצר *אחד* אחר שאפשר לכוונן אותו כדי לאזן
+    // (המשתמש אמר: "אם העליתי 5 גרם קורנפלקס לא הגיוני שזה יוריד מוצר שלם אחר")
+    int bestOtherIndex = -1;
+    double bestOtherWeight = -1;
     double bestScore = -double.infinity;
-    List<double>? bestWeights;
     double bestCal = 0, bestPro = 0, bestCarb = 0, bestFat = 0;
 
-    for (int i = 0; i < 3000; i++) {
-      List<double> testWeights = List.filled(selectedFoods.length, 0);
-      testWeights[lockedIndex] = newTargetWeight;
+    for (int i = 0; i < selectedFoods.length; i++) {
+      if (i == lockedIndex) continue;
 
-      for (int j = 0; j < selectedFoods.length; j++) {
-        if (j != lockedIndex) {
-          testWeights[j] = _random.nextDouble() * 400;
+      // נסרוק טווחים קרובים למשקל הנוכחי של המוצר האחר (כדי לא לשנות drastically)
+      double currentOtherWeight = currentWeights[i];
+      // נבדוק סטייה של עד 50 גרם למעלה או למטה
+      for (double delta = -50.0; delta <= 50.0; delta += 1.0) {
+        List<double> tempWeights = List.from(testWeights);
+        tempWeights[i] = (currentOtherWeight + delta).clamp(0, 2000);
+
+        final res = _evaluate(tempWeights, selectedFoods, targets, preferences.map((e) => e.toDouble()).toList(), settings);
+        if (res != null && res.score > bestScore) {
+          bestScore = res.score;
+          bestOtherIndex = i;
+          bestOtherWeight = tempWeights[i];
+          bestCal = res.cal; bestPro = res.pro; bestCarb = res.carb; bestFat = res.fat;
         }
       }
-
-      final res = _evaluate(testWeights, selectedFoods, targets, preferences.map((e) => e.toDouble()).toList(), settings);
-      if (res != null && res.score > bestScore) {
-        bestScore = res.score;
-        bestWeights = List.from(testWeights);
-        bestCal = res.cal; bestPro = res.pro; bestCarb = res.carb; bestFat = res.fat;
-      }
     }
 
-    if (bestWeights == null) return null;
-
-    Map<int, double> finalWeights = {};
-    for (int i = 0; i < selectedFoods.length; i++) {
-      if (bestWeights[i] > 0.1) {
-        finalWeights[selectedFoods[i].id!] = bestWeights[i];
+    // 4. אם מצאנו מוצר אחר שאפשר לכוונן שיעזור, נחזיר את השילוב המשולב
+    if (bestOtherIndex != -1) {
+      testWeights[bestOtherIndex] = bestOtherWeight;
+      Map<int, double> finalWeights = {};
+      for (int i = 0; i < selectedFoods.length; i++) {
+        if (testWeights[i] > 0.1) finalWeights[selectedFoods[i].id!] = testWeights[i];
       }
+      return OptimizationResult(weights: finalWeights, totalCalories: bestCal, totalProtein: bestPro, totalCarbs: bestCarb, totalFat: bestFat);
     }
 
-    return OptimizationResult(
-      weights: finalWeights,
-      totalCalories: bestCal,
-      totalProtein: bestPro,
-      totalCarbs: bestCarb,
-      totalFat: bestFat,
-    );
+    // 5. אם אין שום מוצר אחר שיכול לאזן, אנו מוותרים (אומרים "לא")
+    return null;
   }
 
-  // הפונקציה החכמה - קוראת את החוקים מההגדרות
   static _EvalResult? _evaluate(List<double> weights, List<Food> foods, List<double> targets, List<double> prefs, Map<String, dynamic> settings) {
     double cal = 0, pro = 0, carb = 0, fat = 0;
 
@@ -149,16 +164,13 @@ class MealOptimizer {
 
     double tCal = targets[0], tPro = targets[1], tCarb = targets[2], tFat = targets[3];
 
-    // פונקציית עזר שבודקת את החוקים
     bool checkRule(String mode, double pct, double actual, double target) {
-      if (mode == 'free') return true; // גמיש
-      if (mode == 'up') return actual >= target - 0.1; // רק למעלה (או בדיוק)
-      if (mode == 'down') return actual <= target + 0.1; // רק למטה (או בדיוק)
-      // both
+      if (mode == 'free') return true;
+      if (mode == 'up') return actual >= target * (1 - pct/100);
+      if (mode == 'down') return actual <= target * (1 + pct/100);
       return actual >= target * (1 - pct/100) && actual <= target * (1 + pct/100);
     }
 
-    // בדיקת החוקים של כל פרמטר
     if (!checkRule(settings['pro_mode'] ?? 'up', settings['pro_pct'] ?? 10.0, pro, tPro)) return null;
     if (!checkRule(settings['carb_mode'] ?? 'both', settings['carb_pct'] ?? 10.0, carb, tCarb)) return null;
     if (!checkRule(settings['cal_mode'] ?? 'down', settings['cal_pct'] ?? 10.0, cal, tCal)) return null;
