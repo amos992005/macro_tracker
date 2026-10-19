@@ -1,5 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
+import '../core/search_utils.dart';
 import '../data/database_helper.dart';
 import '../data/models/food.dart';
 
@@ -13,6 +17,8 @@ class ManageFoodsScreen extends StatefulWidget {
 class _ManageFoodsScreenState extends State<ManageFoodsScreen> {
   final DatabaseHelper _dbHelper = DatabaseHelper();
   List<Food> _foods = [];
+  String _searchQuery = '';
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -25,6 +31,134 @@ class _ManageFoodsScreenState extends State<ManageFoodsScreen> {
     setState(() {
       _foods = foods;
     });
+  }
+
+  List<Food> get _filteredFoods {
+    return SearchUtils.filterAndSortFoods(_foods, _searchQuery);
+  }
+
+  Future<void> _exportFoods({bool onlyFavorites = false}) async {
+    List<Food> foodsToExport = onlyFavorites
+        ? _foods.where((f) => f.isFavorite).toList()
+        : _foods;
+
+    if (foodsToExport.isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(onlyFavorites ? 'אין מועדפים לייצוא.' : 'אין מאכלים לייצוא.')),
+        );
+      }
+      return;
+    }
+
+    List<Map<String, dynamic>> foodMaps = foodsToExport.map((f) => f.toMap()).toList();
+    String jsonString = jsonEncode(foodMaps);
+
+    try {
+      String? outputFile = await FilePicker.platform.saveFile(
+        dialogTitle: onlyFavorites ? 'שמור קובץ מועדפים' : 'שמור קובץ מאכלים',
+        fileName: onlyFavorites ? 'macro_tracker_favorites.json' : 'macro_tracker_foods.json',
+        type: FileType.custom,
+        allowedExtensions: ['json'],
+        bytes: utf8.encode(jsonString),
+      );
+
+      if (outputFile != null) {
+        if (!Platform.isIOS && !Platform.isAndroid) {
+          final file = File(outputFile);
+          await file.writeAsString(jsonString);
+        }
+        if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('הקובץ נשמר בהצלחה!')));
+      }
+    } catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('שגיאה בשמירת הקובץ: $e')));
+    }
+  }
+
+  Future<void> _importFoods({bool forceFavorite = false}) async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['json'],
+    );
+
+    if (result != null && result.files.single.path != null) {
+      File file = File(result.files.single.path!);
+      String jsonString = await file.readAsString();
+
+      try {
+        List<dynamic> jsonList = jsonDecode(jsonString);
+
+        // מפה של המאכלים הקיימים לצורך חיפוש מהיר
+        final existingFoodsMap = {for (var f in _foods) f.name: f};
+
+        List<Food> newFoodsToInsert = [];
+        List<Food> foodsToUpdate = [];
+        int favoritesUpdatedCount = 0;
+
+        for (var json in jsonList) {
+          final newFood = Food.fromMap(json);
+
+          if (existingFoodsMap.containsKey(newFood.name)) {
+            final existing = existingFoodsMap[newFood.name]!;
+            // אם המאכל קיים ואנחנו מייבאים מועדפים, נוודא שהוא מסומן כמועדף
+            if (forceFavorite && !existing.isFavorite) {
+              final updatedFood = Food(
+                id: existing.id,
+                name: existing.name,
+                caloriesPer100g: existing.caloriesPer100g,
+                proteinPer100g: existing.proteinPer100g,
+                carbsPer100g: existing.carbsPer100g,
+                fatPer100g: existing.fatPer100g,
+                isLiquid: existing.isLiquid,
+                isRecipe: existing.isRecipe,
+                servings: existing.servings,
+                isFavorite: true,
+              );
+              foodsToUpdate.add(updatedFood);
+              favoritesUpdatedCount++;
+            }
+          } else {
+            // אם המאכל לא קיים, נוסיף אותו. אם מייבאים מועדפים, הוא יסומן כמועדף.
+            newFoodsToInsert.add(Food(
+              name: newFood.name,
+              caloriesPer100g: newFood.caloriesPer100g,
+              proteinPer100g: newFood.proteinPer100g,
+              carbsPer100g: newFood.carbsPer100g,
+              fatPer100g: newFood.fatPer100g,
+              isLiquid: newFood.isLiquid,
+              isRecipe: newFood.isRecipe,
+              servings: newFood.servings,
+              isFavorite: forceFavorite ? true : newFood.isFavorite,
+            ));
+          }
+        }
+
+        if (newFoodsToInsert.isNotEmpty) {
+          await _dbHelper.insertFoodsBatch(newFoodsToInsert);
+        }
+
+        for (var food in foodsToUpdate) {
+          await _dbHelper.updateFood(food);
+        }
+
+        _loadFoods();
+
+        if (mounted) {
+          String msg = 'יובאו בהצלחה ${newFoodsToInsert.length} מאכלים חדשים.';
+          if (favoritesUpdatedCount > 0) {
+            msg += '\nעודכנו $favoritesUpdatedCount מאכלים קיימים למועדפים.';
+          }
+          if (newFoodsToInsert.isEmpty && favoritesUpdatedCount == 0) {
+            msg = 'לא נמצאו מאכלים חדשים או מועדפים לעדכון.';
+          }
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('שגיאה בקריאת הקובץ: $e')));
+        }
+      }
+    }
   }
 
   Future<void> _deleteFood(Food food) async {
@@ -95,11 +229,7 @@ class _ManageFoodsScreenState extends State<ManageFoodsScreen> {
                         const Expanded(child: Text('האם זה נוזל?')),
                         Checkbox(
                           value: isLiquid,
-                          onChanged: (val) {
-                            setDialogState(() {
-                              isLiquid = val ?? false;
-                            });
-                          },
+                          onChanged: (val) => setDialogState(() => isLiquid = val ?? false),
                         ),
                       ],
                     ),
@@ -119,18 +249,18 @@ class _ManageFoodsScreenState extends State<ManageFoodsScreen> {
                     ),
                     if (isRecipe)
                       TextField(
-                          controller: servingsController,
-                          decoration: const InputDecoration(labelText: 'כמה מנות יש במתכון?'),
-                          keyboardType: TextInputType.number
+                        controller: servingsController,
+                        decoration: const InputDecoration(labelText: 'כמה מנות יש במתכון?'),
+                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
                       ),
 
                     const Divider(),
                     Text(isRecipe ? 'סך הערכים של כל המתכון:' : 'ערכים תזונתיים ל-100 (גרם/מ"ל):', style: const TextStyle(fontWeight: FontWeight.bold)),
                     const SizedBox(height: 8),
-                    TextField(controller: calController, decoration: const InputDecoration(labelText: 'קלוריות'), keyboardType: TextInputType.number),
-                    TextField(controller: proController, decoration: const InputDecoration(labelText: 'חלבון (גר)'), keyboardType: TextInputType.number),
-                    TextField(controller: carbController, decoration: const InputDecoration(labelText: 'פחמימות (גר)'), keyboardType: TextInputType.number),
-                    TextField(controller: fatController, decoration: const InputDecoration(labelText: 'שומן (גר)'), keyboardType: TextInputType.number),
+                    TextField(controller: calController, decoration: const InputDecoration(labelText: 'קלוריות'), keyboardType: const TextInputType.numberWithOptions(decimal: true)),
+                    TextField(controller: proController, decoration: const InputDecoration(labelText: 'חלבון (גר)'), keyboardType: const TextInputType.numberWithOptions(decimal: true)),
+                    TextField(controller: carbController, decoration: const InputDecoration(labelText: 'פחמימות (גר)'), keyboardType: const TextInputType.numberWithOptions(decimal: true)),
+                    TextField(controller: fatController, decoration: const InputDecoration(labelText: 'שומן (גר)'), keyboardType: const TextInputType.numberWithOptions(decimal: true)),
                   ],
                 ),
               ),
@@ -138,14 +268,30 @@ class _ManageFoodsScreenState extends State<ManageFoodsScreen> {
                 TextButton(onPressed: () => Navigator.pop(context), child: const Text('ביטול')),
                 ElevatedButton(
                   onPressed: () async {
-                    if (nameController.text.isEmpty) return;
+                    String newName = nameController.text.trim();
+                    if (newName.isEmpty) return;
+
+                    bool nameExists = _foods.any((f) => f.name == newName && f.id != existingFood?.id);
+                    if (nameExists) {
+                      showDialog(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          title: const Text('שם קיים'),
+                          content: Text('כבר קיים מאכל בשם "$newName". אנא בחר שם אחר.'),
+                          actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('הבנתי'))],
+                        ),
+                      );
+                      return;
+                    }
 
                     double servings = double.tryParse(servingsController.text) ?? 1.0;
                     if (servings <= 0) servings = 1.0;
 
+                    bool finalIsFavorite = isRecipe ? true : (existingFood?.isFavorite ?? false);
+
                     final foodObj = Food(
                       id: existingFood?.id,
-                      name: nameController.text,
+                      name: newName,
                       caloriesPer100g: double.tryParse(calController.text) ?? 0,
                       proteinPer100g: double.tryParse(proController.text) ?? 0,
                       carbsPer100g: double.tryParse(carbController.text) ?? 0,
@@ -153,6 +299,7 @@ class _ManageFoodsScreenState extends State<ManageFoodsScreen> {
                       isLiquid: isLiquid,
                       isRecipe: isRecipe,
                       servings: servings,
+                      isFavorite: finalIsFavorite,
                     );
 
                     if (existingFood == null) {
@@ -181,37 +328,117 @@ class _ManageFoodsScreenState extends State<ManageFoodsScreen> {
         title: const Text('ניהול מאכלים ומתכונים'),
         centerTitle: true,
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        actions: [
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert),
+            onSelected: (value) {
+              if (value == 'export_all') _exportFoods(onlyFavorites: false);
+              if (value == 'export_favs') _exportFoods(onlyFavorites: true);
+              if (value == 'import_all') _importFoods(forceFavorite: false);
+              if (value == 'import_favs') _importFoods(forceFavorite: true);
+            },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+              const PopupMenuItem<String>(
+                value: 'export_all',
+                child: Text('ייצוא כל המאכלים'),
+              ),
+              const PopupMenuItem<String>(
+                value: 'export_favs',
+                child: Text('ייצוא מועדפים בלבד'),
+              ),
+              const PopupMenuDivider(),
+              const PopupMenuItem<String>(
+                value: 'import_all',
+                child: Text('ייבוא מאכלים'),
+              ),
+              const PopupMenuItem<String>(
+                value: 'import_favs',
+                child: Text('ייבוא מועדפים (והוספה למועדפים)'),
+              ),
+            ],
+          ),
+        ],
       ),
-      body: _foods.isEmpty
-          ? const Center(child: Text('אין מאכלים עדיין. הוסף אחד!'))
-          : ListView.builder(
-        itemCount: _foods.length,
-        itemBuilder: (context, index) {
-          final food = _foods[index];
-          return Card(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: ListTile(
-              onTap: () => _showFoodDialog(existingFood: food),
-              title: Text(food.name),
-              subtitle: Text(
-                  food.isRecipe
-                      ? 'מתכון: ${food.servings.toStringAsFixed(0)} מנות (${food.caloriesPer100g.toStringAsFixed(0)} קק"ל למנה)'
-                      : '${food.caloriesPer100g} קק"ל ל-100${food.isLiquid ? 'מ"ל' : 'גרם'}'
-              ),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.edit, color: Colors.blueGrey, size: 20),
-                  const SizedBox(width: 8),
-                  IconButton(
-                    icon: const Icon(Icons.delete, color: Colors.red),
-                    onPressed: () => _deleteFood(food),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                TextField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    labelText: 'חפש מאכל...',
+                    prefixIcon: const Icon(Icons.search),
+                    suffixIcon: _searchQuery.isNotEmpty
+                        ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          _searchController.clear();
+                          setState(() => _searchQuery = '');
+                        }
+                    ) : null,
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
                   ),
-                ],
-              ),
+                  onChanged: (val) => setState(() => _searchQuery = val),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  _searchQuery.isEmpty
+                      ? 'סה"כ מוצרים במאגר: ${_foods.length}'
+                      : 'נמצאו ${_filteredFoods.length} תוצאות',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: _searchQuery.isEmpty ? Colors.blueGrey : Colors.blue,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ),
-          );
-        },
+          ),
+
+          Expanded(
+            child: _filteredFoods.isEmpty
+                ? const Center(child: Text('לא נמצאו מאכלים'))
+                : ListView.builder(
+              itemCount: _filteredFoods.length,
+              itemBuilder: (context, index) {
+                final food = _filteredFoods[index];
+                return Card(
+                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  child: ListTile(
+                    onTap: () => _showFoodDialog(existingFood: food),
+                    title: Text(food.name),
+                    subtitle: Text(
+                        food.isRecipe
+                            ? 'מתכון: ${food.servings.toStringAsFixed(0)} מנות'
+                            : '${food.caloriesPer100g} קק"ל ל-100${food.isLiquid ? 'מ"ל' : 'גרם'}'
+                    ),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: Icon(food.isFavorite ? Icons.star : Icons.star_border, color: Colors.amber),
+                          onPressed: () async {
+                            await _dbHelper.toggleFavorite(food.id!, !food.isFavorite);
+                            _loadFoods();
+                          },
+                        ),
+                        const SizedBox(width: 8),
+                        IconButton(
+                          icon: const Icon(Icons.delete, color: Colors.red),
+                          onPressed: () => _deleteFood(food),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showFoodDialog(),

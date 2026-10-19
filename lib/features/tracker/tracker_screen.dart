@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import '../../core/calculator.dart';
 import '../../core/meal_optimizer.dart';
+import '../../core/search_utils.dart';
 import '../../data/database_helper.dart';
 import '../../data/models/food.dart';
 import '../manage_foods_screen.dart';
@@ -130,10 +132,10 @@ class _TrackerScreenState extends State<TrackerScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                TextField(controller: calController, decoration: const InputDecoration(labelText: 'קלוריות'), keyboardType: TextInputType.number),
-                TextField(controller: proController, decoration: const InputDecoration(labelText: 'חלבון (גר)'), keyboardType: TextInputType.number),
-                TextField(controller: carbController, decoration: const InputDecoration(labelText: 'פחמימות (גר)'), keyboardType: TextInputType.number),
-                TextField(controller: fatController, decoration: const InputDecoration(labelText: 'שומן (גר)'), keyboardType: TextInputType.number),
+                TextField(controller: calController, decoration: const InputDecoration(labelText: 'קלוריות'), keyboardType: const TextInputType.numberWithOptions(decimal: true)),
+                TextField(controller: proController, decoration: const InputDecoration(labelText: 'חלבון (גר)'), keyboardType: const TextInputType.numberWithOptions(decimal: true)),
+                TextField(controller: carbController, decoration: const InputDecoration(labelText: 'פחמימות (גר)'), keyboardType: const TextInputType.numberWithOptions(decimal: true)),
+                TextField(controller: fatController, decoration: const InputDecoration(labelText: 'שומן (גר)'), keyboardType: const TextInputType.numberWithOptions(decimal: true)),
               ],
             ),
           ),
@@ -154,6 +156,100 @@ class _TrackerScreenState extends State<TrackerScreen> {
               child: const Text('שמור'),
             ),
           ],
+        );
+      },
+    );
+  }
+
+  void _showFoodPicker() {
+    final searchController = TextEditingController();
+    bool showOnlyFavorites = false;
+    Timer? debounce;
+
+    List<Food> dialogFilteredList = SearchUtils.filterAndSortFoods(_foods, '');
+
+    void performSearch(String query, StateSetter setDialogState, {bool immediate = false}) {
+      if (debounce?.isActive ?? false) debounce!.cancel();
+
+      void executeSearch() {
+        final results = SearchUtils.filterAndSortFoods(_foods, query, onlyFavorites: showOnlyFavorites);
+        setDialogState(() {
+          dialogFilteredList = results;
+        });
+      }
+
+      if (immediate) {
+        executeSearch();
+      } else {
+        debounce = Timer(const Duration(milliseconds: 200), executeSearch);
+      }
+    }
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: const Text('בחר מאכל'),
+              content: SizedBox(
+                width: double.maxFinite,
+                height: 400,
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            key: const ValueKey('food_picker_search'),
+                            controller: searchController,
+                            decoration: const InputDecoration(
+                              hintText: 'חפש...',
+                              prefixIcon: Icon(Icons.search),
+                              isDense: true,
+                            ),
+                            onChanged: (val) => performSearch(val, setDialogState),
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(showOnlyFavorites ? Icons.star : Icons.star_border, color: Colors.amber),
+                          onPressed: () {
+                            setDialogState(() {
+                              showOnlyFavorites = !showOnlyFavorites;
+                            });
+                            performSearch(searchController.text, setDialogState, immediate: true);
+                          },
+                        )
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Expanded(
+                      child: dialogFilteredList.isEmpty
+                          ? const Center(child: Text('לא נמצאו תוצאות'))
+                          : ListView.builder(
+                        key: const ValueKey('food_picker_list'),
+                        itemCount: dialogFilteredList.length,
+                        itemBuilder: (context, index) {
+                          final food = dialogFilteredList[index];
+                          return ListTile(
+                            leading: food.isFavorite ? const Icon(Icons.star, color: Colors.amber) : null,
+                            title: Text(food.name),
+                            subtitle: Text('${food.caloriesPer100g} קק"ל ל-100${food.isLiquid ? 'מ"ל' : 'גרם'}'),
+                            onTap: () {
+                              setState(() {
+                                _selectedFoodId = food.id;
+                              });
+                              Navigator.pop(context);
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
         );
       },
     );
@@ -199,7 +295,7 @@ class _TrackerScreenState extends State<TrackerScreen> {
                           width: 60,
                           child: TextField(
                             controller: TextEditingController(text: currentPct.toStringAsFixed(0)),
-                            keyboardType: TextInputType.number,
+                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
                             decoration: const InputDecoration(labelText: '%', isDense: true),
                             onChanged: (val) {
                               double pct = double.tryParse(val) ?? 0;
@@ -229,10 +325,7 @@ class _TrackerScreenState extends State<TrackerScreen> {
                 ),
               ),
               actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('ביטול'),
-                ),
+                TextButton(onPressed: () => Navigator.pop(context), child: const Text('ביטול')),
                 ElevatedButton(
                   onPressed: () async {
                     Map<String, dynamic> newSettings = {
@@ -264,9 +357,31 @@ class _TrackerScreenState extends State<TrackerScreen> {
 
     List<int> selectedFoodIds = [];
     Map<int, int> preferences = {};
+    Map<int, double> lockedWeights = {};
 
     OptimizationResult? result;
     bool isSaving = false;
+
+    bool showOnlyFavorites = false;
+    Timer? debounce;
+    List<Food> filteredFoods = SearchUtils.filterAndSortFoods(_foods, '');
+
+    void performSearch(String query, StateSetter setDialogState, {bool immediate = false}) {
+      if (debounce?.isActive ?? false) debounce!.cancel();
+
+      void executeSearch() {
+        final results = SearchUtils.filterAndSortFoods(_foods, query, onlyFavorites: showOnlyFavorites);
+        setDialogState(() {
+          filteredFoods = results;
+        });
+      }
+
+      if (immediate) {
+        executeSearch();
+      } else {
+        debounce = Timer(const Duration(milliseconds: 200), executeSearch);
+      }
+    }
 
     showDialog(
       context: context,
@@ -276,45 +391,41 @@ class _TrackerScreenState extends State<TrackerScreen> {
 
             void runOptimization() {
               if (selectedFoodIds.isEmpty) return;
-
               double tCal = double.tryParse(calController.text) ?? 0;
               double tPro = double.tryParse(proController.text) ?? 0;
               double tCarb = double.tryParse(carbController.text) ?? 0;
               double tFat = double.tryParse(fatController.text) ?? 0;
-
               if (tCal == 0 && tPro == 0 && tCarb == 0 && tFat == 0) return;
 
               final selectedFoods = _foods.where((f) => selectedFoodIds.contains(f.id)).toList();
               final prefsList = selectedFoods.map((f) => preferences[f.id] ?? 3).toList();
 
-              final optResult = MealOptimizer.findOptimalWeights(
-                selectedFoods: selectedFoods,
+              final optResult = MealOptimizer.optimizeWithFixed(
+                allFoods: selectedFoods,
+                fixedWeights: lockedWeights,
                 targets: [tCal, tPro, tCarb, tFat],
                 preferences: prefsList,
                 settings: _settings,
               );
 
-              setDialogState(() {
-                result = optResult;
-              });
+              setDialogState(() { result = optResult; });
 
               if (optResult == null) {
+                final errorMsg = MealOptimizer.lastErrorMessage ?? 'לא נמצא שילוב חוקי שעומד ביעדים ובחוקי הברזל.';
                 showDialog(
                   context: this.context,
                   builder: (popupContext) {
                     return AlertDialog(
                       title: const Text('שגיאה'),
-                      content: const Text('לא נמצא שילוב חוקי שעומד ביעדים ובחוקי הברזל.\nנסה לשנות את היעדים או לבחור מוצרים אחרים.'),
-                      actions: [
-                        TextButton(onPressed: () => Navigator.pop(popupContext), child: const Text('סגור')),
-                      ],
+                      content: Text('$errorMsg\nנסה לשנות את היעדים או לבחור מוצרים אחרים.'),
+                      actions: [TextButton(onPressed: () => Navigator.pop(popupContext), child: const Text('סגור'))],
                     );
                   },
                 );
               }
             }
 
-            void adjustItem(int foodId, double change) {
+            void adjustItem(int foodId, double currentWeight, double change) {
               double tCal = double.tryParse(calController.text) ?? 0;
               double tPro = double.tryParse(proController.text) ?? 0;
               double tCarb = double.tryParse(carbController.text) ?? 0;
@@ -323,27 +434,35 @@ class _TrackerScreenState extends State<TrackerScreen> {
               final selectedFoods = _foods.where((f) => selectedFoodIds.contains(f.id)).toList();
               final prefsList = selectedFoods.map((f) => preferences[f.id] ?? 3).toList();
 
-              List<double> currentWeights = selectedFoods.map((f) => result?.weights[f.id] ?? 0.0).toList();
+              Map<int, double> currentMealWeights = {};
+              for (var id in selectedFoodIds) {
+                currentMealWeights[id] = result?.weights[id] ?? 0.0;
+              }
 
               final optResult = MealOptimizer.adjustWeight(
                 selectedFoods: selectedFoods,
                 targets: [tCal, tPro, tCarb, tFat],
                 preferences: prefsList,
                 settings: _settings,
-                lockedFoodId: foodId,
-                currentWeights: currentWeights,
+                lockedWeights: lockedWeights,
+                currentWeights: currentMealWeights,
+                adjustedFoodId: foodId,
                 changeAmount: change,
               );
 
               if (optResult != null) {
-                setDialogState(() { result = optResult; });
+                setDialogState(() {
+                  result = optResult;
+                });
               } else {
+                final errorMsg = MealOptimizer.lastErrorMessage ?? 'לא ניתן להוסיף יותר מהמוצר הזה בלי לחרוג מהיעדים ובחוקי הברזל.';
+
                 showDialog(
                   context: this.context,
                   builder: (popupContext) {
                     return AlertDialog(
                       title: const Text('לא ניתן להוסיף'),
-                      content: const Text('לא ניתן להוסיף יותר מהמוצר הזה בלי לחרוג מהיעדים ובחוקי הברזל.'),
+                      content: Text(errorMsg),
                       actions: [
                         TextButton(onPressed: () => Navigator.pop(popupContext), child: const Text('סגור')),
                       ],
@@ -378,10 +497,10 @@ class _TrackerScreenState extends State<TrackerScreen> {
                 final food = _foods.firstWhere((f) => f.id == id);
                 final weight = result!.weights[id] ?? 0;
                 if (weight > 0.1) {
-                  buffer.writeln('- ${food.name}: ${weight.toStringAsFixed(1)} ${food.isLiquid ? 'מ״ל' : 'גרם'}');
+                  buffer.writeln('- ${food.name}: ${weight.toStringAsFixed(1)} ${food.isLiquid ? 'מ"ל' : 'גרם'}');
                 }
               }
-              buffer.writeln('סה״כ: ${result!.totalCalories.toStringAsFixed(1)} קלוריות, ${result!.totalProtein.toStringAsFixed(1)} חלבון, ${result!.totalCarbs.toStringAsFixed(1)} פחמימות, ${result!.totalFat.toStringAsFixed(1)} שומן');
+              buffer.writeln('סה"כ: ${result!.totalCalories.toStringAsFixed(1)} קלוריות, ${result!.totalProtein.toStringAsFixed(1)} חלבון, ${result!.totalCarbs.toStringAsFixed(1)} פחמימות, ${result!.totalFat.toStringAsFixed(1)} שומן');
               Clipboard.setData(ClipboardData(text: buffer.toString()));
               ScaffoldMessenger.of(this.context).showSnackBar(const SnackBar(content: Text('הפרטים הועתקו ללוח!')));
             }
@@ -392,184 +511,219 @@ class _TrackerScreenState extends State<TrackerScreen> {
             double remainingCarb = (_targetCarbs - dailyTotals.carbs).clamp(0, 9999);
             double remainingFat = (_targetFat - dailyTotals.fat).clamp(0, 9999);
 
-            List<Food> filteredFoods = _foods.where((f) => f.name.contains(searchController.text)).toList();
-
             return AlertDialog(
               title: const Text('✨ הרכבת ארוחה חכמה'),
-              content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    OutlinedButton.icon(
-                      onPressed: () {
-                        calController.text = remainingCal.toStringAsFixed(0);
-                        proController.text = remainingPro.toStringAsFixed(0);
-                        carbController.text = remainingCarb.toStringAsFixed(0);
-                        fatController.text = remainingFat.toStringAsFixed(0);
-                      },
-                      icon: const Icon(Icons.auto_fix_high),
-                      label: const Text('מלא יעדים לפי מה שנשאר להיום'),
-                    ),
-                    const SizedBox(height: 12),
-                    const Text('יעדים לארוחה:', style: TextStyle(fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Expanded(child: TextField(controller: calController, decoration: const InputDecoration(labelText: 'קלוריות'), keyboardType: TextInputType.number)),
-                        const SizedBox(width: 8),
-                        Expanded(child: TextField(controller: proController, decoration: const InputDecoration(labelText: 'חלבון'), keyboardType: TextInputType.number)),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Expanded(child: TextField(controller: carbController, decoration: const InputDecoration(labelText: 'פחמימות'), keyboardType: TextInputType.number)),
-                        const SizedBox(width: 8),
-                        Expanded(child: TextField(controller: fatController, decoration: const InputDecoration(labelText: 'שומן'), keyboardType: TextInputType.number)),
-                      ],
-                    ),
-                    const Divider(height: 30),
-                    TextField(
-                      controller: searchController,
-                      decoration: InputDecoration(
-                        labelText: 'חפש מוצר...',
-                        prefixIcon: const Icon(Icons.search),
-                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+              content: SizedBox(
+                width: double.maxFinite,
+                height: 550,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      OutlinedButton.icon(
+                        onPressed: () {
+                          calController.text = remainingCal.toStringAsFixed(0);
+                          proController.text = remainingPro.toStringAsFixed(0);
+                          carbController.text = remainingCarb.toStringAsFixed(0);
+                          fatController.text = remainingFat.toStringAsFixed(0);
+                        },
+                        icon: const Icon(Icons.auto_fix_high),
+                        label: const Text('מלא יעדים לפי מה שנשאר להיום'),
                       ),
-                      onChanged: (val) => setDialogState(() {}),
-                    ),
-                    const SizedBox(height: 8),
-                    const Text('בחר מוצרים (עד 10):', style: TextStyle(fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 8),
-                    ...filteredFoods.map((food) {
-                      bool isSelected = selectedFoodIds.contains(food.id);
-                      int pref = preferences[food.id] ?? 3;
-                      return Card(
-                        margin: const EdgeInsets.symmetric(vertical: 2),
-                        child: Column(
-                          children: [
-                            CheckboxListTile(
-                              dense: true,
-                              title: Text(food.name),
-                              value: isSelected,
-                              onChanged: (val) {
-                                setDialogState(() {
-                                  if (val == true && selectedFoodIds.length < 10) {
-                                    selectedFoodIds.add(food.id!);
-                                    preferences[food.id!] = 3;
-                                  } else if (val == false) {
-                                    selectedFoodIds.remove(food.id);
-                                  }
-                                });
-                              },
-                            ),
-                            if (isSelected)
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 4.0, left: 16, right: 16),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Text('פחות ', style: TextStyle(fontSize: 10)),
-                                    ...List.generate(5, (index) {
-                                      return InkWell(
-                                        onTap: () => setDialogState(() => preferences[food.id!] = index + 1),
-                                        child: Icon(index < pref ? Icons.star : Icons.star_border, color: Colors.amber, size: 18),
-                                      );
-                                    }),
-                                    const Text(' יותר', style: TextStyle(fontSize: 10)),
-                                  ],
-                                ),
-                              )
-                          ],
-                        ),
-                      );
-                    }).toList(),
-                    const SizedBox(height: 16),
-                    ElevatedButton.icon(
-                      onPressed: runOptimization,
-                      icon: const Icon(Icons.auto_awesome),
-                      label: const Text('חשב משקלים'),
-                    ),
-                    if (result != null) ...[
+                      const SizedBox(height: 12),
+                      const Text('יעדים לארוחה:', style: TextStyle(fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Expanded(child: TextField(controller: calController, decoration: const InputDecoration(labelText: 'קלוריות'), keyboardType: const TextInputType.numberWithOptions(decimal: true))),
+                          const SizedBox(width: 8),
+                          Expanded(child: TextField(controller: proController, decoration: const InputDecoration(labelText: 'חלבון'), keyboardType: const TextInputType.numberWithOptions(decimal: true))),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Expanded(child: TextField(controller: carbController, decoration: const InputDecoration(labelText: 'פחמימות'), keyboardType: const TextInputType.numberWithOptions(decimal: true))),
+                          const SizedBox(width: 8),
+                          Expanded(child: TextField(controller: fatController, decoration: const InputDecoration(labelText: 'שומן'), keyboardType: const TextInputType.numberWithOptions(decimal: true))),
+                        ],
+                      ),
                       const Divider(height: 30),
-                      const Text('התוצאה (כוונן ידנית):', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)),
-                      const SizedBox(height: 8),
-                      ...selectedFoodIds.map((id) {
-                        final food = _foods.firstWhere((f) => f.id == id);
-                        final weight = result!.weights[id] ?? 0;
-                        return Card(
-                          elevation: 0,
-                          color: Colors.blue.shade50,
-                          child: ListTile(
-                            dense: true,
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 8),
-                            title: Text(food.name, style: const TextStyle(fontSize: 14)),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  icon: const Icon(
-                                    Icons.remove_circle_outline,
-                                    color: Colors.red,
-                                    size: 20,
-                                  ),
-                                  onPressed: weight > 0
-                                      ? () => adjustItem(id, -5)
-                                      : null,
-                                ),
-                                Text(
-                                  '${weight.toStringAsFixed(1)} ${food.isLiquid ? 'מ״ל' : 'גרם'}',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 13,
-                                    color: Colors.blue,
-                                  ),
-                                ),
-                                IconButton(
-                                  icon: const Icon(
-                                    Icons.add_circle_outline,
-                                    color: Colors.green,
-                                    size: 20,
-                                  ),
-                                  onPressed: () => adjustItem(id, 5),
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                      const Divider(),
-                      const Text('סיכום תזונתי של הארוחה:', style: TextStyle(fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 8),
-                      _buildCompareRow('קלוריות', result!.totalCalories, double.tryParse(calController.text) ?? 0, 'קק״ל'),
-                      _buildCompareRow('חלבון', result!.totalProtein, double.tryParse(proController.text) ?? 0, 'גר'),
-                      _buildCompareRow('פחמימות', result!.totalCarbs, double.tryParse(carbController.text) ?? 0, 'גר'),
-                      _buildCompareRow('שומן', result!.totalFat, double.tryParse(fatController.text) ?? 0, 'גר'),
-                      const SizedBox(height: 16),
                       Row(
                         children: [
                           Expanded(
-                            child: ElevatedButton.icon(
-                              onPressed: isSaving ? null : saveToDiary,
-                              icon: isSaving ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)) : const Icon(Icons.save),
-                              label: const Text('הוסף ליומן'),
-                              style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                            child: TextField(
+                              key: const ValueKey('meal_builder_search'),
+                              controller: searchController,
+                              decoration: InputDecoration(
+                                labelText: 'חפש מוצר...',
+                                prefixIcon: const Icon(Icons.search),
+                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                              ),
+                              onChanged: (val) => performSearch(val, setDialogState),
                             ),
                           ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: ElevatedButton.icon(
-                              onPressed: copyDetails,
-                              icon: const Icon(Icons.copy),
-                              label: const Text('העתק'),
-                              style: ElevatedButton.styleFrom(backgroundColor: Colors.blueGrey),
-                            ),
-                          ),
+                          IconButton(
+                            icon: Icon(showOnlyFavorites ? Icons.star : Icons.star_border, color: Colors.amber),
+                            onPressed: () {
+                              setDialogState(() {
+                                showOnlyFavorites = !showOnlyFavorites;
+                              });
+                              performSearch(searchController.text, setDialogState, immediate: true);
+                            },
+                          )
                         ],
-                      )
-                    ]
-                  ],
+                      ),
+                      const SizedBox(height: 8),
+                      const Text('בחר מוצרים (עד 10):', style: TextStyle(fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        height: 250,
+                        child: filteredFoods.isEmpty
+                            ? const Center(child: Text('לא נמצאו מוצרים'))
+                            : ListView.builder(
+                          key: const ValueKey('meal_builder_food_list'),
+                          itemCount: filteredFoods.length,
+                          itemBuilder: (context, index) {
+                            final food = filteredFoods[index];
+                            bool isSelected = selectedFoodIds.contains(food.id);
+                            int pref = preferences[food.id] ?? 3;
+
+                            return Card(
+                              margin: const EdgeInsets.symmetric(vertical: 2),
+                              child: Column(
+                                children: [
+                                  CheckboxListTile(
+                                    dense: true,
+                                    title: Row(
+                                      children: [
+                                        if (food.isFavorite) const Padding(
+                                          padding: EdgeInsets.only(right: 4.0),
+                                          child: Icon(Icons.star, color: Colors.amber, size: 16),
+                                        ),
+                                        Expanded(child: Text(food.name)),
+                                      ],
+                                    ),
+                                    value: isSelected,
+                                    onChanged: (val) {
+                                      setDialogState(() {
+                                        if (val == true && selectedFoodIds.length < 10) {
+                                          selectedFoodIds.add(food.id!);
+                                          preferences[food.id!] = 3;
+                                        } else if (val == false) {
+                                          selectedFoodIds.remove(food.id);
+                                          lockedWeights.remove(food.id);
+                                        }
+                                      });
+                                    },
+                                  ),
+                                  if (isSelected)
+                                    Padding(
+                                      padding: const EdgeInsets.only(bottom: 4.0, left: 16, right: 16),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          const Text('פחות ', style: TextStyle(fontSize: 10)),
+                                          ...List.generate(5, (index) {
+                                            return InkWell(
+                                              onTap: () => setDialogState(() => preferences[food.id!] = index + 1),
+                                              child: Icon(index < pref ? Icons.star : Icons.star_border, color: Colors.amber, size: 18),
+                                            );
+                                          }),
+                                          const Text(' יותר', style: TextStyle(fontSize: 10)),
+                                        ],
+                                      ),
+                                    )
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton.icon(
+                        onPressed: runOptimization,
+                        icon: const Icon(Icons.auto_awesome),
+                        label: const Text('חשב משקלים'),
+                      ),
+                      if (result != null) ...[
+                        const Divider(height: 30),
+                        const Text('התוצאה (כוונן ידנית ונעל מוצרים):', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)),
+                        const SizedBox(height: 8),
+                        ...selectedFoodIds.map((id) {
+                          final food = _foods.firstWhere((f) => f.id == id);
+                          final weight = result!.weights[id] ?? 0;
+                          final isLocked = lockedWeights.containsKey(id);
+
+                          return Card(
+                            elevation: 0,
+                            color: isLocked ? Colors.orange.shade50 : Colors.blue.shade50,
+                            child: ListTile(
+                              dense: true,
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+                              title: Text(food.name, style: const TextStyle(fontSize: 14)),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    icon: Icon(isLocked ? Icons.lock : Icons.lock_open, color: isLocked ? Colors.orange : Colors.grey),
+                                    onPressed: () {
+                                      setDialogState(() {
+                                        if (isLocked) {
+                                          lockedWeights.remove(id);
+                                        } else {
+                                          lockedWeights[id] = weight;
+                                        }
+                                      });
+                                    },
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.remove_circle_outline, color: Colors.red, size: 20),
+                                    onPressed: weight > 0 ? () => adjustItem(id, weight, -5) : null,
+                                  ),
+                                  Text('${weight.toStringAsFixed(1)} ${food.isLiquid ? 'מ"ל' : 'גרם'}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.blue)),
+                                  IconButton(
+                                    icon: const Icon(Icons.add_circle_outline, color: Colors.green, size: 20),
+                                    onPressed: () => adjustItem(id, weight, 5),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                        const Divider(),
+                        const Text('סיכום תזונתי של הארוחה:', style: TextStyle(fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 8),
+                        _buildCompareRow('קלוריות', result!.totalCalories, double.tryParse(calController.text) ?? 0, 'קק"ל'),
+                        _buildCompareRow('חלבון', result!.totalProtein, double.tryParse(proController.text) ?? 0, 'גר'),
+                        _buildCompareRow('פחמימות', result!.totalCarbs, double.tryParse(carbController.text) ?? 0, 'גר'),
+                        _buildCompareRow('שומן', result!.totalFat, double.tryParse(fatController.text) ?? 0, 'גר'),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: ElevatedButton.icon(
+                                onPressed: isSaving ? null : saveToDiary,
+                                icon: isSaving ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)) : const Icon(Icons.save),
+                                label: const Text('הוסף ליומן'),
+                                style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: ElevatedButton.icon(
+                                onPressed: copyDetails,
+                                icon: const Icon(Icons.copy),
+                                label: const Text('העתק'),
+                                style: ElevatedButton.styleFrom(backgroundColor: Colors.blueGrey),
+                              ),
+                            ),
+                          ],
+                        )
+                      ]
+                    ],
+                  ),
                 ),
               ),
               actions: [
@@ -611,7 +765,7 @@ class _TrackerScreenState extends State<TrackerScreen> {
           children: [
             const Icon(Icons.fitness_center, color: Color(0xFF00FF87)),
             const SizedBox(width: 8),
-            const Text('מעקב מאקרו'),
+            const Text('מעקב מאקרו', style: TextStyle(fontWeight: FontWeight.bold)),
           ],
         ),
         actions: [
@@ -664,12 +818,19 @@ class _TrackerScreenState extends State<TrackerScreen> {
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
                       children: [
-                        DropdownButtonFormField<int>(
-                          initialValue: _selectedFoodId,
-                          decoration: const InputDecoration(labelText: 'בחר מאכל / מתכון', border: InputBorder.none),
-                          hint: Text(_foods.isEmpty ? 'טוען נתונים...' : 'בחר מהרשימה...'),
-                          items: _foods.map((food) => DropdownMenuItem<int>(value: food.id, child: Text(food.name))).toList(),
-                          onChanged: (val) => setState(() => _selectedFoodId = val),
+                        InkWell(
+                          onTap: _showFoodPicker,
+                          child: InputDecorator(
+                            decoration: const InputDecoration(
+                              labelText: 'בחר מאכל / מתכון',
+                              border: InputBorder.none,
+                              suffixIcon: Icon(Icons.arrow_drop_down),
+                            ),
+                            child: Text(
+                              selectedFood?.name ?? 'לחץ לבחירת מאכל...',
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                          ),
                         ),
                         const SizedBox(height: 12),
                         Row(
@@ -679,7 +840,7 @@ class _TrackerScreenState extends State<TrackerScreen> {
                                 controller: _weightController,
                                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
                                 decoration: InputDecoration(
-                                  labelText: selectedFood?.isRecipe == true ? 'מספר מנות' : (selectedFood?.isLiquid == true ? 'נפח (מ״ל)' : 'משקל (גרם)'),
+                                  labelText: selectedFood?.isRecipe == true ? 'מספר מנות' : (selectedFood?.isLiquid == true ? 'נפח (מ"ל)' : 'משקל (גרם)'),
                                 ),
                               ),
                             ),
@@ -688,7 +849,9 @@ class _TrackerScreenState extends State<TrackerScreen> {
                               width: 80,
                               child: ElevatedButton(
                                 onPressed: _addMeal,
-                                style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 0)),
+                                style: ElevatedButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 0),
+                                ),
                                 child: const Text('הוסף', style: TextStyle(fontWeight: FontWeight.bold)),
                               ),
                             ),
@@ -708,12 +871,12 @@ class _TrackerScreenState extends State<TrackerScreen> {
                   ),
                   child: Column(
                     children: [
-                      const Text('סה״כ היום (מתוך יעד)', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white70)),
+                      const Text('סה"כ היום (מתוך יעד)', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white70)),
                       const SizedBox(height: 10),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          _buildMacroText('קלוריות', dailyTotals.calories, _targetCalories, 'קק״ל'),
+                          _buildMacroText('קלוריות', dailyTotals.calories, _targetCalories, 'קק"ל'),
                           _buildMacroText('חלבון', dailyTotals.protein, _targetProtein, 'גר'),
                           _buildMacroText('פחמימות', dailyTotals.carbs, _targetCarbs, 'גר'),
                           _buildMacroText('שומן', dailyTotals.fat, _targetFat, 'גר'),
@@ -736,7 +899,7 @@ class _TrackerScreenState extends State<TrackerScreen> {
                       final isRecipe = meal['is_recipe'] == 1;
                       final servings = (meal['servings'] as num?)?.toDouble() ?? 1.0;
                       double displayAmount = meal['weight_grams'];
-                      String unit = isLiquid ? 'מ״ל' : 'גרם';
+                      String unit = isLiquid ? 'מ"ל' : 'גרם';
                       if (isRecipe) {
                         displayAmount = (meal['weight_grams'] / (100 / servings));
                         unit = 'מנות';
@@ -756,7 +919,7 @@ class _TrackerScreenState extends State<TrackerScreen> {
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text('${result.calDisplay} קק״ל', style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF00FF87))),
+                              Text('${result.calDisplay} קק"ל', style: const TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF00FF87))),
                               IconButton(icon: const Icon(Icons.delete_outline, color: Colors.redAccent), onPressed: () => _deleteMeal(meal['entry_id'])),
                             ],
                           ),
@@ -775,12 +938,12 @@ class _TrackerScreenState extends State<TrackerScreen> {
 
   Widget _buildMacroText(String label, double current, double target, String unit) {
     bool isOver = current > target;
-    Color valueColor = isOver ? Colors.red.shade700 : Colors.green.shade800;
+    Color valueColor = isOver ? Colors.red.shade700 : const Color(0xFF00FF87);
     return Column(
       children: [
-        Text(label, style: const TextStyle(fontSize: 12)),
+        Text(label, style: const TextStyle(fontSize: 12, color: Colors.white70)),
         Text('${current.toStringAsFixed(1)} / ${target.toStringAsFixed(0)}', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: valueColor)),
-        Text(unit, style: const TextStyle(fontSize: 10, color: Colors.black54)),
+        Text(unit, style: const TextStyle(fontSize: 10, color: Colors.white54)),
       ],
     );
   }

@@ -1,0 +1,5702 @@
+[
+  {
+    "name": "בקלה אטלנטי מבושל-מיובש בחום",
+    "calories_per_100g": 105.0,
+    "protein_per_100g": 22.83,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 0.86,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "לחם אחיד פרוס, מאפיית אנג`ל",
+    "calories_per_100g": 240.0,
+    "protein_per_100g": 9.2,
+    "carbs_per_100g": 45.1,
+    "fat_per_100g": 1.7,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "סטייק כתף בקר מבושל-צלוי",
+    "calories_per_100g": 182.0,
+    "protein_per_100g": 26.3,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 7.66,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שוקולד מריר מעולה כשר לפסח, עלית",
+    "calories_per_100g": 533.0,
+    "protein_per_100g": 4.7,
+    "carbs_per_100g": 46.0,
+    "fat_per_100g": 35.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "טונה צהובת סנפיר מבושלת (טונה טרייה מבושלת)",
+    "calories_per_100g": 130.0,
+    "protein_per_100g": 29.15,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 0.59,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "מרק בצל - רכיבים טבעיים בלבד, אסם",
+    "calories_per_100g": 364.2,
+    "protein_per_100g": 5.71,
+    "carbs_per_100g": 68.57,
+    "fat_per_100g": 7.14,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "Picolini - מיני פנה רגטה קישוא ותרד, ברילה",
+    "calories_per_100g": 188.0,
+    "protein_per_100g": 6.8,
+    "carbs_per_100g": 37.9,
+    "fat_per_100g": 1.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "ג`אמפ תפוזים, טמפו",
+    "calories_per_100g": 44.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 10.9,
+    "fat_per_100g": 0.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "קציצות קישואים בציפוי זרעי פשתן, טבעול",
+    "calories_per_100g": 196.0,
+    "protein_per_100g": 7.0,
+    "carbs_per_100g": 15.0,
+    "fat_per_100g": 12.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "קונפיטורת תות שדה, 778",
+    "calories_per_100g": 248.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 62.0,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "דנונה - אקטימל במתיקות מעודנת 1.6% שומן בתוספת ויטמין D, שטראוס עלית",
+    "calories_per_100g": 52.0,
+    "protein_per_100g": 2.8,
+    "carbs_per_100g": 5.0,
+    "fat_per_100g": 1.6,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "ריקוטה עיזים, מחלבות גד",
+    "calories_per_100g": 97.0,
+    "protein_per_100g": 9.0,
+    "carbs_per_100g": 4.0,
+    "fat_per_100g": 5.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "פריכיות אורז מלא, שופרסל",
+    "calories_per_100g": 386.0,
+    "protein_per_100g": 8.5,
+    "carbs_per_100g": 79.0,
+    "fat_per_100g": 3.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "ענבים ירוקים או אדומים",
+    "calories_per_100g": 69.0,
+    "protein_per_100g": 0.72,
+    "carbs_per_100g": 18.1,
+    "fat_per_100g": 0.16,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "קוטג` תנובה עם שום שמיר 5%, תנובה",
+    "calories_per_100g": 97.0,
+    "protein_per_100g": 11.0,
+    "carbs_per_100g": 2.0,
+    "fat_per_100g": 5.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "ג`לי בטעם תות, אסם",
+    "calories_per_100g": 384.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 96.0,
+    "fat_per_100g": 0.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "גלידה פיצוץ קרמל ובוטנים, מקדונלד`ס",
+    "calories_per_100g": 180.0,
+    "protein_per_100g": 5.0,
+    "carbs_per_100g": 27.0,
+    "fat_per_100g": 5.8,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "מלפפונים במלח גדולים, בית השיטה",
+    "calories_per_100g": 12.0,
+    "protein_per_100g": 1.0,
+    "carbs_per_100g": 2.0,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "גלידה פיצוץ בייגלה מלוח, מקדונלד`ס",
+    "calories_per_100g": 192.0,
+    "protein_per_100g": 4.0,
+    "carbs_per_100g": 24.0,
+    "fat_per_100g": 8.5,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "מילקי קל שוקולד 4.5% שומן, שטראוס עלית",
+    "calories_per_100g": 103.0,
+    "protein_per_100g": 2.3,
+    "carbs_per_100g": 13.3,
+    "fat_per_100g": 4.5,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "דנונה - אקטיביה פרוביוטיקה יומית - יוגורט 3% שומן, שטראוס עלית",
+    "calories_per_100g": 71.0,
+    "protein_per_100g": 5.2,
+    "carbs_per_100g": 4.3,
+    "fat_per_100g": 3.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חומוס מסבחה, סלטי שמיר",
+    "calories_per_100g": 242.0,
+    "protein_per_100g": 6.3,
+    "carbs_per_100g": 12.7,
+    "fat_per_100g": 17.4,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "תפוח אדמה סגול טרי",
+    "calories_per_100g": 85.0,
+    "protein_per_100g": 1.54,
+    "carbs_per_100g": 20.0,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "מרק ברוקולי עשיר בירקות, סנפרוסט",
+    "calories_per_100g": 20.0,
+    "protein_per_100g": 0.9,
+    "carbs_per_100g": 4.1,
+    "fat_per_100g": 0.7,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "טופו קשה בטעם טבעי, משק ויילר",
+    "calories_per_100g": 140.0,
+    "protein_per_100g": 16.0,
+    "carbs_per_100g": 1.0,
+    "fat_per_100g": 8.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "מוצר בשר טחון מעורב בקר וכבש בתוספת חלבון מהצומח - קפוא, טיבון ויל",
+    "calories_per_100g": 176.0,
+    "protein_per_100g": 15.0,
+    "carbs_per_100g": 2.0,
+    "fat_per_100g": 12.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שוקולד מריר 55%, לובקה",
+    "calories_per_100g": 558.0,
+    "protein_per_100g": 5.9,
+    "carbs_per_100g": 49.0,
+    "fat_per_100g": 35.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "סינטה טלה מבושל-צלוי",
+    "calories_per_100g": 292.0,
+    "protein_per_100g": 24.63,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 20.67,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "דש לייט, יד מרדכי",
+    "calories_per_100g": 212.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 83.0,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "קריספי צ`יקן, מקדונלד`ס",
+    "calories_per_100g": 189.0,
+    "protein_per_100g": 9.0,
+    "carbs_per_100g": 22.0,
+    "fat_per_100g": 6.6,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שמן זית כתית מעולה חמיצות מירבית 0.5% - מעודן, עץ הזית",
+    "calories_per_100g": 828.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 92.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "בקלה פסיפי",
+    "calories_per_100g": 69.0,
+    "protein_per_100g": 15.27,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 0.41,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "פסטה פנה ריגטה, אופאל יאצא בע\"מ",
+    "calories_per_100g": 329.0,
+    "protein_per_100g": 12.5,
+    "carbs_per_100g": 68.5,
+    "fat_per_100g": 0.8,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "עדשים מונבטות מבושלות-מוקפצות ללא מלח",
+    "calories_per_100g": 101.0,
+    "protein_per_100g": 8.8,
+    "carbs_per_100g": 21.2,
+    "fat_per_100g": 0.45,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "גזר לבן מבושל עם מלח - פארסניפ",
+    "calories_per_100g": 71.0,
+    "protein_per_100g": 1.32,
+    "carbs_per_100g": 17.01,
+    "fat_per_100g": 0.3,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "קוואקר - אורגני, הרדוף",
+    "calories_per_100g": 342.0,
+    "protein_per_100g": 11.5,
+    "carbs_per_100g": 67.0,
+    "fat_per_100g": 8.8,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "לחם 100% שיפון (גרעיני חמניה - אגוזי מלך - גרעיני פשתן), מאפיית לחמנו",
+    "calories_per_100g": 184.0,
+    "protein_per_100g": 5.2,
+    "carbs_per_100g": 34.3,
+    "fat_per_100g": 0.7,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "ירך עוף מבושל",
+    "calories_per_100g": 195.0,
+    "protein_per_100g": 25.0,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 9.79,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "אנג`ל 100 קל בתוספת שיפון, מאפיית אנג`ל",
+    "calories_per_100g": 211.0,
+    "protein_per_100g": 14.7,
+    "carbs_per_100g": 25.7,
+    "fat_per_100g": 3.4,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "תות שדה קפוא, Best Fruit",
+    "calories_per_100g": 32.0,
+    "protein_per_100g": 1.0,
+    "carbs_per_100g": 6.7,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "גזר לבן מבושל ללא מלח - פארסניפ",
+    "calories_per_100g": 71.0,
+    "protein_per_100g": 1.32,
+    "carbs_per_100g": 17.01,
+    "fat_per_100g": 0.3,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "גבינה לבנה 5%, תנובה",
+    "calories_per_100g": 98.0,
+    "protein_per_100g": 9.0,
+    "carbs_per_100g": 4.3,
+    "fat_per_100g": 5.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חציל בלקני עם בצל אפוי - השף רפי כהן, סלטי צבר",
+    "calories_per_100g": 98.0,
+    "protein_per_100g": 1.0,
+    "carbs_per_100g": 5.1,
+    "fat_per_100g": 8.1,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "קליפת תפוז",
+    "calories_per_100g": 97.0,
+    "protein_per_100g": 1.5,
+    "carbs_per_100g": 25.0,
+    "fat_per_100g": 0.2,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "אבטיח - קרחון שרבט פרווה בטעם אבטיח, נסטלה",
+    "calories_per_100g": 99.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 24.5,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "קמח אורז לבן",
+    "calories_per_100g": 366.0,
+    "protein_per_100g": 5.95,
+    "carbs_per_100g": 80.13,
+    "fat_per_100g": 1.42,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חמאת בוטנים טבעית קרנצ`י עם שברי בוטנים, B&D",
+    "calories_per_100g": 617.0,
+    "protein_per_100g": 28.0,
+    "carbs_per_100g": 12.4,
+    "fat_per_100g": 49.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "בצל ירוק",
+    "calories_per_100g": 32.0,
+    "protein_per_100g": 1.83,
+    "carbs_per_100g": 7.34,
+    "fat_per_100g": 0.19,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חלב טרה 1%, טרה",
+    "calories_per_100g": 41.0,
+    "protein_per_100g": 3.1,
+    "carbs_per_100g": 5.0,
+    "fat_per_100g": 1.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "דבש טהור מפרחי בר, מכוורת עמק חפר בע\"מ",
+    "calories_per_100g": 332.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 83.0,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שמן זית כתית מעולה בכבישה קרה - חמיצות מירבית 0.4%, מין הזית",
+    "calories_per_100g": 828.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 92.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "קוטג`",
+    "calories_per_100g": 98.0,
+    "protein_per_100g": 11.12,
+    "carbs_per_100g": 3.38,
+    "fat_per_100g": 4.3,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חציל בלאדי שרוף על האש עם שמן זית, סלטי צבר",
+    "calories_per_100g": 103.0,
+    "protein_per_100g": 1.0,
+    "carbs_per_100g": 5.5,
+    "fat_per_100g": 8.5,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "משקה קל ענבים, פרימור",
+    "calories_per_100g": 45.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 11.2,
+    "fat_per_100g": 0.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "המבורגר אנטריקוט, מעדני הטלה",
+    "calories_per_100g": 244.0,
+    "protein_per_100g": 14.0,
+    "carbs_per_100g": 2.0,
+    "fat_per_100g": 20.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שייקי - מנגו מוקפא, יוחננוף",
+    "calories_per_100g": 65.0,
+    "protein_per_100g": 0.73,
+    "carbs_per_100g": 14.6,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "PREMIUM - צלעות אסאדו מעושנות, זוגלובק",
+    "calories_per_100g": 201.0,
+    "protein_per_100g": 17.0,
+    "carbs_per_100g": 4.0,
+    "fat_per_100g": 13.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "קוטג` עם זיתים מושחרים 5%, תנובה",
+    "calories_per_100g": 91.0,
+    "protein_per_100g": 9.9,
+    "carbs_per_100g": 1.7,
+    "fat_per_100g": 5.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "משקה בטעם בננה 0% שומן ללא תוספת סוכר 25 גרם חלבון בבקבוק, מולר",
+    "calories_per_100g": 40.0,
+    "protein_per_100g": 7.15,
+    "carbs_per_100g": 2.9,
+    "fat_per_100g": 0.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "תות שדה קפוא, Field Good",
+    "calories_per_100g": 37.0,
+    "protein_per_100g": 1.7,
+    "carbs_per_100g": 6.5,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "יוגורט עיזים מחלב מלא כ- 3.7% שומן, משק צוריאל",
+    "calories_per_100g": 65.0,
+    "protein_per_100g": 3.4,
+    "carbs_per_100g": 4.5,
+    "fat_per_100g": 3.7,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "סלמון ורוד מבושל-מיובש בחום",
+    "calories_per_100g": 153.0,
+    "protein_per_100g": 24.58,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 5.28,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שקדים טבעיים גרוסים, שקדיה",
+    "calories_per_100g": 604.0,
+    "protein_per_100g": 20.8,
+    "carbs_per_100g": 20.5,
+    "fat_per_100g": 50.2,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "סלמון קוהו פראי מבושל-מיובש בחום",
+    "calories_per_100g": 139.0,
+    "protein_per_100g": 23.45,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 4.3,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "לחם מלא פרוס - חיטה מלאה בתוספת גרעינים ודגנים, מאפיית אנג`ל",
+    "calories_per_100g": 225.0,
+    "protein_per_100g": 12.4,
+    "carbs_per_100g": 30.5,
+    "fat_per_100g": 4.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "כרע עוף טרי",
+    "calories_per_100g": 119.0,
+    "protein_per_100g": 20.59,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 3.42,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חומוס, סלטי צבר",
+    "calories_per_100g": 215.0,
+    "protein_per_100g": 8.0,
+    "carbs_per_100g": 15.0,
+    "fat_per_100g": 13.7,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "SKIPPY - חמאת בוטנים עם שברי בוטנים, יוניליוור בסטפודס ישראל",
+    "calories_per_100g": 643.0,
+    "protein_per_100g": 26.0,
+    "carbs_per_100g": 18.3,
+    "fat_per_100g": 51.8,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "ירך עוף מבושל-מטוגן",
+    "calories_per_100g": 218.0,
+    "protein_per_100g": 28.18,
+    "carbs_per_100g": 1.18,
+    "fat_per_100g": 10.3,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "רבע לשבע - גלילי ופל במילוי קרם אגוזים בציפוי שוקולד חלב מעולה, עלית",
+    "calories_per_100g": 500.0,
+    "protein_per_100g": 6.9,
+    "carbs_per_100g": 62.0,
+    "fat_per_100g": 24.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "טופו חומוס בטעם טבעי, משק ויילר",
+    "calories_per_100g": 84.0,
+    "protein_per_100g": 6.0,
+    "carbs_per_100g": 10.0,
+    "fat_per_100g": 1.5,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "אבטיח",
+    "calories_per_100g": 30.0,
+    "protein_per_100g": 0.61,
+    "carbs_per_100g": 7.55,
+    "fat_per_100g": 0.15,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שקדים קלופים קלויים, יש",
+    "calories_per_100g": 627.0,
+    "protein_per_100g": 22.0,
+    "carbs_per_100g": 20.0,
+    "fat_per_100g": 51.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "בצל קצוץ ומטוגן, דורות",
+    "calories_per_100g": 315.0,
+    "protein_per_100g": 1.8,
+    "carbs_per_100g": 16.0,
+    "fat_per_100g": 27.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "גלידת שמנת משובחת בטעם שוקולד, בן & ג`ריס",
+    "calories_per_100g": 232.0,
+    "protein_per_100g": 4.0,
+    "carbs_per_100g": 23.5,
+    "fat_per_100g": 13.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "סלסה פלפל אדום וצ`יפוטלה, טרז פזוס",
+    "calories_per_100g": 222.0,
+    "protein_per_100g": 0.7,
+    "carbs_per_100g": 53.0,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "לחם לבן מסחרי קלוי מופחת נתרן - ללא מלח",
+    "calories_per_100g": 293.0,
+    "protein_per_100g": 9.0,
+    "carbs_per_100g": 54.4,
+    "fat_per_100g": 4.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "קריספי בטטה לתנור, תפוגן",
+    "calories_per_100g": 181.0,
+    "protein_per_100g": 1.5,
+    "carbs_per_100g": 22.0,
+    "fat_per_100g": 9.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "תפוח עץ ירוק עם קליפה (גרני סמית)",
+    "calories_per_100g": 58.0,
+    "protein_per_100g": 0.44,
+    "carbs_per_100g": 13.6,
+    "fat_per_100g": 0.19,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "מאמא עוף שניצל אוקינוס בציפוי מעודן, תנובה",
+    "calories_per_100g": 214.0,
+    "protein_per_100g": 11.0,
+    "carbs_per_100g": 20.0,
+    "fat_per_100g": 10.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שיבולת שועל מלאה להכנה מהירה, מיה",
+    "calories_per_100g": 366.0,
+    "protein_per_100g": 12.0,
+    "carbs_per_100g": 56.0,
+    "fat_per_100g": 8.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "אבקת חלבון ביצה",
+    "calories_per_100g": 382.0,
+    "protein_per_100g": 81.1,
+    "carbs_per_100g": 7.8,
+    "fat_per_100g": 0.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "מינוט סטייק - אנטריקוט דקדק לטיגון והקפצה, אל גאוצ`ו",
+    "calories_per_100g": 186.0,
+    "protein_per_100g": 19.0,
+    "carbs_per_100g": 0.5,
+    "fat_per_100g": 12.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שוק עוף מבושלת-מטוגנת",
+    "calories_per_100g": 208.0,
+    "protein_per_100g": 28.38,
+    "carbs_per_100g": 0.65,
+    "fat_per_100g": 9.32,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "תפוח אדמה מבושל עם קליפה",
+    "calories_per_100g": 87.0,
+    "protein_per_100g": 1.87,
+    "carbs_per_100g": 20.13,
+    "fat_per_100g": 0.1,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "ג`לי בטעם ענבים, אסם",
+    "calories_per_100g": 384.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 96.0,
+    "fat_per_100g": 0.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "PRO - לחם מלא פרוס 28 גרם חלבון ל- 100 גרם, מאפיית אנג`ל",
+    "calories_per_100g": 214.0,
+    "protein_per_100g": 28.0,
+    "carbs_per_100g": 15.0,
+    "fat_per_100g": 2.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "קוטג` תנובה 1%, תנובה",
+    "calories_per_100g": 62.0,
+    "protein_per_100g": 11.5,
+    "carbs_per_100g": 1.8,
+    "fat_per_100g": 1.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "מיץ תפוזים אורגני, פרימור",
+    "calories_per_100g": 46.0,
+    "protein_per_100g": 0.8,
+    "carbs_per_100g": 10.2,
+    "fat_per_100g": 0.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "כריך גבינה צפתית, לורד סנדוויץ`",
+    "calories_per_100g": 170.0,
+    "protein_per_100g": 7.8,
+    "carbs_per_100g": 30.7,
+    "fat_per_100g": 3.8,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "מיץ תפוזים אורגני, גרין פילד מזון אורגני בע\"מ",
+    "calories_per_100g": 46.0,
+    "protein_per_100g": 1.0,
+    "carbs_per_100g": 11.0,
+    "fat_per_100g": 0.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "עדשים ירוקות, המותג",
+    "calories_per_100g": 353.0,
+    "protein_per_100g": 25.0,
+    "carbs_per_100g": 60.0,
+    "fat_per_100g": 1.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "עגבניות מרוסקות - עגבניות מתובלות בתוספת שום, רמי לוי שיווק השקמה",
+    "calories_per_100g": 27.0,
+    "protein_per_100g": 1.8,
+    "carbs_per_100g": 3.5,
+    "fat_per_100g": 0.12,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "דבש טהור מפרחי בר, יד מרדכי",
+    "calories_per_100g": 320.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 80.0,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "עגבנייה טרייה",
+    "calories_per_100g": 18.0,
+    "protein_per_100g": 0.887,
+    "carbs_per_100g": 3.923,
+    "fat_per_100g": 0.2,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "לחם מלא 100% קמח חיטה מלא, מאפיית יוסף ברון",
+    "calories_per_100g": 222.0,
+    "protein_per_100g": 10.1,
+    "carbs_per_100g": 37.9,
+    "fat_per_100g": 1.4,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "קרחון בטעם ענבים, גלידות פלדמן",
+    "calories_per_100g": 78.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 19.4,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "פיראוס - צפתית עיזים 5% שומן, תנובה",
+    "calories_per_100g": 125.0,
+    "protein_per_100g": 18.0,
+    "carbs_per_100g": 1.9,
+    "fat_per_100g": 5.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שמן דגים מכבד בקלה",
+    "calories_per_100g": 902.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 100.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "בטבע שלי - שיפודים טבעוניים בטעם פרגית, גורי מוצרי צריכה בע\"מ",
+    "calories_per_100g": 104.0,
+    "protein_per_100g": 13.0,
+    "carbs_per_100g": 6.0,
+    "fat_per_100g": 2.2,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "בצל מתוק",
+    "calories_per_100g": 32.0,
+    "protein_per_100g": 0.8,
+    "carbs_per_100g": 7.55,
+    "fat_per_100g": 0.08,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "מועשר 3% - חלב מועשר בסידן ובויטמין D, טרה",
+    "calories_per_100g": 60.0,
+    "protein_per_100g": 3.3,
+    "carbs_per_100g": 4.9,
+    "fat_per_100g": 3.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חציל על האש, סלטי צבר",
+    "calories_per_100g": 136.0,
+    "protein_per_100g": 1.0,
+    "carbs_per_100g": 5.0,
+    "fat_per_100g": 12.5,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "תפוז גזר מנדרינה - 100% סחוט טבעי, פריניב",
+    "calories_per_100g": 44.0,
+    "protein_per_100g": 0.57,
+    "carbs_per_100g": 10.3,
+    "fat_per_100g": 0.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "ENERGY - פריכיות אורז מלא עם תפוח וקינמון, שטראוס עלית",
+    "calories_per_100g": 379.0,
+    "protein_per_100g": 8.1,
+    "carbs_per_100g": 78.0,
+    "fat_per_100g": 3.2,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "גרעיני אבטיח מיובשים",
+    "calories_per_100g": 557.0,
+    "protein_per_100g": 28.33,
+    "carbs_per_100g": 15.31,
+    "fat_per_100g": 47.37,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "פסטה, המותג",
+    "calories_per_100g": 353.0,
+    "protein_per_100g": 11.0,
+    "carbs_per_100g": 76.9,
+    "fat_per_100g": 0.11,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שקדים מולבנים פרוסים, שקדיה",
+    "calories_per_100g": 601.0,
+    "protein_per_100g": 21.3,
+    "carbs_per_100g": 15.1,
+    "fat_per_100g": 50.6,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "טונה צהובת סנפיר (טונה טרייה)",
+    "calories_per_100g": 109.0,
+    "protein_per_100g": 24.4,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 0.49,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "בננה",
+    "calories_per_100g": 89.0,
+    "protein_per_100g": 1.09,
+    "carbs_per_100g": 22.84,
+    "fat_per_100g": 0.33,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "בננה - משקה חלב בטעם בננה 1.5% שומן, טרה",
+    "calories_per_100g": 46.0,
+    "protein_per_100g": 3.4,
+    "carbs_per_100g": 4.8,
+    "fat_per_100g": 1.5,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "תפוזים - מיץ תפוזים מרוכז קפוא, פריגת",
+    "calories_per_100g": 48.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 12.1,
+    "fat_per_100g": 0.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "כרע עוף מבושל-מטוגן",
+    "calories_per_100g": 195.0,
+    "protein_per_100g": 28.62,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 8.08,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "דבש טהור מפרחי בר, בוסתן",
+    "calories_per_100g": 304.0,
+    "protein_per_100g": 2.0,
+    "carbs_per_100g": 79.5,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "פסטה מסולסלת, יש",
+    "calories_per_100g": 143.0,
+    "protein_per_100g": 4.4,
+    "carbs_per_100g": 29.6,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חומוס גלילי - סלט חומוס בתוספת רוטב פלפל ירוק, פיקניק מעדנים",
+    "calories_per_100g": 240.0,
+    "protein_per_100g": 6.4,
+    "carbs_per_100g": 12.8,
+    "fat_per_100g": 17.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חציל במיונז, סלטי שמיר",
+    "calories_per_100g": 335.0,
+    "protein_per_100g": 1.0,
+    "carbs_per_100g": 5.7,
+    "fat_per_100g": 34.2,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "תות ליים, שוופס",
+    "calories_per_100g": 38.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 9.3,
+    "fat_per_100g": 0.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "סובין שיבולת שועל מבושלת",
+    "calories_per_100g": 40.0,
+    "protein_per_100g": 3.21,
+    "carbs_per_100g": 11.44,
+    "fat_per_100g": 0.86,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "אבוקדו בשל מוכן לאכילה, מור בריאות בע\"מ",
+    "calories_per_100g": 162.45,
+    "protein_per_100g": 1.7,
+    "carbs_per_100g": 5.0,
+    "fat_per_100g": 15.3,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "סינטה בקר מבושל-צלוי",
+    "calories_per_100g": 212.0,
+    "protein_per_100g": 29.33,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 9.67,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שקדים מולבנים חצויים, שקדיה",
+    "calories_per_100g": 617.0,
+    "protein_per_100g": 21.2,
+    "carbs_per_100g": 18.2,
+    "fat_per_100g": 51.1,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "תפוח אדמה במיקרוגל",
+    "calories_per_100g": 105.0,
+    "protein_per_100g": 2.44,
+    "carbs_per_100g": 24.24,
+    "fat_per_100g": 0.1,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "בקלה אטלנטי",
+    "calories_per_100g": 82.0,
+    "protein_per_100g": 17.81,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 0.67,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שניצל עוף דקיק - ענקיסטי, עוף טוב",
+    "calories_per_100g": 248.0,
+    "protein_per_100g": 13.0,
+    "carbs_per_100g": 16.5,
+    "fat_per_100g": 14.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "לחם לבן מופחת קלוריות",
+    "calories_per_100g": 207.0,
+    "protein_per_100g": 8.7,
+    "carbs_per_100g": 44.3,
+    "fat_per_100g": 2.5,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שמן זית כתית מעולה חמיצות מירבית עד 0.46%, Oliveri",
+    "calories_per_100g": 900.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 100.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "GO By TNUVA בטעם עוגיות 25 גרם חלבון בבקבוק, תנובה",
+    "calories_per_100g": 67.0,
+    "protein_per_100g": 7.4,
+    "carbs_per_100g": 5.0,
+    "fat_per_100g": 1.9,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "קוואקר דק להכנה מהירה (אינסטנט) אורגני ללא גלוטן, נוטרה זן",
+    "calories_per_100g": 366.0,
+    "protein_per_100g": 14.2,
+    "carbs_per_100g": 57.0,
+    "fat_per_100g": 6.7,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "אורז יסמין איכותי, וילי פוד",
+    "calories_per_100g": 355.0,
+    "protein_per_100g": 7.7,
+    "carbs_per_100g": 80.0,
+    "fat_per_100g": 0.5,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "גזר גמדי קפוא, שופרסל",
+    "calories_per_100g": 36.0,
+    "protein_per_100g": 0.8,
+    "carbs_per_100g": 7.9,
+    "fat_per_100g": 0.5,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שניצל עוף דקיק עם צ`יפס שמח, עוף טוב",
+    "calories_per_100g": 248.0,
+    "protein_per_100g": 13.0,
+    "carbs_per_100g": 16.5,
+    "fat_per_100g": 14.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חלב 1% בטעם וניל, תנובה",
+    "calories_per_100g": 53.0,
+    "protein_per_100g": 3.2,
+    "carbs_per_100g": 7.0,
+    "fat_per_100g": 1.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "בצל מטוגן מוכן להגשה, אסם",
+    "calories_per_100g": 401.0,
+    "protein_per_100g": 7.0,
+    "carbs_per_100g": 71.9,
+    "fat_per_100g": 9.5,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חזה עוף על גחלים, יחיעם",
+    "calories_per_100g": 96.0,
+    "protein_per_100g": 17.0,
+    "carbs_per_100g": 2.5,
+    "fat_per_100g": 2.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "סלט אבוקדו עם ביצים, סלטי שמיר",
+    "calories_per_100g": 199.0,
+    "protein_per_100g": 8.4,
+    "carbs_per_100g": 5.0,
+    "fat_per_100g": 16.2,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "ממרח 100% שקדים, שקדיה",
+    "calories_per_100g": 640.0,
+    "protein_per_100g": 27.0,
+    "carbs_per_100g": 4.4,
+    "fat_per_100g": 55.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "מיני קריספי צ`יקן, מקדונלד`ס",
+    "calories_per_100g": 207.0,
+    "protein_per_100g": 11.0,
+    "carbs_per_100g": 26.0,
+    "fat_per_100g": 5.9,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "עדשים מבושלות עם מלח",
+    "calories_per_100g": 114.0,
+    "protein_per_100g": 9.02,
+    "carbs_per_100g": 19.54,
+    "fat_per_100g": 0.38,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "טוויסט, עלית",
+    "calories_per_100g": 488.0,
+    "protein_per_100g": 4.7,
+    "carbs_per_100g": 60.0,
+    "fat_per_100g": 25.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "פיתה קראנצ` מחיטה מלאה, עלית",
+    "calories_per_100g": 456.0,
+    "protein_per_100g": 10.6,
+    "carbs_per_100g": 70.0,
+    "fat_per_100g": 14.8,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "פסטה ספגטי מס` 5, ברילה",
+    "calories_per_100g": 359.0,
+    "protein_per_100g": 13.0,
+    "carbs_per_100g": 71.0,
+    "fat_per_100g": 2.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חזה עוף מבושל",
+    "calories_per_100g": 151.0,
+    "protein_per_100g": 28.98,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 3.03,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "צפתית עיזים מעודנת 9%, משק צוריאל",
+    "calories_per_100g": 141.0,
+    "protein_per_100g": 11.0,
+    "carbs_per_100g": 4.0,
+    "fat_per_100g": 9.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חלב 1%, שופרסל",
+    "calories_per_100g": 43.0,
+    "protein_per_100g": 3.4,
+    "carbs_per_100g": 5.0,
+    "fat_per_100g": 1.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "פסטה פפיון צבעוני, באשר",
+    "calories_per_100g": 388.0,
+    "protein_per_100g": 12.0,
+    "carbs_per_100g": 78.0,
+    "fat_per_100g": 1.4,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "המבורגר - מוצר בשר בקר טחון מתובל קפוא, לימוזין",
+    "calories_per_100g": 271.0,
+    "protein_per_100g": 14.4,
+    "carbs_per_100g": 5.4,
+    "fat_per_100g": 21.3,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "לחם שיפון 100%, לחם הארץ - מאפית ברמן",
+    "calories_per_100g": 220.0,
+    "protein_per_100g": 9.5,
+    "carbs_per_100g": 35.5,
+    "fat_per_100g": 2.6,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "מנגו, א.מ. שרון שיווק (2014) בע\"מ",
+    "calories_per_100g": 60.0,
+    "protein_per_100g": 0.82,
+    "carbs_per_100g": 14.9,
+    "fat_per_100g": 0.38,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "תפוזים סחוט, פריגת",
+    "calories_per_100g": 43.0,
+    "protein_per_100g": 0.7,
+    "carbs_per_100g": 9.6,
+    "fat_per_100g": 0.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חומוס, סוגת",
+    "calories_per_100g": 322.0,
+    "protein_per_100g": 16.6,
+    "carbs_per_100g": 64.2,
+    "fat_per_100g": 6.3,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "ענבים מרלו - משקה קל ענבים בניחוח מרלו, פריגת",
+    "calories_per_100g": 38.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 9.0,
+    "fat_per_100g": 0.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "סלמון ורוד",
+    "calories_per_100g": 127.0,
+    "protein_per_100g": 20.5,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 4.4,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "פיתה קראנצ` זעתר, עלית",
+    "calories_per_100g": 453.0,
+    "protein_per_100g": 10.2,
+    "carbs_per_100g": 69.0,
+    "fat_per_100g": 15.1,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "תפוח אדמה מבושל ללא קליפה",
+    "calories_per_100g": 86.0,
+    "protein_per_100g": 1.71,
+    "carbs_per_100g": 20.01,
+    "fat_per_100g": 0.1,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חלב 3%, שופרסל",
+    "calories_per_100g": 60.0,
+    "protein_per_100g": 3.3,
+    "carbs_per_100g": 5.0,
+    "fat_per_100g": 3.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "תפוח אדמה טרי",
+    "calories_per_100g": 69.0,
+    "protein_per_100g": 1.68,
+    "carbs_per_100g": 15.71,
+    "fat_per_100g": 0.1,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "תפוז",
+    "calories_per_100g": 46.0,
+    "protein_per_100g": 0.7,
+    "carbs_per_100g": 11.5,
+    "fat_per_100g": 0.21,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "SKIPPY - חמאת בוטנים קלאסית, יוניליוור בסטפודס ישראל",
+    "calories_per_100g": 626.0,
+    "protein_per_100g": 24.6,
+    "carbs_per_100g": 15.3,
+    "fat_per_100g": 50.6,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "יוגורט Bio 1.5%, תנובה",
+    "calories_per_100g": 56.0,
+    "protein_per_100g": 5.2,
+    "carbs_per_100g": 5.3,
+    "fat_per_100g": 1.5,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "WHEY PROTEIN VANILLA FLAVOR - חלבון מי גבינה בטעם וניל, allin",
+    "calories_per_100g": 396.0,
+    "protein_per_100g": 81.9,
+    "carbs_per_100g": 5.6,
+    "fat_per_100g": 5.2,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "פילה דג אמנון קפוא עם עור בציפוי קרח מכיל 80% דג, דלידג",
+    "calories_per_100g": 103.0,
+    "protein_per_100g": 20.0,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 2.5,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "בטטה סגולה טריה",
+    "calories_per_100g": 85.0,
+    "protein_per_100g": 1.54,
+    "carbs_per_100g": 20.0,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "לחם לבן מסחרי קלוי",
+    "calories_per_100g": 293.0,
+    "protein_per_100g": 9.0,
+    "carbs_per_100g": 54.4,
+    "fat_per_100g": 4.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חזה עוף טרי",
+    "calories_per_100g": 120.0,
+    "protein_per_100g": 22.5,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 2.62,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שניצל עוף עם תירס, עוף טוב",
+    "calories_per_100g": 205.0,
+    "protein_per_100g": 8.0,
+    "carbs_per_100g": 23.0,
+    "fat_per_100g": 11.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חמאת בוטנים טבעית, B&D",
+    "calories_per_100g": 617.0,
+    "protein_per_100g": 28.0,
+    "carbs_per_100g": 12.4,
+    "fat_per_100g": 49.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שוק עוף מבושלת-צלויה",
+    "calories_per_100g": 191.0,
+    "protein_per_100g": 27.03,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 8.43,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "לחם חיטה מלא מחיטה מלאה, דגנית עין בר",
+    "calories_per_100g": 227.0,
+    "protein_per_100g": 10.3,
+    "carbs_per_100g": 36.7,
+    "fat_per_100g": 2.8,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "GO By TNUVA בטעם קפה ללא תוספת סוכר 25 גרם חלבון ו- 2 גרם קריאטין, תנובה",
+    "calories_per_100g": 41.0,
+    "protein_per_100g": 7.4,
+    "carbs_per_100g": 2.0,
+    "fat_per_100g": 0.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "מיוקל שמן זית 5% שומן, תלמה",
+    "calories_per_100g": 98.0,
+    "protein_per_100g": 0.3,
+    "carbs_per_100g": 13.0,
+    "fat_per_100g": 5.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "מוגז עדין בטעם אבטיח, שוופס",
+    "calories_per_100g": 20.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 4.9,
+    "fat_per_100g": 0.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "MINUTE סטייק - נתח אנטריקוט פרוס דק, בלדי בע\"מ",
+    "calories_per_100g": 187.0,
+    "protein_per_100g": 21.2,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 11.4,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "טונת סקיפ ג`ק",
+    "calories_per_100g": 103.0,
+    "protein_per_100g": 22.0,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 1.01,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "תרכיז עגבניות 28Bx, שופרסל",
+    "calories_per_100g": 139.0,
+    "protein_per_100g": 4.4,
+    "carbs_per_100g": 27.6,
+    "fat_per_100g": 1.2,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "מלפפונים בינוניים כבושים בחומץ, שופרסל",
+    "calories_per_100g": 17.0,
+    "protein_per_100g": 1.0,
+    "carbs_per_100g": 3.0,
+    "fat_per_100g": 0.1,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "פלפל אדום מבושל",
+    "calories_per_100g": 28.0,
+    "protein_per_100g": 0.92,
+    "carbs_per_100g": 6.7,
+    "fat_per_100g": 0.2,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "ברוקוליני טרי",
+    "calories_per_100g": 22.0,
+    "protein_per_100g": 3.17,
+    "carbs_per_100g": 2.85,
+    "fat_per_100g": 0.49,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "סינטה טלה (שוק עם סינטה)",
+    "calories_per_100g": 230.0,
+    "protein_per_100g": 17.91,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 17.07,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "מפלדינה, ברילה",
+    "calories_per_100g": 350.0,
+    "protein_per_100g": 12.0,
+    "carbs_per_100g": 71.7,
+    "fat_per_100g": 1.5,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "ויטמינצ`יק בטעם ענבים (קרחון), נסטלה",
+    "calories_per_100g": 73.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 18.3,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "פלפל אדום חריף",
+    "calories_per_100g": 40.0,
+    "protein_per_100g": 1.87,
+    "carbs_per_100g": 8.81,
+    "fat_per_100g": 0.44,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "תפרחות ברוקולי מוקפאות, שופרסל",
+    "calories_per_100g": 18.0,
+    "protein_per_100g": 2.5,
+    "carbs_per_100g": 0.6,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "קוטג` תנובה 9%, תנובה",
+    "calories_per_100g": 128.0,
+    "protein_per_100g": 10.5,
+    "carbs_per_100g": 1.2,
+    "fat_per_100g": 9.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "בשר עוף טחון מבושל-מטוגן",
+    "calories_per_100g": 189.0,
+    "protein_per_100g": 23.28,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 10.92,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "דבש פרחי בר, מכוורת גליל קיבוץ שמיר",
+    "calories_per_100g": 330.0,
+    "protein_per_100g": 0.3,
+    "carbs_per_100g": 79.0,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "סינטה טלה (שוק עם סינטה) מבושל-צלוי",
+    "calories_per_100g": 258.0,
+    "protein_per_100g": 25.55,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 16.48,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חציל טרי",
+    "calories_per_100g": 24.0,
+    "protein_per_100g": 1.01,
+    "carbs_per_100g": 5.7,
+    "fat_per_100g": 0.19,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חלב עמיד דל שומן, הומוגני, 1% שומן, תנובה",
+    "calories_per_100g": 43.0,
+    "protein_per_100g": 3.35,
+    "carbs_per_100g": 5.1,
+    "fat_per_100g": 1.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "פנקו - פירורי לחם עם בטטה סגולה, מזרח ומערב",
+    "calories_per_100g": 382.0,
+    "protein_per_100g": 13.0,
+    "carbs_per_100g": 72.0,
+    "fat_per_100g": 3.2,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "טונה בהירה משומרת במים ללא מלח",
+    "calories_per_100g": 116.0,
+    "protein_per_100g": 25.51,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 0.82,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "נתחי טונה בהירה במים, ויליגר",
+    "calories_per_100g": 94.0,
+    "protein_per_100g": 22.0,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 0.6,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חלב 3% שומן מועשר בסידן ובויטמין D, טרה",
+    "calories_per_100g": 60.0,
+    "protein_per_100g": 3.3,
+    "carbs_per_100g": 4.9,
+    "fat_per_100g": 3.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שניצל עוף - מיני דובונים, עוף טוב",
+    "calories_per_100g": 203.0,
+    "protein_per_100g": 11.0,
+    "carbs_per_100g": 25.0,
+    "fat_per_100g": 9.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "טונה בהירה משומרת במים",
+    "calories_per_100g": 116.0,
+    "protein_per_100g": 25.51,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 0.82,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "לחם חיטה מלא ירוק ללא חומרים משמרים בתוספת גרעיני חמניות ופשתן, דגנית עין בר",
+    "calories_per_100g": 223.0,
+    "protein_per_100g": 12.6,
+    "carbs_per_100g": 35.9,
+    "fat_per_100g": 1.8,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "WANNA BEE - סירופ אורז מלא בתוספת נקטר אגבה ומייפל, וגה מוצרים טבעוניים",
+    "calories_per_100g": 300.0,
+    "protein_per_100g": 1.0,
+    "carbs_per_100g": 82.0,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "מיץ תפוזים",
+    "calories_per_100g": 45.0,
+    "protein_per_100g": 0.7,
+    "carbs_per_100g": 10.4,
+    "fat_per_100g": 0.2,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "גלידה פיצוץ תות ובוטנים, מקדונלד`ס",
+    "calories_per_100g": 164.0,
+    "protein_per_100g": 4.0,
+    "carbs_per_100g": 25.0,
+    "fat_per_100g": 5.1,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "ברוקולי מבושל",
+    "calories_per_100g": 35.0,
+    "protein_per_100g": 2.38,
+    "carbs_per_100g": 7.18,
+    "fat_per_100g": 0.41,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "אל מטאדור - סינטה בקר, בלדי בע\"מ",
+    "calories_per_100g": 198.0,
+    "protein_per_100g": 20.8,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 12.7,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "אריסה אדומה עם פלפל אדום, סלטי צבר",
+    "calories_per_100g": 294.0,
+    "protein_per_100g": 3.5,
+    "carbs_per_100g": 16.0,
+    "fat_per_100g": 24.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "אמנון",
+    "calories_per_100g": 96.0,
+    "protein_per_100g": 20.08,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 1.7,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "עדשים מונבטות טריות",
+    "calories_per_100g": 106.0,
+    "protein_per_100g": 8.96,
+    "carbs_per_100g": 22.1,
+    "fat_per_100g": 0.55,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "גזר לבן (פארסניפ) טרי",
+    "calories_per_100g": 75.0,
+    "protein_per_100g": 1.2,
+    "carbs_per_100g": 17.99,
+    "fat_per_100g": 0.3,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "מעדני תנעמי - פיתה מקמח מלא, דגנית עין בר",
+    "calories_per_100g": 237.0,
+    "protein_per_100g": 7.8,
+    "carbs_per_100g": 44.8,
+    "fat_per_100g": 2.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "גבינה לבנה 5% עם בצל בטעם בצל מטוגן, תנובה",
+    "calories_per_100g": 102.0,
+    "protein_per_100g": 9.3,
+    "carbs_per_100g": 5.0,
+    "fat_per_100g": 5.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "דבש איכות - פרחי אבוקדו, נגוהות",
+    "calories_per_100g": 304.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 80.0,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "מחית תפוח עץ ואגס אורגניים ללא תוספת סוכר, השדה - מוצרים אורגניים",
+    "calories_per_100g": 64.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 14.6,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "נתחי טונה בהירה במים, סטארקיסט",
+    "calories_per_100g": 104.0,
+    "protein_per_100g": 24.8,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 0.6,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "לחם לבן מסחרי מופחת נתרן - ללא מלח",
+    "calories_per_100g": 267.0,
+    "protein_per_100g": 8.2,
+    "carbs_per_100g": 49.5,
+    "fat_per_100g": 3.6,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "בצל טרי",
+    "calories_per_100g": 40.0,
+    "protein_per_100g": 1.1,
+    "carbs_per_100g": 9.34,
+    "fat_per_100g": 0.1,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "טופו משי (רך) ללא גלוטן, מזרח ומערב",
+    "calories_per_100g": 55.0,
+    "protein_per_100g": 5.2,
+    "carbs_per_100g": 1.7,
+    "fat_per_100g": 3.1,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חמאת בוטנים",
+    "calories_per_100g": 529.0,
+    "protein_per_100g": 18.3,
+    "carbs_per_100g": 46.88,
+    "fat_per_100g": 29.8,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "אורז מלא ארוך, סוגת",
+    "calories_per_100g": 133.0,
+    "protein_per_100g": 3.2,
+    "carbs_per_100g": 28.3,
+    "fat_per_100g": 0.7,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "עדשים אדומות, סוגת",
+    "calories_per_100g": 301.0,
+    "protein_per_100g": 25.3,
+    "carbs_per_100g": 58.4,
+    "fat_per_100g": 1.7,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "גבינה לבנה 3%, תנובה",
+    "calories_per_100g": 82.0,
+    "protein_per_100g": 9.5,
+    "carbs_per_100g": 4.3,
+    "fat_per_100g": 3.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "מלפפון עם קליפה",
+    "calories_per_100g": 15.0,
+    "protein_per_100g": 0.65,
+    "carbs_per_100g": 3.63,
+    "fat_per_100g": 0.11,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "בשר בקר טחון-מבושל-אפוי - 5% שומן",
+    "calories_per_100g": 174.0,
+    "protein_per_100g": 27.31,
+    "carbs_per_100g": 0,
+    "fat_per_100g": 6.37,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "סוכריות ג`לי בטעם אבטיח חמוץ, Mike and Ike",
+    "calories_per_100g": 367.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 87.0,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "לחם לבן מסחרי עם פירורי לחם רכים",
+    "calories_per_100g": 266.0,
+    "protein_per_100g": 7.64,
+    "carbs_per_100g": 50.61,
+    "fat_per_100g": 3.29,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "גזר גמדי קטן במיוחד מוקפא, סנפרוסט",
+    "calories_per_100g": 29.0,
+    "protein_per_100g": 0.9,
+    "carbs_per_100g": 7.0,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "מחית תפוח עץ ואפרסק אורגניים ללא תוספת סוכר, השדה - מוצרים אורגניים",
+    "calories_per_100g": 58.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 13.0,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "דבש טהור פרחי בר, צוקרמן מוצרים טבעיים",
+    "calories_per_100g": 324.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 81.0,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "כתף בקר מבושלת-צלויה",
+    "calories_per_100g": 177.0,
+    "protein_per_100g": 26.22,
+    "carbs_per_100g": 0,
+    "fat_per_100g": 7.2,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "ליש - רצועת פירות בטעם אבטיח, גרופר",
+    "calories_per_100g": 357.0,
+    "protein_per_100g": 2.3,
+    "carbs_per_100g": 84.0,
+    "fat_per_100g": 0.5,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "אורז מלא עגול, סוגת",
+    "calories_per_100g": 129.0,
+    "protein_per_100g": 3.0,
+    "carbs_per_100g": 28.3,
+    "fat_per_100g": 0.5,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חלב טרי 3%, תנובה",
+    "calories_per_100g": 60.0,
+    "protein_per_100g": 3.3,
+    "carbs_per_100g": 4.95,
+    "fat_per_100g": 3.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "סלמון קוהו פראי",
+    "calories_per_100g": 146.0,
+    "protein_per_100g": 21.62,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 5.93,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "צפתית מעודנת 5%, משק צוריאל",
+    "calories_per_100g": 111.0,
+    "protein_per_100g": 11.5,
+    "carbs_per_100g": 4.9,
+    "fat_per_100g": 5.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "קוביות עגבניות במיץ עגבניות, מגה",
+    "calories_per_100g": 22.0,
+    "protein_per_100g": 1.1,
+    "carbs_per_100g": 4.3,
+    "fat_per_100g": 0.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "סלמון אטלנטי טרי",
+    "calories_per_100g": 208.0,
+    "protein_per_100g": 20.42,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 13.42,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "פרוסות מנגו מקולפות בסירופ קל, טעמן",
+    "calories_per_100g": 69.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 17.0,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "תפוז סיני, המותג",
+    "calories_per_100g": 345.0,
+    "protein_per_100g": 4.0,
+    "carbs_per_100g": 80.0,
+    "fat_per_100g": 1.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חלב טרי 3%, מחלבות רמת הגולן",
+    "calories_per_100g": 60.0,
+    "protein_per_100g": 3.3,
+    "carbs_per_100g": 5.0,
+    "fat_per_100g": 3.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "ביצה שלמה מבושלת-מקושקשת",
+    "calories_per_100g": 167.0,
+    "protein_per_100g": 11.09,
+    "carbs_per_100g": 2.2,
+    "fat_per_100g": 12.21,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "סקי - גבינה לבנה 5% שומן, שטראוס עלית",
+    "calories_per_100g": 96.0,
+    "protein_per_100g": 7.9,
+    "carbs_per_100g": 3.9,
+    "fat_per_100g": 5.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "תפוח עץ מיובש, שקדיה",
+    "calories_per_100g": 243.0,
+    "protein_per_100g": 0.9,
+    "carbs_per_100g": 66.0,
+    "fat_per_100g": 0.3,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שוק עוף מבושלת",
+    "calories_per_100g": 185.0,
+    "protein_per_100g": 26.26,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 8.06,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שקדים טבעיים, מיה",
+    "calories_per_100g": 593.0,
+    "protein_per_100g": 21.0,
+    "carbs_per_100g": 8.0,
+    "fat_per_100g": 52.5,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "דנונה greek - יוגורט בסגנון יווני, שטראוס עלית",
+    "calories_per_100g": 101.0,
+    "protein_per_100g": 5.5,
+    "carbs_per_100g": 4.3,
+    "fat_per_100g": 6.5,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שמן אבוקדו",
+    "calories_per_100g": 884.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 100.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שמן זית כתית מעולה חמיצות מירבית 0.5% - קלאסי, עץ הזית",
+    "calories_per_100g": 828.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 92.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "אלואדי - טחינה 100% שומשום טהור, אר.ג`י.אם. תעשיות מזון בע\"מ",
+    "calories_per_100g": 687.0,
+    "protein_per_100g": 25.5,
+    "carbs_per_100g": 10.7,
+    "fat_per_100g": 60.1,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שוקולד מריר קלאסי 64% מוצקי קקאו, אדום יבוא מזון",
+    "calories_per_100g": 508.0,
+    "protein_per_100g": 9.1,
+    "carbs_per_100g": 36.0,
+    "fat_per_100g": 33.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "פלפל אדום טרי",
+    "calories_per_100g": 31.0,
+    "protein_per_100g": 0.99,
+    "carbs_per_100g": 6.03,
+    "fat_per_100g": 0.3,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "בקלה פסיפי מבושל-מיובש בחום",
+    "calories_per_100g": 85.0,
+    "protein_per_100g": 18.73,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 0.5,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "בננה צ`יפס, שופרסל",
+    "calories_per_100g": 500.0,
+    "protein_per_100g": 2.0,
+    "carbs_per_100g": 53.2,
+    "fat_per_100g": 31.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "אורז בסמטי קלאסי, סוגת",
+    "calories_per_100g": 118.0,
+    "protein_per_100g": 2.9,
+    "carbs_per_100g": 26.2,
+    "fat_per_100g": 0.2,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "לחם לבן, ארומה",
+    "calories_per_100g": 257.0,
+    "protein_per_100g": 9.1,
+    "carbs_per_100g": 50.6,
+    "fat_per_100g": 1.5,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "green - חלב טרי אורגני 1%, שופרסל",
+    "calories_per_100g": 43.0,
+    "protein_per_100g": 3.4,
+    "carbs_per_100g": 5.0,
+    "fat_per_100g": 1.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "צפתית 5% שומן, מחלבות גד",
+    "calories_per_100g": 117.0,
+    "protein_per_100g": 12.0,
+    "carbs_per_100g": 6.0,
+    "fat_per_100g": 5.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "צלעות אסאדו על האש, יחיעם",
+    "calories_per_100g": 135.0,
+    "protein_per_100g": 16.0,
+    "carbs_per_100g": 2.0,
+    "fat_per_100g": 7.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חמאת בוטנים, בוסתן",
+    "calories_per_100g": 633.0,
+    "protein_per_100g": 27.0,
+    "carbs_per_100g": 4.0,
+    "fat_per_100g": 54.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "פסטה - קרניים בינוניות, אסם",
+    "calories_per_100g": 158.0,
+    "protein_per_100g": 5.0,
+    "carbs_per_100g": 32.0,
+    "fat_per_100g": 0.8,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "טוב טעם - גבינה לבנה חצי קשה 3% שומן, טרה",
+    "calories_per_100g": 105.0,
+    "protein_per_100g": 15.5,
+    "carbs_per_100g": 4.0,
+    "fat_per_100g": 3.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "טופו מתובל בפסטו, משק ויילר",
+    "calories_per_100g": 143.0,
+    "protein_per_100g": 16.0,
+    "carbs_per_100g": 0.1,
+    "fat_per_100g": 8.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "GO By TNUVA בטעם שוקולד ללא תוספת סוכר 25 גרם חלבון ו- 2 גרם קריאטין, תנובה",
+    "calories_per_100g": 41.0,
+    "protein_per_100g": 7.4,
+    "carbs_per_100g": 1.6,
+    "fat_per_100g": 0.5,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "טי בון סטייק בקר מבושל-צלוי",
+    "calories_per_100g": 247.0,
+    "protein_per_100g": 24.18,
+    "carbs_per_100g": 0,
+    "fat_per_100g": 15.93,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "כנפי עוף מבושלות",
+    "calories_per_100g": 181.0,
+    "protein_per_100g": 27.18,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 7.18,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "גרגירי חומוס מבושלים עם מלח",
+    "calories_per_100g": 164.0,
+    "protein_per_100g": 8.86,
+    "carbs_per_100g": 27.42,
+    "fat_per_100g": 2.59,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "טחינה גולמית (מזרעי שומשום קלויים)",
+    "calories_per_100g": 595.0,
+    "protein_per_100g": 17.0,
+    "carbs_per_100g": 21.2,
+    "fat_per_100g": 53.8,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "בשר עוף טחון",
+    "calories_per_100g": 143.0,
+    "protein_per_100g": 17.44,
+    "carbs_per_100g": 0.04,
+    "fat_per_100g": 8.1,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "קוואקר אינסטנט אואטמיל תות שדה ושמנת, Quakeroats",
+    "calories_per_100g": 384.0,
+    "protein_per_100g": 8.6,
+    "carbs_per_100g": 77.1,
+    "fat_per_100g": 6.9,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "אורז לבן עגול מתאים לסושי, טעמי אסיה בע\"מ",
+    "calories_per_100g": 352.0,
+    "protein_per_100g": 5.7,
+    "carbs_per_100g": 81.6,
+    "fat_per_100g": 0.44,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חלב 1%, תנובה",
+    "calories_per_100g": 43.0,
+    "protein_per_100g": 3.35,
+    "carbs_per_100g": 5.1,
+    "fat_per_100g": 1.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חומוס שלם, שופרסל",
+    "calories_per_100g": 116.0,
+    "protein_per_100g": 6.7,
+    "carbs_per_100g": 18.8,
+    "fat_per_100g": 1.6,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "בננה - משקה חלב בטעם בננה 2% שומן, תנובה",
+    "calories_per_100g": 70.8,
+    "protein_per_100g": 3.2,
+    "carbs_per_100g": 10.0,
+    "fat_per_100g": 2.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "BIG MASS GAINER בטעם עוגת שוקולד, אלפא תוספי תזונה לספורטאים",
+    "calories_per_100g": 396.0,
+    "protein_per_100g": 15.0,
+    "carbs_per_100g": 75.7,
+    "fat_per_100g": 3.2,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "ביצה שלמה קפואה",
+    "calories_per_100g": 148.0,
+    "protein_per_100g": 11.95,
+    "carbs_per_100g": 1.05,
+    "fat_per_100g": 10.2,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "DELI - דיילי נקניקיות פרגית קארי ירוק, מעדני מזרע",
+    "calories_per_100g": 212.0,
+    "protein_per_100g": 12.0,
+    "carbs_per_100g": 5.0,
+    "fat_per_100g": 16.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חציל במיונז, יד המלך",
+    "calories_per_100g": 142.0,
+    "protein_per_100g": 2.5,
+    "carbs_per_100g": 21.1,
+    "fat_per_100g": 5.3,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "ספגטירקות - קישוא, מרינה פטריות הגליל בע\"מ",
+    "calories_per_100g": 27.0,
+    "protein_per_100g": 3.2,
+    "carbs_per_100g": 3.1,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "תות שדה, א.מ. שרון שיווק (2014) בע\"מ",
+    "calories_per_100g": 35.0,
+    "protein_per_100g": 0.8,
+    "carbs_per_100g": 7.5,
+    "fat_per_100g": 0.4,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "פיתה אסלית, פילסברי",
+    "calories_per_100g": 229.0,
+    "protein_per_100g": 8.6,
+    "carbs_per_100g": 48.2,
+    "fat_per_100g": 0.7,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "ביצה שלמה מבושלת-מורתחת",
+    "calories_per_100g": 155.0,
+    "protein_per_100g": 12.58,
+    "carbs_per_100g": 1.12,
+    "fat_per_100g": 10.61,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "טופו, טעמי אסיה בע\"מ",
+    "calories_per_100g": 59.0,
+    "protein_per_100g": 7.05,
+    "carbs_per_100g": 2.35,
+    "fat_per_100g": 2.35,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "רכז עגבניות Bx 28-30, ויטה פרי הגליל",
+    "calories_per_100g": 107.0,
+    "protein_per_100g": 4.2,
+    "carbs_per_100g": 23.7,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "דגי תנובה - פילה אמנון קפוא בציפוי קרח מכיל 80% דג לפחות, תנובה",
+    "calories_per_100g": 79.0,
+    "protein_per_100g": 15.8,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 1.8,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שפונדרה בקר",
+    "calories_per_100g": 169.0,
+    "protein_per_100g": 19.7,
+    "carbs_per_100g": 0.05,
+    "fat_per_100g": 10.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "צפתית מעודנת 5% עם מלח ים טבעי, מחלבות גד",
+    "calories_per_100g": 117.0,
+    "protein_per_100g": 15.0,
+    "carbs_per_100g": 3.0,
+    "fat_per_100g": 5.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חסה אמריקאית",
+    "calories_per_100g": 15.0,
+    "protein_per_100g": 1.36,
+    "carbs_per_100g": 2.79,
+    "fat_per_100g": 0.15,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חסה ערבית",
+    "calories_per_100g": 17.0,
+    "protein_per_100g": 1.23,
+    "carbs_per_100g": 3.29,
+    "fat_per_100g": 0.3,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שמן זית כתית מעולה בכבישה קרה חמיצות מירבית 0.6%, טעמן",
+    "calories_per_100g": 824.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 91.6,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "טעם ענבים - 40% פחות סוכר, פריגת",
+    "calories_per_100g": 19.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 6.2,
+    "fat_per_100g": 0.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "כנפי עוף מבושלות-מטוגנות",
+    "calories_per_100g": 211.0,
+    "protein_per_100g": 30.15,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 9.15,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "ענבים דיאט ללא תוספת סוכר, מרמולייט",
+    "calories_per_100g": 4.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 1.0,
+    "fat_per_100g": 0.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חציל כבוש",
+    "calories_per_100g": 49.0,
+    "protein_per_100g": 0.9,
+    "carbs_per_100g": 9.77,
+    "fat_per_100g": 0.7,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "פרחי ברוקולי מוקפאים, Field Good",
+    "calories_per_100g": 39.0,
+    "protein_per_100g": 3.1,
+    "carbs_per_100g": 5.0,
+    "fat_per_100g": 0.76,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "דבש טהור מפרחי אבוקדו, בוסתן",
+    "calories_per_100g": 304.0,
+    "protein_per_100g": 2.0,
+    "carbs_per_100g": 79.5,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "100% שקדים טחונים, משק לין",
+    "calories_per_100g": 600.0,
+    "protein_per_100g": 23.6,
+    "carbs_per_100g": 3.9,
+    "fat_per_100g": 50.4,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "גלידה בטעמי וניל ומסטיק, שטראוס עלית",
+    "calories_per_100g": 173.0,
+    "protein_per_100g": 2.6,
+    "carbs_per_100g": 25.8,
+    "fat_per_100g": 6.6,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "סינטה בקר טרי",
+    "calories_per_100g": 201.0,
+    "protein_per_100g": 20.3,
+    "carbs_per_100g": 0,
+    "fat_per_100g": 12.7,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "טופו אורגני, ניצת הדובדבן",
+    "calories_per_100g": 150.5,
+    "protein_per_100g": 14.9,
+    "carbs_per_100g": 3.6,
+    "fat_per_100g": 8.5,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "קונפיטורת תות שדה לייט, 778",
+    "calories_per_100g": 120.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 30.0,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "כרע עוף מבושל-צלוי",
+    "calories_per_100g": 172.0,
+    "protein_per_100g": 28.29,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 5.66,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "עדשים ירוקות מבושלות - מוקפאות, סנפרוסט",
+    "calories_per_100g": 124.0,
+    "protein_per_100g": 10.9,
+    "carbs_per_100g": 26.5,
+    "fat_per_100g": 0.8,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "טופו, מזרח ומערב",
+    "calories_per_100g": 93.0,
+    "protein_per_100g": 10.5,
+    "carbs_per_100g": 5.9,
+    "fat_per_100g": 3.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שיפודי פרגיות, זוגלובק",
+    "calories_per_100g": 103.0,
+    "protein_per_100g": 17.0,
+    "carbs_per_100g": 2.0,
+    "fat_per_100g": 3.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "פלפל גאבי אדום, דליקטסן",
+    "calories_per_100g": 208.0,
+    "protein_per_100g": 3.0,
+    "carbs_per_100g": 8.5,
+    "fat_per_100g": 18.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "קוביות מנגו קפואות, שדה בשקית",
+    "calories_per_100g": 60.0,
+    "protein_per_100g": 2.0,
+    "carbs_per_100g": 14.0,
+    "fat_per_100g": 0.5,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שוקולד מריר ממולא קרם בטעם אספרסו, ק.א. שוקולד בע\"מ",
+    "calories_per_100g": 530.0,
+    "protein_per_100g": 4.9,
+    "carbs_per_100g": 48.9,
+    "fat_per_100g": 33.7,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "טי בון סטייק בקר",
+    "calories_per_100g": 220.0,
+    "protein_per_100g": 19.19,
+    "carbs_per_100g": 0,
+    "fat_per_100g": 15.32,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "מנגו",
+    "calories_per_100g": 65.0,
+    "protein_per_100g": 0.51,
+    "carbs_per_100g": 17.0,
+    "fat_per_100g": 0.27,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "דנונה PRO בטעם טבעי 2% שומן 25 גרם חלבון בגביע, שטראוס עלית",
+    "calories_per_100g": 88.0,
+    "protein_per_100g": 11.6,
+    "carbs_per_100g": 4.1,
+    "fat_per_100g": 2.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "עדשים אדומות, מגה",
+    "calories_per_100g": 302.0,
+    "protein_per_100g": 25.8,
+    "carbs_per_100g": 58.3,
+    "fat_per_100g": 1.5,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "100% מיץ תפוח עץ צלול מיוצר מרכז תפוחי עץ טבעי, פריניב",
+    "calories_per_100g": 39.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 9.5,
+    "fat_per_100g": 0.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "בצל מבושל",
+    "calories_per_100g": 44.0,
+    "protein_per_100g": 1.36,
+    "carbs_per_100g": 10.15,
+    "fat_per_100g": 0.19,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "תרכיז עגבניות - ריכוז BX 28-30, פרי ניר",
+    "calories_per_100g": 135.0,
+    "protein_per_100g": 4.4,
+    "carbs_per_100g": 26.7,
+    "fat_per_100g": 1.2,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "אורז בשמתי מלא אורגני, תבואות",
+    "calories_per_100g": 320.0,
+    "protein_per_100g": 7.1,
+    "carbs_per_100g": 72.9,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "פסטה מ- 100% סמולינה חיטת דורום - קונכיות גדולות, מוטלו",
+    "calories_per_100g": 354.0,
+    "protein_per_100g": 11.0,
+    "carbs_per_100g": 74.0,
+    "fat_per_100g": 1.1,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "בשר בקר טחון-מבושל-צלוי - 5% שומן",
+    "calories_per_100g": 171.0,
+    "protein_per_100g": 26.29,
+    "carbs_per_100g": 0,
+    "fat_per_100g": 6.55,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "קוטג` תנובה 3%, תנובה",
+    "calories_per_100g": 77.0,
+    "protein_per_100g": 11.0,
+    "carbs_per_100g": 1.5,
+    "fat_per_100g": 3.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "פסטה, קניה חכמה",
+    "calories_per_100g": 162.5,
+    "protein_per_100g": 5.4,
+    "carbs_per_100g": 35.0,
+    "fat_per_100g": 0.3,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חזה עוף מבושל-צלוי",
+    "calories_per_100g": 165.0,
+    "protein_per_100g": 31.02,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 3.57,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "אורז פרסי, שופרסל",
+    "calories_per_100g": 338.0,
+    "protein_per_100g": 6.0,
+    "carbs_per_100g": 78.6,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "מעדני תנעמי - פיתות בטעם ביתי, דגנית עין בר",
+    "calories_per_100g": 243.0,
+    "protein_per_100g": 7.3,
+    "carbs_per_100g": 47.2,
+    "fat_per_100g": 1.8,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חלמון ביצה",
+    "calories_per_100g": 322.0,
+    "protein_per_100g": 15.86,
+    "carbs_per_100g": 3.59,
+    "fat_per_100g": 26.54,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "ביצה שלמה מיובשת",
+    "calories_per_100g": 594.0,
+    "protein_per_100g": 47.35,
+    "carbs_per_100g": 4.95,
+    "fat_per_100g": 40.95,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "FRESH - לקט קלאסי, שופרסל",
+    "calories_per_100g": 22.0,
+    "protein_per_100g": 1.1,
+    "carbs_per_100g": 3.4,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "טחון בקר - רמת שומן בינונית, בלדי בע\"מ",
+    "calories_per_100g": 182.0,
+    "protein_per_100g": 14.5,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 13.8,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "דניס אפוי-צלוי",
+    "calories_per_100g": 133.0,
+    "protein_per_100g": 23.8,
+    "carbs_per_100g": 0.1,
+    "fat_per_100g": 3.44,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "קבב ריב אנטריקוט, אסלי עמוס",
+    "calories_per_100g": 218.0,
+    "protein_per_100g": 14.0,
+    "carbs_per_100g": 1.6,
+    "fat_per_100g": 17.3,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "ביצה שלמה - טריה",
+    "calories_per_100g": 143.0,
+    "protein_per_100g": 12.56,
+    "carbs_per_100g": 0.72,
+    "fat_per_100g": 9.51,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שוקולד מריר מעולה, עלית",
+    "calories_per_100g": 507.0,
+    "protein_per_100g": 5.5,
+    "carbs_per_100g": 51.0,
+    "fat_per_100g": 30.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "אלונים - מלפפונים במלח גדול 7-9, שימורי השרון בע\"מ",
+    "calories_per_100g": 10.0,
+    "protein_per_100g": 0.6,
+    "carbs_per_100g": 1.8,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "אמנון מבושל-מיובש בחום",
+    "calories_per_100g": 128.0,
+    "protein_per_100g": 26.15,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 2.65,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "ביצה שלמה מבושלת-שלוקה",
+    "calories_per_100g": 142.0,
+    "protein_per_100g": 12.53,
+    "carbs_per_100g": 0.76,
+    "fat_per_100g": 9.9,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "אבוקדו",
+    "calories_per_100g": 160.0,
+    "protein_per_100g": 2.0,
+    "carbs_per_100g": 8.53,
+    "fat_per_100g": 14.66,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "ברוקוליני מבושל",
+    "calories_per_100g": 46.0,
+    "protein_per_100g": 3.2,
+    "carbs_per_100g": 2.88,
+    "fat_per_100g": 3.15,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "עדשים טריות",
+    "calories_per_100g": 353.0,
+    "protein_per_100g": 25.8,
+    "carbs_per_100g": 60.08,
+    "fat_per_100g": 1.06,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חומוס אבו גוש, סלטי שמיר",
+    "calories_per_100g": 272.0,
+    "protein_per_100g": 6.6,
+    "carbs_per_100g": 13.5,
+    "fat_per_100g": 20.1,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "אנטרקוט בקר מבושל-צלוי",
+    "calories_per_100g": 265.0,
+    "protein_per_100g": 26.58,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 16.76,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "קוטג` תנובה 5%, תנובה",
+    "calories_per_100g": 95.0,
+    "protein_per_100g": 11.0,
+    "carbs_per_100g": 1.5,
+    "fat_per_100g": 5.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "עדשים אדומות, מיה",
+    "calories_per_100g": 345.0,
+    "protein_per_100g": 25.0,
+    "carbs_per_100g": 60.0,
+    "fat_per_100g": 2.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "סלמון אטלנטי מבושל-מיובש בחום",
+    "calories_per_100g": 206.0,
+    "protein_per_100g": 22.1,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 12.35,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חלב הרים טהור 1%, מחלבות רמת הגולן",
+    "calories_per_100g": 43.0,
+    "protein_per_100g": 3.35,
+    "carbs_per_100g": 5.1,
+    "fat_per_100g": 1.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שפונדרה בקר מבושל",
+    "calories_per_100g": 305.0,
+    "protein_per_100g": 25.5,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 22.6,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "CHEF שגב - בשר טחון בקר וכבש מתובל קפוא, נטו",
+    "calories_per_100g": 216.0,
+    "protein_per_100g": 16.0,
+    "carbs_per_100g": 2.0,
+    "fat_per_100g": 16.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "טונה בהירה בשמן, סטארקיסט",
+    "calories_per_100g": 194.0,
+    "protein_per_100g": 26.0,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 10.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "קישוא (חורף) טרי",
+    "calories_per_100g": 34.0,
+    "protein_per_100g": 0.95,
+    "carbs_per_100g": 8.59,
+    "fat_per_100g": 0.13,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "גזר גמדי מוקפא, פרי הגליל",
+    "calories_per_100g": 23.0,
+    "protein_per_100g": 1.0,
+    "carbs_per_100g": 3.8,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "סטייק כתף בקר",
+    "calories_per_100g": 141.0,
+    "protein_per_100g": 20.67,
+    "carbs_per_100g": 0,
+    "fat_per_100g": 5.88,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "בטטה צ`יפס, בסט קווליטי צ`יפס בע\"מ",
+    "calories_per_100g": 148.0,
+    "protein_per_100g": 2.5,
+    "carbs_per_100g": 19.54,
+    "fat_per_100g": 6.8,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "אבקת חלבון, הרבלייף",
+    "calories_per_100g": 385.0,
+    "protein_per_100g": 83.0,
+    "carbs_per_100g": 3.7,
+    "fat_per_100g": 4.3,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "גזר מרוקאי, מעדני מיקי",
+    "calories_per_100g": 104.0,
+    "protein_per_100g": 0.8,
+    "carbs_per_100g": 6.9,
+    "fat_per_100g": 8.1,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "גלידה בגביע, מקדונלד`ס",
+    "calories_per_100g": 156.0,
+    "protein_per_100g": 5.0,
+    "carbs_per_100g": 24.0,
+    "fat_per_100g": 4.5,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "כנפי עוף מבושלות-צלויות עם עור",
+    "calories_per_100g": 290.0,
+    "protein_per_100g": 26.86,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 19.46,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "פיתה פרימיום - 10 פיתות מקמח לבן, מאפיית אורן משי",
+    "calories_per_100g": 235.0,
+    "protein_per_100g": 7.3,
+    "carbs_per_100g": 49.6,
+    "fat_per_100g": 0.8,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "WHEY PROTEIN PROFESSIONAL 100% STRAWBERRY FLAVORED, SCITEC NUTRITION",
+    "calories_per_100g": 382.0,
+    "protein_per_100g": 72.0,
+    "carbs_per_100g": 9.9,
+    "fat_per_100g": 5.5,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "בננה mix - משקה קל בננה קוקוס, ספרינג",
+    "calories_per_100g": 42.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 10.5,
+    "fat_per_100g": 0.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "פיתה קלה מקמח חיטה מלא, פיתה אקספרס",
+    "calories_per_100g": 158.0,
+    "protein_per_100g": 6.9,
+    "carbs_per_100g": 28.6,
+    "fat_per_100g": 1.2,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "20 גרם חלבון בגביע - יוגורט 1.5% שומן - דנונה PRO, שטראוס עלית",
+    "calories_per_100g": 70.0,
+    "protein_per_100g": 10.0,
+    "carbs_per_100g": 3.4,
+    "fat_per_100g": 1.5,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "GO By TNUVA בטעם וניל 25 גרם חלבון בבקבוק, תנובה",
+    "calories_per_100g": 67.0,
+    "protein_per_100g": 7.4,
+    "carbs_per_100g": 5.0,
+    "fat_per_100g": 1.9,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "כנפי עוף",
+    "calories_per_100g": 126.0,
+    "protein_per_100g": 21.97,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 3.54,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "Jif - חמאת בוטנים קלאסית, רנדי חברה בע\"מ",
+    "calories_per_100g": 589.0,
+    "protein_per_100g": 21.2,
+    "carbs_per_100g": 12.7,
+    "fat_per_100g": 48.8,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חסלט - ברוקולי מוקפא, עלי קטיף בע\"מ",
+    "calories_per_100g": 24.0,
+    "protein_per_100g": 2.3,
+    "carbs_per_100g": 2.2,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "טחינה 100% שומשום טהור, בארכה",
+    "calories_per_100g": 689.0,
+    "protein_per_100g": 24.0,
+    "carbs_per_100g": 12.0,
+    "fat_per_100g": 60.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חלב 3% מועשר בויטמינים, תנובה",
+    "calories_per_100g": 57.0,
+    "protein_per_100g": 2.9,
+    "carbs_per_100g": 4.7,
+    "fat_per_100g": 3.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "סלמון סוקי מבושל-מיובש בחום",
+    "calories_per_100g": 169.0,
+    "protein_per_100g": 25.4,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 6.69,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "גבינה לבנה 5% שומן, טרה",
+    "calories_per_100g": 97.0,
+    "protein_per_100g": 8.1,
+    "carbs_per_100g": 4.9,
+    "fat_per_100g": 5.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "בשר בקר טחון - 30% שומן",
+    "calories_per_100g": 332.0,
+    "protein_per_100g": 14.35,
+    "carbs_per_100g": 0,
+    "fat_per_100g": 30.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "טחינה גולמית משומשום מלא, טורקיז",
+    "calories_per_100g": 634.0,
+    "protein_per_100g": 22.0,
+    "carbs_per_100g": 3.0,
+    "fat_per_100g": 56.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "טעם הטבע - לבבות חסה קיסר שטופים, שטראוס עלית",
+    "calories_per_100g": 16.0,
+    "protein_per_100g": 1.4,
+    "carbs_per_100g": 1.6,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "פסטרמה פרגית, זוגלובק",
+    "calories_per_100g": 133.0,
+    "protein_per_100g": 15.0,
+    "carbs_per_100g": 7.0,
+    "fat_per_100g": 5.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "FRUIT WATER - משקה בטעם אבטיח, יפאורה - תבורי",
+    "calories_per_100g": 19.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 4.8,
+    "fat_per_100g": 0.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "אבוקדו, דורות",
+    "calories_per_100g": 200.0,
+    "protein_per_100g": 3.3,
+    "carbs_per_100g": 10.0,
+    "fat_per_100g": 16.7,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "משקה חלב 1%, תנובה",
+    "calories_per_100g": 46.0,
+    "protein_per_100g": 3.4,
+    "carbs_per_100g": 5.2,
+    "fat_per_100g": 1.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "דבש טהור מפרחי הדר, בוסתן",
+    "calories_per_100g": 304.0,
+    "protein_per_100g": 2.0,
+    "carbs_per_100g": 79.5,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "תפוח עץ ללא קליפה",
+    "calories_per_100g": 48.0,
+    "protein_per_100g": 0.27,
+    "carbs_per_100g": 12.76,
+    "fat_per_100g": 0.13,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שוק עוף טריה",
+    "calories_per_100g": 120.0,
+    "protein_per_100g": 20.13,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 3.81,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "דבש",
+    "calories_per_100g": 304.0,
+    "protein_per_100g": 0.3,
+    "carbs_per_100g": 82.4,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שמן זית כתית מעולה חמיצות מירבית 0.8%, ויקטורי",
+    "calories_per_100g": 822.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 91.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "גרגירי חומוס מבושלים ללא מלח",
+    "calories_per_100g": 164.0,
+    "protein_per_100g": 8.86,
+    "carbs_per_100g": 27.42,
+    "fat_per_100g": 2.59,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "גיוזה בטטה, דים סאם להבות חביבה",
+    "calories_per_100g": 226.0,
+    "protein_per_100g": 3.9,
+    "carbs_per_100g": 35.0,
+    "fat_per_100g": 7.8,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "מלפפונים במלח בינוני 10-12 / קטן 13-17 / קטן מאד 18-25, קבוצת יבנה",
+    "calories_per_100g": 13.0,
+    "protein_per_100g": 1.0,
+    "carbs_per_100g": 2.0,
+    "fat_per_100g": 0.1,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "כנפי עוף מבושלות עם עור",
+    "calories_per_100g": 249.0,
+    "protein_per_100g": 22.78,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 16.82,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "בטטה מבושלת ללא קליפה",
+    "calories_per_100g": 76.0,
+    "protein_per_100g": 1.37,
+    "carbs_per_100g": 17.72,
+    "fat_per_100g": 0.14,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "ירוקים - לקט המושב - חסה קיסר, כרוב לבן, כרוב סגול, פרסקו",
+    "calories_per_100g": 24.0,
+    "protein_per_100g": 1.4,
+    "carbs_per_100g": 3.0,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "פיתה, א.א.ק אורנים",
+    "calories_per_100g": 168.0,
+    "protein_per_100g": 0.7,
+    "carbs_per_100g": 41.0,
+    "fat_per_100g": 0.3,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "גזר מבושל",
+    "calories_per_100g": 35.0,
+    "protein_per_100g": 0.76,
+    "carbs_per_100g": 8.22,
+    "fat_per_100g": 0.18,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "פילה אמנון קפוא מתובל בפלפל שחור, גואנגשי ננינג באיינג פוד בע\"מ",
+    "calories_per_100g": 113.0,
+    "protein_per_100g": 20.0,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 2.5,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "טחינה גולמית, Basics",
+    "calories_per_100g": 687.0,
+    "protein_per_100g": 25.5,
+    "carbs_per_100g": 10.7,
+    "fat_per_100g": 60.1,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "דק ענק - שניצל עוף קריספי צ`יפס, עוף טוב",
+    "calories_per_100g": 259.0,
+    "protein_per_100g": 13.0,
+    "carbs_per_100g": 20.0,
+    "fat_per_100g": 14.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "גלידה פיצוץ שוקולד ובוטנים, מקדונלד`ס",
+    "calories_per_100g": 180.0,
+    "protein_per_100g": 5.0,
+    "carbs_per_100g": 25.0,
+    "fat_per_100g": 6.5,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חלבון ביצה קפוא",
+    "calories_per_100g": 47.0,
+    "protein_per_100g": 9.8,
+    "carbs_per_100g": 1.05,
+    "fat_per_100g": 0.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "פרומקס משקה התאוששות, הרבלייף",
+    "calories_per_100g": 380.0,
+    "protein_per_100g": 50.8,
+    "carbs_per_100g": 36.2,
+    "fat_per_100g": 3.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "ירך עוף מבושל-צלוי",
+    "calories_per_100g": 209.0,
+    "protein_per_100g": 25.94,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 10.88,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "דבש טהור מגובש מפרחי בר, מכוורת עין חרוד",
+    "calories_per_100g": 320.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 80.0,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "ירך עוף טרי",
+    "calories_per_100g": 119.0,
+    "protein_per_100g": 19.65,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 3.91,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "קישוא בייבי זוקיני טרי",
+    "calories_per_100g": 21.0,
+    "protein_per_100g": 2.71,
+    "carbs_per_100g": 3.11,
+    "fat_per_100g": 0.4,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "לחם לבן, א.א.ק אורנים",
+    "calories_per_100g": 205.0,
+    "protein_per_100g": 2.2,
+    "carbs_per_100g": 47.8,
+    "fat_per_100g": 0.6,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "קוטג` עם זעתר 5%, תנובה",
+    "calories_per_100g": 95.0,
+    "protein_per_100g": 10.7,
+    "carbs_per_100g": 1.8,
+    "fat_per_100g": 5.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "תפוח אדמה אפוי עם קליפה",
+    "calories_per_100g": 93.0,
+    "protein_per_100g": 2.5,
+    "carbs_per_100g": 21.15,
+    "fat_per_100g": 0.13,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שקדימון - חמאת שקדים, טבע מהדרין",
+    "calories_per_100g": 580.0,
+    "protein_per_100g": 23.0,
+    "carbs_per_100g": 19.9,
+    "fat_per_100g": 50.6,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "יוגורט מחלב עיזים בטעם טבעי, מחלבות גד",
+    "calories_per_100g": 56.0,
+    "protein_per_100g": 3.0,
+    "carbs_per_100g": 3.1,
+    "fat_per_100g": 3.5,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "צלעות בקר מבושלות-צלויות",
+    "calories_per_100g": 351.0,
+    "protein_per_100g": 22.77,
+    "carbs_per_100g": 0,
+    "fat_per_100g": 28.11,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "לבבות קיסר, משק בכור",
+    "calories_per_100g": 17.0,
+    "protein_per_100g": 1.23,
+    "carbs_per_100g": 3.29,
+    "fat_per_100g": 0.3,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שלוקים - משקה בטעם ענבים, כרמית",
+    "calories_per_100g": 42.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 10.5,
+    "fat_per_100g": 0.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "כבד בקר מבושל-צלוי",
+    "calories_per_100g": 191.0,
+    "protein_per_100g": 29.0,
+    "carbs_per_100g": 5.13,
+    "fat_per_100g": 5.26,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "פלדה מבושלת-צלויה - בקר",
+    "calories_per_100g": 192.0,
+    "protein_per_100g": 27.66,
+    "carbs_per_100g": 0,
+    "fat_per_100g": 8.23,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "ISO 100 HYDROLYZED - אבקת חלבון להכנת משקה בטעם קרם עוגיות, דיימטייז",
+    "calories_per_100g": 387.0,
+    "protein_per_100g": 80.6,
+    "carbs_per_100g": 6.45,
+    "fat_per_100g": 3.22,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שמן זית כתית מעולה, ג`השאן",
+    "calories_per_100g": 828.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 92.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "בננה מיובשת",
+    "calories_per_100g": 346.0,
+    "protein_per_100g": 3.89,
+    "carbs_per_100g": 88.3,
+    "fat_per_100g": 1.81,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "עגבנייה מיובשת",
+    "calories_per_100g": 258.0,
+    "protein_per_100g": 14.11,
+    "carbs_per_100g": 55.76,
+    "fat_per_100g": 2.97,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שוקולד מריר 60%, עלית",
+    "calories_per_100g": 553.0,
+    "protein_per_100g": 6.0,
+    "carbs_per_100g": 49.0,
+    "fat_per_100g": 37.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "תות עץ",
+    "calories_per_100g": 43.0,
+    "protein_per_100g": 1.44,
+    "carbs_per_100g": 9.8,
+    "fat_per_100g": 0.39,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "אנטרקוט בקר טרי",
+    "calories_per_100g": 274.0,
+    "protein_per_100g": 17.51,
+    "carbs_per_100g": 0,
+    "fat_per_100g": 22.07,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שניצל עוף דקיק - קריספי, עוף טוב",
+    "calories_per_100g": 248.0,
+    "protein_per_100g": 13.0,
+    "carbs_per_100g": 16.5,
+    "fat_per_100g": 14.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שמן זרעי ענבים מזוכך, כרם תעשיות מזון מן הטבע",
+    "calories_per_100g": 832.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 92.4,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "מאמא עוף - כנפי עוף בתיבול גריל, תנובה",
+    "calories_per_100g": 172.0,
+    "protein_per_100g": 19.0,
+    "carbs_per_100g": 2.6,
+    "fat_per_100g": 9.5,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חסה מיקס - חסה אלון אדום - חסה אלון ירוק, אסיף ינוב גידולים בע\"מ",
+    "calories_per_100g": 17.0,
+    "protein_per_100g": 1.4,
+    "carbs_per_100g": 2.6,
+    "fat_per_100g": 0.2,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "גלידה פיצוץ פיסטוק, מקדונלד`ס",
+    "calories_per_100g": 194.0,
+    "protein_per_100g": 5.0,
+    "carbs_per_100g": 23.0,
+    "fat_per_100g": 8.7,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "אבקה להכנת משקה חלבון מי גבינה בטעם עוגת שוקולד, אלפא תוספי תזונה לספורטאים",
+    "calories_per_100g": 408.0,
+    "protein_per_100g": 74.0,
+    "carbs_per_100g": 8.8,
+    "fat_per_100g": 6.6,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חלב 3% טרי אורגני, הרדוף",
+    "calories_per_100g": 58.0,
+    "protein_per_100g": 3.1,
+    "carbs_per_100g": 4.7,
+    "fat_per_100g": 3.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "LIKE EGG - לייק אג - תערובת ייחודית מן הצומח להכנת חביתה/מקושקשת, וגאנץ בע\"מ",
+    "calories_per_100g": 356.0,
+    "protein_per_100g": 58.0,
+    "carbs_per_100g": 9.6,
+    "fat_per_100g": 9.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "בצל שאלוט",
+    "calories_per_100g": 72.0,
+    "protein_per_100g": 2.5,
+    "carbs_per_100g": 16.8,
+    "fat_per_100g": 0.1,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "קוטג` למריחה 5%, תנובה",
+    "calories_per_100g": 93.0,
+    "protein_per_100g": 10.5,
+    "carbs_per_100g": 1.5,
+    "fat_per_100g": 5.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "לחם עינן קל - חיטה מלאה גרוסה, מאפיית אנג`ל",
+    "calories_per_100g": 220.0,
+    "protein_per_100g": 14.8,
+    "carbs_per_100g": 28.5,
+    "fat_per_100g": 2.9,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חסה סלנובה, כרמלים שדות חדשים",
+    "calories_per_100g": 24.0,
+    "protein_per_100g": 5.0,
+    "carbs_per_100g": 1.0,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חלב מועשר 3%, מחלבות רמת הגולן",
+    "calories_per_100g": 61.0,
+    "protein_per_100g": 3.4,
+    "carbs_per_100g": 5.0,
+    "fat_per_100g": 3.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חזה עוף בגריל, יחיעם",
+    "calories_per_100g": 96.0,
+    "protein_per_100g": 17.0,
+    "carbs_per_100g": 2.5,
+    "fat_per_100g": 2.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "טעם הטבע - ממרח אבוקדו, שטראוס עלית",
+    "calories_per_100g": 192.0,
+    "protein_per_100g": 1.9,
+    "carbs_per_100g": 1.8,
+    "fat_per_100g": 19.7,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שקדים",
+    "calories_per_100g": 575.0,
+    "protein_per_100g": 21.22,
+    "carbs_per_100g": 21.67,
+    "fat_per_100g": 49.42,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "לחם לבן פרוס, מאפית ברמן",
+    "calories_per_100g": 229.0,
+    "protein_per_100g": 7.5,
+    "carbs_per_100g": 46.1,
+    "fat_per_100g": 3.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "FUZE tea בטעם אבטיח, קוקה-קולה",
+    "calories_per_100g": 33.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 8.0,
+    "fat_per_100g": 0.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "פיתה מקמח כוסמין מלא, פיתה אקספרס",
+    "calories_per_100g": 198.0,
+    "protein_per_100g": 8.9,
+    "carbs_per_100g": 39.8,
+    "fat_per_100g": 1.6,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "סובין שיבולת שועל",
+    "calories_per_100g": 246.0,
+    "protein_per_100g": 17.3,
+    "carbs_per_100g": 66.22,
+    "fat_per_100g": 7.03,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שוקולד מריר מעולה לאפיה 64% מוצקי קקאו, עלית",
+    "calories_per_100g": 536.0,
+    "protein_per_100g": 9.1,
+    "carbs_per_100g": 41.0,
+    "fat_per_100g": 35.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "גזר טרי",
+    "calories_per_100g": 41.0,
+    "protein_per_100g": 0.93,
+    "carbs_per_100g": 9.58,
+    "fat_per_100g": 0.24,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "בצל סגול",
+    "calories_per_100g": 44.0,
+    "protein_per_100g": 0.94,
+    "carbs_per_100g": 9.93,
+    "fat_per_100g": 0.1,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "תבלין פלפל אדום או חריף",
+    "calories_per_100g": 318.0,
+    "protein_per_100g": 12.01,
+    "carbs_per_100g": 56.63,
+    "fat_per_100g": 17.27,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "טופו חומוס בטעם מעושן, משק ויילר",
+    "calories_per_100g": 83.0,
+    "protein_per_100g": 7.4,
+    "carbs_per_100g": 9.0,
+    "fat_per_100g": 0.4,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "אורז פרסי מלא אורגני, אדמה מוצרי מזון אורגניים",
+    "calories_per_100g": 360.0,
+    "protein_per_100g": 7.6,
+    "carbs_per_100g": 78.0,
+    "fat_per_100g": 2.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "בטטה טריה",
+    "calories_per_100g": 86.0,
+    "protein_per_100g": 1.57,
+    "carbs_per_100g": 20.12,
+    "fat_per_100g": 0.05,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "קרמיסימו וניל, שטראוס עלית",
+    "calories_per_100g": 187.0,
+    "protein_per_100g": 3.6,
+    "carbs_per_100g": 23.6,
+    "fat_per_100g": 8.7,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "תפוח עץ מבושל ללא קליפה",
+    "calories_per_100g": 53.0,
+    "protein_per_100g": 0.26,
+    "carbs_per_100g": 13.64,
+    "fat_per_100g": 0.36,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "PRO - משקה קפה עם חלבון חלב 1.5% שומן 25 גרם חלבון בבקבוק, יטבתה",
+    "calories_per_100g": 63.0,
+    "protein_per_100g": 7.2,
+    "carbs_per_100g": 5.1,
+    "fat_per_100g": 1.5,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "מחית תפוח עץ ומנגו אורגניים ללא תוספת סוכר, השדה - מוצרים אורגניים",
+    "calories_per_100g": 64.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 14.3,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "פילה בקר מבושל-צלוי",
+    "calories_per_100g": 218.0,
+    "protein_per_100g": 27.58,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 11.12,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חזה עוף מבושל-מטוגן",
+    "calories_per_100g": 187.0,
+    "protein_per_100g": 33.44,
+    "carbs_per_100g": 0.51,
+    "fat_per_100g": 4.71,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "צפתית עיזים 23% שומן, מחלבת קיבוץ לוטן",
+    "calories_per_100g": 275.0,
+    "protein_per_100g": 14.9,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 23.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שוקולד מריר מעולה 50% מוצקי קקאו, יש",
+    "calories_per_100g": 520.0,
+    "protein_per_100g": 5.4,
+    "carbs_per_100g": 51.4,
+    "fat_per_100g": 31.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "ביצה שלמה מבושלת-מטוגנת",
+    "calories_per_100g": 196.0,
+    "protein_per_100g": 13.63,
+    "carbs_per_100g": 0.88,
+    "fat_per_100g": 15.31,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חזה עוף סיני עם נודלס, ניר עציון",
+    "calories_per_100g": 91.0,
+    "protein_per_100g": 6.0,
+    "carbs_per_100g": 10.0,
+    "fat_per_100g": 3.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "PRO - משקה חלב עם בננה ושיבולת שועל מלאה 1.7% שומן 20 גרם חלבון בבקבוק, יטבתה",
+    "calories_per_100g": 70.0,
+    "protein_per_100g": 5.7,
+    "carbs_per_100g": 7.8,
+    "fat_per_100g": 1.7,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "מלפפונים בינוניים כבושים במלח, שופרסל",
+    "calories_per_100g": 12.0,
+    "protein_per_100g": 0.7,
+    "carbs_per_100g": 2.1,
+    "fat_per_100g": 0.1,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "CHEF שגב - בשר בקר טחון מובחר בתיבול מזרחי קפוא, נטו",
+    "calories_per_100g": 216.0,
+    "protein_per_100g": 16.0,
+    "carbs_per_100g": 2.0,
+    "fat_per_100g": 16.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "טחול בקר מטוגן/צלוי",
+    "calories_per_100g": 145.0,
+    "protein_per_100g": 25.1,
+    "carbs_per_100g": 0,
+    "fat_per_100g": 4.2,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "צפתית 5% שומן, תנובה",
+    "calories_per_100g": 135.0,
+    "protein_per_100g": 18.5,
+    "carbs_per_100g": 4.0,
+    "fat_per_100g": 5.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "קישוא (קיץ) מבושל",
+    "calories_per_100g": 20.0,
+    "protein_per_100g": 0.91,
+    "carbs_per_100g": 4.31,
+    "fat_per_100g": 0.31,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "צפתית מחלב כבשים, מחלבות גד",
+    "calories_per_100g": 129.0,
+    "protein_per_100g": 15.0,
+    "carbs_per_100g": 6.0,
+    "fat_per_100g": 5.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חזה בקר מבושל-צלוי",
+    "calories_per_100g": 213.0,
+    "protein_per_100g": 32.9,
+    "carbs_per_100g": 0,
+    "fat_per_100g": 8.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "green - חלב טרי אורגני 3%, שופרסל",
+    "calories_per_100g": 60.0,
+    "protein_per_100g": 3.3,
+    "carbs_per_100g": 5.0,
+    "fat_per_100g": 3.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חציל מבושל",
+    "calories_per_100g": 35.0,
+    "protein_per_100g": 0.83,
+    "carbs_per_100g": 8.73,
+    "fat_per_100g": 0.23,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "מנגו מיובש, שקדיה",
+    "calories_per_100g": 320.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 72.5,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "מחית בננות, Beech Nut",
+    "calories_per_100g": 88.0,
+    "protein_per_100g": 0.9,
+    "carbs_per_100g": 18.0,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "טחינה גולמית, יש",
+    "calories_per_100g": 680.0,
+    "protein_per_100g": 23.0,
+    "carbs_per_100g": 11.0,
+    "fat_per_100g": 60.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "5 פיתות, מאפית המכבים",
+    "calories_per_100g": 249.0,
+    "protein_per_100g": 8.5,
+    "carbs_per_100g": 47.9,
+    "fat_per_100g": 0.7,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "טחינה 100% שומשום, שופרסל",
+    "calories_per_100g": 666.0,
+    "protein_per_100g": 23.8,
+    "carbs_per_100g": 4.5,
+    "fat_per_100g": 59.6,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "ג`אמפ תפוחים, טמפו",
+    "calories_per_100g": 43.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 10.7,
+    "fat_per_100g": 0.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שמן זית כתית מעולה 0.6%, Chefs Choice",
+    "calories_per_100g": 828.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 92.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "תפוז דם טרי",
+    "calories_per_100g": 45.0,
+    "protein_per_100g": 0.65,
+    "carbs_per_100g": 9.74,
+    "fat_per_100g": 0.42,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "CREAMY Reese`s PEANUT BUTTER, ליימן שליסל בע\"מ",
+    "calories_per_100g": 633.0,
+    "protein_per_100g": 24.4,
+    "carbs_per_100g": 22.2,
+    "fat_per_100g": 49.6,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "פורטרהאוס סטייק בקר",
+    "calories_per_100g": 247.0,
+    "protein_per_100g": 18.8,
+    "carbs_per_100g": 0,
+    "fat_per_100g": 18.5,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חלב 3% ברזל, תנובה",
+    "calories_per_100g": 61.0,
+    "protein_per_100g": 3.2,
+    "carbs_per_100g": 4.85,
+    "fat_per_100g": 3.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שוקולד מריר 72%, Frey",
+    "calories_per_100g": 552.0,
+    "protein_per_100g": 8.0,
+    "carbs_per_100g": 31.0,
+    "fat_per_100g": 44.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "מלפפון בחומץ קורנישון, בית השיטה",
+    "calories_per_100g": 28.0,
+    "protein_per_100g": 1.0,
+    "carbs_per_100g": 6.0,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "מוח בקר מבושל",
+    "calories_per_100g": 151.0,
+    "protein_per_100g": 11.67,
+    "carbs_per_100g": 1.48,
+    "fat_per_100g": 10.5,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חלבון ביצה",
+    "calories_per_100g": 52.0,
+    "protein_per_100g": 10.9,
+    "carbs_per_100g": 0.73,
+    "fat_per_100g": 0.17,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "לחם 100% קמח מלא ללא תוספת סוכר, מאפיית לחמנו",
+    "calories_per_100g": 172.0,
+    "protein_per_100g": 14.1,
+    "carbs_per_100g": 21.4,
+    "fat_per_100g": 3.6,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "תות - שלגון פירות, שלגוגו בע\"מ - גלידות השרון",
+    "calories_per_100g": 58.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 13.5,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "דניס",
+    "calories_per_100g": 105.0,
+    "protein_per_100g": 18.9,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 2.73,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "גלידה פיצוץ עם שוקולד איטלקי ואגוזי לוז, מקדונלד`ס",
+    "calories_per_100g": 194.0,
+    "protein_per_100g": 5.0,
+    "carbs_per_100g": 24.0,
+    "fat_per_100g": 8.8,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "אינדירה - אורז לבן פרסי, אושר עד",
+    "calories_per_100g": 347.0,
+    "protein_per_100g": 7.5,
+    "carbs_per_100g": 79.0,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "יוגורט בסגנון יווני, מולר",
+    "calories_per_100g": 95.0,
+    "protein_per_100g": 5.5,
+    "carbs_per_100g": 3.2,
+    "fat_per_100g": 6.5,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "מלפפון כבוש - חמוץ",
+    "calories_per_100g": 11.0,
+    "protein_per_100g": 0.33,
+    "carbs_per_100g": 2.26,
+    "fat_per_100g": 0.2,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "בשר בקר טחון-מבושל-צלוי - 30% שומן",
+    "calories_per_100g": 273.0,
+    "protein_per_100g": 25.38,
+    "carbs_per_100g": 0,
+    "fat_per_100g": 18.2,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "טונת סקיפ ג`ק מבושלת-מיובשת בחום",
+    "calories_per_100g": 132.0,
+    "protein_per_100g": 28.21,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 1.29,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חומוס, רמי לוי שיווק השקמה",
+    "calories_per_100g": 305.0,
+    "protein_per_100g": 8.4,
+    "carbs_per_100g": 15.0,
+    "fat_per_100g": 22.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "טופו במרקם רך, טעמי אסיה בע\"מ",
+    "calories_per_100g": 40.0,
+    "protein_per_100g": 7.0,
+    "carbs_per_100g": 1.1,
+    "fat_per_100g": 1.1,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שלווה טבע - פצפוצי אורז מלא עם סוכר חום, אשבול בע\"מ",
+    "calories_per_100g": 372.0,
+    "protein_per_100g": 7.5,
+    "carbs_per_100g": 79.7,
+    "fat_per_100g": 2.6,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "גרגירי חומוס (יבשים)",
+    "calories_per_100g": 364.0,
+    "protein_per_100g": 19.3,
+    "carbs_per_100g": 60.65,
+    "fat_per_100g": 6.04,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "כרע עוף מבושל",
+    "calories_per_100g": 169.0,
+    "protein_per_100g": 27.5,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 5.71,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "Vegan Protein Blend - Unfalvoured, מיי פרוטאין",
+    "calories_per_100g": 340.0,
+    "protein_per_100g": 81.0,
+    "carbs_per_100g": 1.8,
+    "fat_per_100g": 0.9,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שיבולת שועל",
+    "calories_per_100g": 389.0,
+    "protein_per_100g": 16.89,
+    "carbs_per_100g": 66.27,
+    "fat_per_100g": 6.9,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "קישוא (חורף) מבושל",
+    "calories_per_100g": 37.0,
+    "protein_per_100g": 0.89,
+    "carbs_per_100g": 8.85,
+    "fat_per_100g": 0.35,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "מועשר 1% - חלב מועשר בסידן ובויטמין D, טרה",
+    "calories_per_100g": 42.0,
+    "protein_per_100g": 3.4,
+    "carbs_per_100g": 4.9,
+    "fat_per_100g": 1.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "קוואקר מהיר הכנה, תבואות",
+    "calories_per_100g": 388.0,
+    "protein_per_100g": 16.5,
+    "carbs_per_100g": 67.0,
+    "fat_per_100g": 6.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "עדשים מבושלות ללא מלח",
+    "calories_per_100g": 116.0,
+    "protein_per_100g": 9.02,
+    "carbs_per_100g": 20.13,
+    "fat_per_100g": 0.38,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "סינטה סטייק מעובד, טיבון ויל",
+    "calories_per_100g": 144.0,
+    "protein_per_100g": 17.0,
+    "carbs_per_100g": 1.0,
+    "fat_per_100g": 8.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "תפוח עץ מיובש",
+    "calories_per_100g": 243.0,
+    "protein_per_100g": 0.93,
+    "carbs_per_100g": 65.89,
+    "fat_per_100g": 0.32,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "תות שדה",
+    "calories_per_100g": 32.0,
+    "protein_per_100g": 0.67,
+    "carbs_per_100g": 7.68,
+    "fat_per_100g": 0.3,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שמן זית",
+    "calories_per_100g": 884.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 100.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "אורז פרסי קלאסי, סוגת",
+    "calories_per_100g": 347.0,
+    "protein_per_100g": 6.9,
+    "carbs_per_100g": 78.6,
+    "fat_per_100g": 0.6,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "אורז מיקס קלאסי, סוגת",
+    "calories_per_100g": 124.2,
+    "protein_per_100g": 2.8,
+    "carbs_per_100g": 25.7,
+    "fat_per_100g": 1.1,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "קרטיב אבטיח - קרחון שרבט פרווה בטעם אבטיח, שטראוס עלית",
+    "calories_per_100g": 78.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 19.6,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "מנגו חתוך מוקפא, סנפרוסט",
+    "calories_per_100g": 62.0,
+    "protein_per_100g": 0.6,
+    "carbs_per_100g": 1.6,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "אורז בסמטי מלא, סוגת",
+    "calories_per_100g": 121.0,
+    "protein_per_100g": 2.8,
+    "carbs_per_100g": 25.3,
+    "fat_per_100g": 0.9,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חמאת בוטנים מתוקה, B&D",
+    "calories_per_100g": 598.0,
+    "protein_per_100g": 25.7,
+    "carbs_per_100g": 19.3,
+    "fat_per_100g": 45.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "מלפפונים במלח גדולים, שופרסל",
+    "calories_per_100g": 8.4,
+    "protein_per_100g": 0.8,
+    "carbs_per_100g": 0.7,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חציל במיונז, קניה חכמה",
+    "calories_per_100g": 224.0,
+    "protein_per_100g": 1.0,
+    "carbs_per_100g": 5.0,
+    "fat_per_100g": 22.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "גרעיני אבטיח, פיצוחי ציון",
+    "calories_per_100g": 598.0,
+    "protein_per_100g": 26.0,
+    "carbs_per_100g": 71.0,
+    "fat_per_100g": 50.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "צפתית עיזים דל שומן 5%, מחלבת קיבוץ לוטן",
+    "calories_per_100g": 150.0,
+    "protein_per_100g": 21.5,
+    "carbs_per_100g": 2.8,
+    "fat_per_100g": 5.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "אורז פרסי, יוחננוף",
+    "calories_per_100g": 121.0,
+    "protein_per_100g": 2.5,
+    "carbs_per_100g": 27.0,
+    "fat_per_100g": 0.3,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "בטטה אפויה עם קליפה",
+    "calories_per_100g": 90.0,
+    "protein_per_100g": 2.01,
+    "carbs_per_100g": 20.71,
+    "fat_per_100g": 0.15,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "סלט אבוקדו וביצים, מעדני מיקי",
+    "calories_per_100g": 163.0,
+    "protein_per_100g": 6.4,
+    "carbs_per_100g": 6.4,
+    "fat_per_100g": 12.4,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "המבורגר פרגיות, זוגלובק",
+    "calories_per_100g": 211.0,
+    "protein_per_100g": 14.0,
+    "carbs_per_100g": 0.5,
+    "fat_per_100g": 17.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "שניצל עוף אמיתי - ציפוי מעודן, עוף טוב",
+    "calories_per_100g": 205.0,
+    "protein_per_100g": 16.0,
+    "carbs_per_100g": 17.0,
+    "fat_per_100g": 8.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "קוטג` תנובה בקטנה 5%, תנובה",
+    "calories_per_100g": 95.0,
+    "protein_per_100g": 11.0,
+    "carbs_per_100g": 1.5,
+    "fat_per_100g": 5.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "דניס מבושל",
+    "calories_per_100g": 162.0,
+    "protein_per_100g": 23.1,
+    "carbs_per_100g": 0.1,
+    "fat_per_100g": 7.11,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "טופו - טופו גולמי, משק צוריאל",
+    "calories_per_100g": 141.0,
+    "protein_per_100g": 15.0,
+    "carbs_per_100g": 1.9,
+    "fat_per_100g": 8.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "תפוחי אדמה מעוכים - פירה",
+    "calories_per_100g": 83.0,
+    "protein_per_100g": 2.31,
+    "carbs_per_100g": 16.12,
+    "fat_per_100g": 1.21,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "סלמון מעושן פרוס, פל דגים",
+    "calories_per_100g": 226.0,
+    "protein_per_100g": 21.6,
+    "carbs_per_100g": 1.6,
+    "fat_per_100g": 14.2,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "בשר בקר טחון-מטוגן - 5% שומן",
+    "calories_per_100g": 164.0,
+    "protein_per_100g": 25.8,
+    "carbs_per_100g": 0,
+    "fat_per_100g": 5.94,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "ברוקולי מוקפא, סנפרוסט",
+    "calories_per_100g": 24.0,
+    "protein_per_100g": 2.3,
+    "carbs_per_100g": 2.2,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "קרם גבינה",
+    "calories_per_100g": 342.0,
+    "protein_per_100g": 5.93,
+    "carbs_per_100g": 4.07,
+    "fat_per_100g": 34.24,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "עגבנייה מבושלת",
+    "calories_per_100g": 18.0,
+    "protein_per_100g": 0.95,
+    "carbs_per_100g": 4.01,
+    "fat_per_100g": 0.11,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "QUAKER - שיבולת שועל להכנה מהירה, Quakeroats",
+    "calories_per_100g": 374.0,
+    "protein_per_100g": 11.0,
+    "carbs_per_100g": 69.0,
+    "fat_per_100g": 8.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "טליאטלה, ברילה",
+    "calories_per_100g": 356.0,
+    "protein_per_100g": 12.0,
+    "carbs_per_100g": 72.2,
+    "fat_per_100g": 1.5,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "עגבניות שרי",
+    "calories_per_100g": 18.0,
+    "protein_per_100g": 0.88,
+    "carbs_per_100g": 3.92,
+    "fat_per_100g": 0.2,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "פילה דג אמנון קפוא בציפוי קרח ללא עור, רמי לוי שיווק השקמה",
+    "calories_per_100g": 103.0,
+    "protein_per_100g": 20.0,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 2.5,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "כנפי עוף מבושלות-צלויות",
+    "calories_per_100g": 203.0,
+    "protein_per_100g": 30.46,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 8.13,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "PRO - משקה בטעם קרמל מלוח עם חלבון חלב 0% שומן, יטבתה",
+    "calories_per_100g": 55.0,
+    "protein_per_100g": 11.5,
+    "carbs_per_100g": 2.2,
+    "fat_per_100g": 0.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "ברוקולי טרי",
+    "calories_per_100g": 34.0,
+    "protein_per_100g": 2.82,
+    "carbs_per_100g": 6.64,
+    "fat_per_100g": 0.37,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "סינטה, הטחנה - חנות בשר",
+    "calories_per_100g": 201.0,
+    "protein_per_100g": 20.0,
+    "carbs_per_100g": 0.5,
+    "fat_per_100g": 12.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "טעם תפוזים - 40% פחות סוכר, פריגת",
+    "calories_per_100g": 19.0,
+    "protein_per_100g": 0.0,
+    "carbs_per_100g": 5.9,
+    "fat_per_100g": 0.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "סדרת הביתיים - שניצל עוף ביתי עם שומשום קופצני, עוף טוב",
+    "calories_per_100g": 207.0,
+    "protein_per_100g": 15.0,
+    "carbs_per_100g": 14.0,
+    "fat_per_100g": 10.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "סינטה טלה",
+    "calories_per_100g": 272.0,
+    "protein_per_100g": 16.94,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 22.11,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "מלפפון ללא קליפה",
+    "calories_per_100g": 12.0,
+    "protein_per_100g": 0.59,
+    "carbs_per_100g": 2.16,
+    "fat_per_100g": 0.16,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "דנונה PRO ZERO בננה טופי 0% שומן 20 גרם חלבון בגביע ללא תוספת סוכר לבן, שטראוס עלית",
+    "calories_per_100g": 56.0,
+    "protein_per_100g": 10.0,
+    "carbs_per_100g": 3.5,
+    "fat_per_100g": 0.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "מיץ תפוזים, ארומה",
+    "calories_per_100g": 33.0,
+    "protein_per_100g": 0.7,
+    "carbs_per_100g": 7.5,
+    "fat_per_100g": 0.1,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "מנגו, עבודי פירות קפואים",
+    "calories_per_100g": 60.0,
+    "protein_per_100g": 1.0,
+    "carbs_per_100g": 14.0,
+    "fat_per_100g": 0.5,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "סלמון סוקי",
+    "calories_per_100g": 142.0,
+    "protein_per_100g": 21.31,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 5.61,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "תפוח אדמה מטוגן (טוגנים) ללא מלח",
+    "calories_per_100g": 172.0,
+    "protein_per_100g": 2.66,
+    "carbs_per_100g": 28.71,
+    "fat_per_100g": 5.22,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "ממרח בוטנים, Anise",
+    "calories_per_100g": 633.0,
+    "protein_per_100g": 27.0,
+    "carbs_per_100g": 4.0,
+    "fat_per_100g": 54.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "גבינה לבנה 3% מועשרת בסידן ובויטמין D, טרה",
+    "calories_per_100g": 81.0,
+    "protein_per_100g": 9.1,
+    "carbs_per_100g": 4.5,
+    "fat_per_100g": 3.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "אבקה להכנת משקה חלבון מי גבינה בטעם עוגיות, סופר אפקט",
+    "calories_per_100g": 408.0,
+    "protein_per_100g": 74.0,
+    "carbs_per_100g": 11.8,
+    "fat_per_100g": 6.6,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "פסטרמה בקר",
+    "calories_per_100g": 146.0,
+    "protein_per_100g": 21.8,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 5.82,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "טונה בהירה משומרת בשמן ללא מלח",
+    "calories_per_100g": 198.0,
+    "protein_per_100g": 29.13,
+    "carbs_per_100g": 0.0,
+    "fat_per_100g": 8.21,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "החציל של מיגל, הצ`ימיצ`ורי של מיגל",
+    "calories_per_100g": 149.0,
+    "protein_per_100g": 0.6,
+    "carbs_per_100g": 4.9,
+    "fat_per_100g": 14.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "מיץ עגבניות משומר ללא תוספת מלח",
+    "calories_per_100g": 17.0,
+    "protein_per_100g": 0.76,
+    "carbs_per_100g": 4.24,
+    "fat_per_100g": 0.05,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "חלב 1% שומן, מחלבות גד",
+    "calories_per_100g": 43.0,
+    "protein_per_100g": 3.35,
+    "carbs_per_100g": 5.1,
+    "fat_per_100g": 1.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "טחינה גולמית משומשום אתיופי, סבא חביב",
+    "calories_per_100g": 693.0,
+    "protein_per_100g": 23.0,
+    "carbs_per_100g": 9.0,
+    "fat_per_100g": 61.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "מיץ תפוזים 100% סחוט טבעי, פריניב",
+    "calories_per_100g": 43.0,
+    "protein_per_100g": 0.52,
+    "carbs_per_100g": 10.2,
+    "fat_per_100g": 0.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "אורז בסמטי הודי, שופרסל",
+    "calories_per_100g": 336.0,
+    "protein_per_100g": 7.0,
+    "carbs_per_100g": 78.0,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "בטטה לבנה",
+    "calories_per_100g": 86.0,
+    "protein_per_100g": 1.55,
+    "carbs_per_100g": 20.12,
+    "fat_per_100g": 0.05,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "משקה שקדים, תנובה",
+    "calories_per_100g": 38.0,
+    "protein_per_100g": 1.0,
+    "carbs_per_100g": 3.5,
+    "fat_per_100g": 2.1,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "Fitness שוקולד - חטיף דגני בוקר עם שוקולד מריר, נסטלה",
+    "calories_per_100g": 392.0,
+    "protein_per_100g": 6.5,
+    "carbs_per_100g": 69.2,
+    "fat_per_100g": 8.3,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "טחינה 100% שומשום אתיופי טהור, יד מרדכי",
+    "calories_per_100g": 699.0,
+    "protein_per_100g": 21.0,
+    "carbs_per_100g": 15.0,
+    "fat_per_100g": 60.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "סחוט - תפוזים, פרימור",
+    "calories_per_100g": 47.0,
+    "protein_per_100g": 0.7,
+    "carbs_per_100g": 10.2,
+    "fat_per_100g": 0.0,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "פרחי ברוקולי מוקפאים, שדה בשקית",
+    "calories_per_100g": 20.0,
+    "protein_per_100g": 1.5,
+    "carbs_per_100g": 2.1,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "רצועות פלפל אדום, קבוצת יבנה",
+    "calories_per_100g": 23.0,
+    "protein_per_100g": 2.0,
+    "carbs_per_100g": 3.0,
+    "fat_per_100g": 0.3,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "יוגורט 2.8% שומן BIO, מולר",
+    "calories_per_100g": 63.0,
+    "protein_per_100g": 5.4,
+    "carbs_per_100g": 3.2,
+    "fat_per_100g": 2.8,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "קוואקר עבה, חצי חינם",
+    "calories_per_100g": 391.0,
+    "protein_per_100g": 13.2,
+    "carbs_per_100g": 67.0,
+    "fat_per_100g": 7.8,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "גזר גמדי מוקפא, סנפרוסט",
+    "calories_per_100g": 30.0,
+    "protein_per_100g": 0.9,
+    "carbs_per_100g": 7.1,
+    "fat_per_100g": 0.2,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "Calvo סלטונה - ירקות וטונה בסגנון קליפורניה, ויסוצקי",
+    "calories_per_100g": 123.0,
+    "protein_per_100g": 9.4,
+    "carbs_per_100g": 3.9,
+    "fat_per_100g": 7.8,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "קישוא (קיץ) טרי",
+    "calories_per_100g": 16.0,
+    "protein_per_100g": 1.21,
+    "carbs_per_100g": 3.35,
+    "fat_per_100g": 0.18,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "תפוח עץ עם קליפה",
+    "calories_per_100g": 52.0,
+    "protein_per_100g": 0.26,
+    "carbs_per_100g": 13.81,
+    "fat_per_100g": 0.171,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "דק דק דק - פסטרמה פרגית, זוגלובק",
+    "calories_per_100g": 133.0,
+    "protein_per_100g": 15.0,
+    "carbs_per_100g": 7.0,
+    "fat_per_100g": 5.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "לחם אחיד פרוס, שופרסל",
+    "calories_per_100g": 268.0,
+    "protein_per_100g": 9.5,
+    "carbs_per_100g": 52.3,
+    "fat_per_100g": 2.4,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "פרוסטי - קוביות מנגו קפוא, בסט קווליטי צ`יפס בע\"מ",
+    "calories_per_100g": 60.0,
+    "protein_per_100g": 0.43,
+    "carbs_per_100g": 14.98,
+    "fat_per_100g": 0.38,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "GO by TNUVA קולגן בטעם אייס קפה 20 גרם חלבון בבקבוק, תנובה",
+    "calories_per_100g": 62.0,
+    "protein_per_100g": 5.9,
+    "carbs_per_100g": 5.4,
+    "fat_per_100g": 1.9,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "משקה קפה 1.5% שומן ללא תוספת סוכר 25 גרם חלבון בבקבוק, מולר",
+    "calories_per_100g": 58.0,
+    "protein_per_100g": 7.15,
+    "carbs_per_100g": 4.0,
+    "fat_per_100g": 1.5,
+    "is_liquid": 1,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "תפוח אדמה אפוי ללא קליפה",
+    "calories_per_100g": 93.0,
+    "protein_per_100g": 1.96,
+    "carbs_per_100g": 21.55,
+    "fat_per_100g": 0.1,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "קוביות מנגו קפוא 100%, Best Fruit",
+    "calories_per_100g": 46.0,
+    "protein_per_100g": 0.5,
+    "carbs_per_100g": 11.0,
+    "fat_per_100g": 0.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "טחינה גולמית (מזרעי שומשום טהור)",
+    "calories_per_100g": 607.0,
+    "protein_per_100g": 18.0,
+    "carbs_per_100g": 17.9,
+    "fat_per_100g": 56.4,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "תפוח אדמה אדום",
+    "calories_per_100g": 70.0,
+    "protein_per_100g": 1.89,
+    "carbs_per_100g": 15.9,
+    "fat_per_100g": 0.14,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "סלמון נורווגי מעושן, דלידג",
+    "calories_per_100g": 205.0,
+    "protein_per_100g": 21.0,
+    "carbs_per_100g": 1.0,
+    "fat_per_100g": 13.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  },
+  {
+    "name": "תפוצ`יפס Gourmet - חטיף בטטה, עלית",
+    "calories_per_100g": 538.0,
+    "protein_per_100g": 3.4,
+    "carbs_per_100g": 45.0,
+    "fat_per_100g": 36.0,
+    "is_liquid": 0,
+    "is_recipe": 0,
+    "servings": 1.0
+  }
+]

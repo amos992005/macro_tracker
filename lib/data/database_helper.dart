@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:flutter/services.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'models/food.dart';
@@ -19,13 +21,24 @@ class DatabaseHelper {
     String path = join(await getDatabasesPath(), 'macro_tracker.db');
     return await openDatabase(
       path,
-      version: 2, // וודא שזה 2!
+      version: 5, // <-- העלנו ל-5 כדי להפעיל את ה-_onUpgrade
       onCreate: _onCreate,
+      onUpgrade: _onUpgrade,
     );
   }
 
+  // פונקציה שרצה כשיש עדכון גרסה (כדי לא לאבד נתונים)
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 4) {
+      await db.execute('ALTER TABLE foods ADD COLUMN is_favorite INTEGER NOT NULL DEFAULT 0');
+    }
+    if (oldVersion < 5) {
+      // הוספת האינדקס למסד קיים
+      await db.execute('CREATE INDEX IF NOT EXISTS idx_food_name ON foods(name)');
+    }
+  }
+
   Future<void> _onCreate(Database db, int version) async {
-    // טבלת מאכלים
     await db.execute('''
       CREATE TABLE foods(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -36,11 +49,11 @@ class DatabaseHelper {
         fat_per_100g REAL NOT NULL,
         is_liquid INTEGER NOT NULL DEFAULT 0,
         is_recipe INTEGER NOT NULL DEFAULT 0,
-        servings REAL NOT NULL DEFAULT 1.0
+        servings REAL NOT NULL DEFAULT 1.0,
+        is_favorite INTEGER NOT NULL DEFAULT 0
       )
     ''');
 
-    // טבלת ארוחות
     await db.execute('''
       CREATE TABLE meal_entries(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -51,7 +64,6 @@ class DatabaseHelper {
       )
     ''');
 
-    // טבלת יעדים
     await db.execute('''
       CREATE TABLE daily_targets(
         date TEXT PRIMARY KEY,
@@ -62,7 +74,6 @@ class DatabaseHelper {
       )
     ''');
 
-    // טבלת הגדרות (החדשה)
     await db.execute('''
       CREATE TABLE app_settings(
         id INTEGER PRIMARY KEY CHECK (id = 1),
@@ -77,31 +88,43 @@ class DatabaseHelper {
       )
     ''');
 
-    // הכנסת ברירת מחדל להגדרות
     await db.insert('app_settings', {'id': 1});
 
-    // הוספת מאכלי בסיס
-    await db.insert('foods', {
-      'name': 'אבקת חלבון וניל Allin',
-      'calories_per_100g': 380.0,
-      'protein_per_100g': 80.0,
-      'carbs_per_100g': 6.0,
-      'fat_per_100g': 5.0,
-      'is_liquid': 0,
-      'is_recipe': 0,
-      'servings': 1.0,
-    });
+    // הוספת האינדקס למסד חדש
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_food_name ON foods(name)');
 
-    await db.insert('foods', {
-      'name': 'חלב 3%',
-      'calories_per_100g': 60.0,
-      'protein_per_100g': 3.0,
-      'carbs_per_100g': 4.5,
-      'fat_per_100g': 3.0,
-      'is_liquid': 1,
-      'is_recipe': 0,
-      'servings': 1.0,
-    });
+    // טעינת קובץ המאכלים (אם קיים)
+    try {
+      String jsonString = await rootBundle.loadString('assets/foods_full_all.json'); // שים לב לשם הקובץ!
+      List<dynamic> jsonList = jsonDecode(jsonString);
+
+      Batch batch = db.batch();
+      for (var json in jsonList) {
+        batch.insert('foods', {
+          'name': json['name'],
+          'calories_per_100g': (json['calories_per_100g'] as num).toDouble(),
+          'protein_per_100g': (json['protein_per_100g'] as num).toDouble(),
+          'carbs_per_100g': (json['carbs_per_100g'] as num).toDouble(),
+          'fat_per_100g': (json['fat_per_100g'] as num).toDouble(),
+          'is_liquid': json['is_liquid'] ?? 0,
+          'is_recipe': json['is_recipe'] ?? 0,
+          'servings': (json['servings'] as num?)?.toDouble() ?? 1.0,
+          'is_favorite': 0,
+        });
+      }
+      await batch.commit(noResult: true);
+    } catch (e) {
+      print('שגיאה בטעינת קובץ המאכלים: $e');
+    }
+  }
+
+  Future<void> insertFoodsBatch(List<Food> foods) async {
+    final db = await database;
+    Batch batch = db.batch();
+    for (var food in foods) {
+      batch.insert('foods', food.toMap());
+    }
+    await batch.commit(noResult: true);
   }
 
   Future<int> insertFood(Food food) async {
@@ -118,6 +141,11 @@ class DatabaseHelper {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query('foods');
     return List.generate(maps.length, (i) => Food.fromMap(maps[i]));
+  }
+
+  Future<void> toggleFavorite(int id, bool isFavorite) async {
+    final db = await database;
+    await db.update('foods', {'is_favorite': isFavorite ? 1 : 0}, where: 'id = ?', whereArgs: [id]);
   }
 
   Future<int> insertMealEntry(int foodId, double weightGrams, String date) async {
@@ -159,12 +187,10 @@ class DatabaseHelper {
     await db.delete('foods', where: 'id = ?', whereArgs: [id]);
   }
 
-  // פונקציות ההגדרות החדשות
   Future<Map<String, dynamic>> getSettings() async {
     final db = await database;
     final maps = await db.query('app_settings', where: 'id = 1');
     if (maps.isEmpty) {
-      // אם משום מה אין, ניצור
       await db.insert('app_settings', {'id': 1});
       final newMaps = await db.query('app_settings', where: 'id = 1');
       return newMaps.first;

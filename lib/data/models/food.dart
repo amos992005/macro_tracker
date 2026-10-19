@@ -8,6 +8,7 @@ class Food {
   final bool isLiquid;
   final bool isRecipe;
   final double servings;
+  final bool isFavorite;
 
   Food({
     this.id,
@@ -19,6 +20,7 @@ class Food {
     this.isLiquid = false,
     this.isRecipe = false,
     this.servings = 1.0,
+    this.isFavorite = false,
   });
 
   Map<String, dynamic> toMap() {
@@ -32,20 +34,22 @@ class Food {
       'is_liquid': isLiquid ? 1 : 0,
       'is_recipe': isRecipe ? 1 : 0,
       'servings': servings,
+      'is_favorite': isFavorite ? 1 : 0,
     };
   }
 
   factory Food.fromMap(Map<String, dynamic> map) {
     return Food(
       id: map['id'],
-      name: map['name'],
-      caloriesPer100g: map['calories_per_100g'],
-      proteinPer100g: map['protein_per_100g'],
-      carbsPer100g: map['carbs_per_100g'],
-      fatPer100g: map['fat_per_100g'],
+      name: map['name'] ?? 'מוצר ללא שם',
+      caloriesPer100g: (map['calories_per_100g'] as num?)?.toDouble() ?? 0.0,
+      proteinPer100g: (map['protein_per_100g'] as num?)?.toDouble() ?? 0.0,
+      carbsPer100g: (map['carbs_per_100g'] as num?)?.toDouble() ?? 0.0,
+      fatPer100g: (map['fat_per_100g'] as num?)?.toDouble() ?? 0.0,
       isLiquid: map['is_liquid'] == 1,
       isRecipe: map['is_recipe'] == 1,
-      servings: map['servings']?.toDouble() ?? 1.0,
+      servings: (map['servings'] as num?)?.toDouble() ?? 1.0,
+      isFavorite: map['is_favorite'] == 1,
     );
   }
 }
