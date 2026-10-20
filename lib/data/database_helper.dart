@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -11,6 +12,9 @@ class DatabaseHelper {
 
   static Database? _database;
 
+  // === V1.3: העלינו מ-5 ל-6 כדי להפעיל מיגרציה של ה-seed החדש ===
+  static const int _dbVersion = 6;
+
   Future<Database> get database async {
     if (_database != null) return _database!;
     _database = await _initDatabase();
@@ -21,24 +25,29 @@ class DatabaseHelper {
     String path = join(await getDatabasesPath(), 'macro_tracker.db');
     return await openDatabase(
       path,
-      version: 5, // <-- העלנו ל-5 כדי להפעיל את ה-_onUpgrade
+      version: _dbVersion,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
   }
 
-  // פונקציה שרצה כשיש עדכון גרסה (כדי לא לאבד נתונים)
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
     if (oldVersion < 4) {
       await db.execute('ALTER TABLE foods ADD COLUMN is_favorite INTEGER NOT NULL DEFAULT 0');
     }
     if (oldVersion < 5) {
-      // הוספת האינדקס למסד קיים
       await db.execute('CREATE INDEX IF NOT EXISTS idx_food_name ON foods(name)');
+    }
+    if (oldVersion < 6) {
+      // V1.3: מיגרציה — מוסיפים רק מוצרים חדשים לפי שם.
+      // מוצרים קיימים (כולל מועדפים ומתכונים אישיים) לא נגעים בהם.
+      debugPrint('🔄 DatabaseHelper: Migration 5→6 — importing new seed foods (skip existing)...');
+      await _importSeedFoods(db, skipExisting: true);
     }
   }
 
   Future<void> _onCreate(Database db, int version) async {
+    // ==================== יצירת טבלאות ====================
     await db.execute('''
       CREATE TABLE foods(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -89,34 +98,105 @@ class DatabaseHelper {
     ''');
 
     await db.insert('app_settings', {'id': 1});
-
-    // הוספת האינדקס למסד חדש
     await db.execute('CREATE INDEX IF NOT EXISTS idx_food_name ON foods(name)');
 
-    // טעינת קובץ המאכלים (אם קיים)
-    try {
-      String jsonString = await rootBundle.loadString('assets/foods_full_all.json'); // שים לב לשם הקובץ!
-      List<dynamic> jsonList = jsonDecode(jsonString);
+    // ==================== ייבוא ה-seed הראשוני ====================
+    // V1.2: ID מוקצה אוטומטית, is_favorite תמיד 0, התחלה נקייה.
+    debugPrint('🌱 DatabaseHelper: Fresh install — loading full seed...');
+    await _importSeedFoods(db, skipExisting: false);
+  }
 
-      Batch batch = db.batch();
-      for (var json in jsonList) {
+  // ==================== לוגיקת ייבוא ה-seed (משותפת ל-onCreate ול-onUpgrade) ====================
+  Future<void> _importSeedFoods(dynamic db, {required bool skipExisting}) async {
+    final stopwatch = Stopwatch()..start();
+    try {
+      final String jsonString = await rootBundle.loadString('assets/foods_full_all.json');
+      final List<dynamic> jsonList = jsonDecode(jsonString);
+
+      // אם במצב מיגרציה — שולפים את כל השמות הקיימים מה-DB כדי לדלג עליהם.
+      final Set<String> existingNames = {};
+      if (skipExisting) {
+        final rows = await db.query('foods', columns: ['name']);
+        for (final row in rows) {
+          existingNames.add((row['name'] as String).trim());
+        }
+      }
+
+      final batch = db.batch();
+      int loaded = 0;
+      int skippedInvalid = 0;
+      int skippedExisting = 0;
+
+      // מגן כפילויות פנימיות בקובץ ה-JSON (שמות זהים בתוך ה-asset).
+      final Set<String> batchNames = {};
+
+      for (final json in jsonList) {
+        // הגנה 1: רשומה חייבת להיות Map
+        if (json is! Map<String, dynamic>) {
+          skippedInvalid++;
+          continue;
+        }
+
+        // הגנה 2: שם חייב להיות קיים ולא ריק
+        final String name = (json['name'] as String?)?.trim() ?? '';
+        if (name.isEmpty) {
+          skippedInvalid++;
+          continue;
+        }
+
+        // הגנה 3: במצב מיגרציה — דלג אם השם כבר קיים ב-DB
+        if (skipExisting && existingNames.contains(name)) {
+          skippedExisting++;
+          continue;
+        }
+
+        // הגנה 4: כפילות פנימית בקובץ
+        if (batchNames.contains(name)) {
+          skippedExisting++;
+          continue;
+        }
+        batchNames.add(name);
+
+        // הגנה 5: ארבעת הערכים התזונתיים חייבים להיות מספרים
+        final double? cal = (json['calories_per_100g'] as num?)?.toDouble();
+        final double? pro = (json['protein_per_100g'] as num?)?.toDouble();
+        final double? carb = (json['carbs_per_100g'] as num?)?.toDouble();
+        final double? fat = (json['fat_per_100g'] as num?)?.toDouble();
+
+        if (cal == null || pro == null || carb == null || fat == null) {
+          skippedInvalid++;
+          continue;
+        }
+
         batch.insert('foods', {
-          'name': json['name'],
-          'calories_per_100g': (json['calories_per_100g'] as num).toDouble(),
-          'protein_per_100g': (json['protein_per_100g'] as num).toDouble(),
-          'carbs_per_100g': (json['carbs_per_100g'] as num).toDouble(),
-          'fat_per_100g': (json['fat_per_100g'] as num).toDouble(),
-          'is_liquid': json['is_liquid'] ?? 0,
-          'is_recipe': json['is_recipe'] ?? 0,
+          'name': name,
+          'calories_per_100g': cal,
+          'protein_per_100g': pro,
+          'carbs_per_100g': carb,
+          'fat_per_100g': fat,
+          'is_liquid': (json['is_liquid'] as num?)?.toInt() ?? 0,
+          'is_recipe': (json['is_recipe'] as num?)?.toInt() ?? 0,
           'servings': (json['servings'] as num?)?.toDouble() ?? 1.0,
           'is_favorite': 0,
         });
+        loaded++;
       }
+
       await batch.commit(noResult: true);
-    } catch (e) {
-      print('שגיאה בטעינת קובץ המאכלים: $e');
+      stopwatch.stop();
+
+      debugPrint(
+        '✅ Seed import done in ${stopwatch.elapsedMilliseconds}ms — '
+            'loaded=$loaded, skippedInvalid=$skippedInvalid, skippedExisting=$skippedExisting',
+      );
+    } catch (e, st) {
+      stopwatch.stop();
+      debugPrint('❌ Seed import failed after ${stopwatch.elapsedMilliseconds}ms: $e');
+      debugPrint('$st');
     }
   }
+
+  // ==================== שאר הפונקציות — ללא שינוי ====================
 
   Future<void> insertFoodsBatch(List<Food> foods) async {
     final db = await database;

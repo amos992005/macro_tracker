@@ -1,11 +1,12 @@
 import 'dart:math' as math;
 import '../data/models/food.dart';
 
-// מחלקת עזר פנימית לשמירת נתוני חיפוש מחושבים מראש
 class _FoodSearchData {
+  final String rawOriginal;
   final List<String> tokens;
   final String normNoSpaces;
-  _FoodSearchData(this.tokens, this.normNoSpaces);
+  final String normOriginal;
+  _FoodSearchData(this.rawOriginal, this.tokens, this.normNoSpaces, this.normOriginal);
 }
 
 class SearchUtils {
@@ -35,19 +36,13 @@ class SearchUtils {
 
   static const List<String> _stopWords = ['ו', 'עם', 'של', 'על', 'ב', 'ל', 'מ', 'ה', 'ש', 'את', 'כי', 'או'];
 
-  static final Map<String, String> _primaryCache = {};
+  static final Map<String, String> _normalizeCache = {};
   static final Map<String, List<String>> _variantCache = {};
-
-  // --- מטמון נתוני חיפוש עבור מוצרים ---
   static final Map<String, _FoodSearchData> _foodDataCache = {};
-
-  // --- מטמון נתוני חיפוש עבור שאילתות ---
-  static final Map<String, List<String>> _queryTokensCache = {};
-  static final Map<String, String> _queryNormCache = {};
 
   static String normalize(String text) {
     if (text.isEmpty) return '';
-    if (_primaryCache.containsKey(text)) return _primaryCache[text]!;
+    if (_normalizeCache.containsKey(text)) return _normalizeCache[text]!;
 
     String lower = text.toLowerCase().trim().replaceAll(RegExp(r'\s+'), ' ');
     StringBuffer sb = StringBuffer();
@@ -60,132 +55,17 @@ class SearchUtils {
       }
     }
     String result = sb.toString();
-    _primaryCache[text] = result;
+    _normalizeCache[text] = result;
     return result;
   }
 
-  static List<String> _tokenizeAndClean(String text) {
-    String normalized = normalize(text);
-    List<String> tokens = normalized.split(' ').where((t) => t.isNotEmpty).toList();
+  static List<String> _getRawTokens(String text) {
+    String lower = text.toLowerCase().trim().replaceAll(RegExp(r'\s+'), ' ');
+    List<String> tokens = lower.split(' ').where((t) => t.isNotEmpty).toList();
     return tokens.where((t) => !_stopWords.contains(t) && t.length > 1).toList();
   }
 
-  // מחזיר את נתוני החיפוש של מוצר - מחושב פעם אחת ונשמר במטמון
-  static _FoodSearchData _getFoodData(Food food) {
-    final key = food.name;
-    if (_foodDataCache.containsKey(key)) return _foodDataCache[key]!;
-
-    final tokens = _tokenizeAndClean(food.name);
-    final normNoSpaces = normalize(food.name).replaceAll(' ', '');
-    final data = _FoodSearchData(tokens, normNoSpaces);
-    _foodDataCache[key] = data;
-    return data;
-  }
-
-  // מחזיר את הטוקנים של השאילתה - מחושב פעם אחת ונשמר במטמון
-  static List<String> _getQueryTokens(String query) {
-    if (_queryTokensCache.containsKey(query)) return _queryTokensCache[query]!;
-    final tokens = _tokenizeAndClean(query);
-    _queryTokensCache[query] = tokens;
-    return tokens;
-  }
-
-  // מחזיר את השאילתה ללא רווחים - מחושב פעם אחת ונשמר במטמון
-  static String _getQueryNormNoSpaces(String query) {
-    if (_queryNormCache.containsKey(query)) return _queryNormCache[query]!;
-    final norm = normalize(query).replaceAll(' ', '');
-    _queryNormCache[query] = norm;
-    return norm;
-  }
-
-  static List<Food> filterAndSortFoods(List<Food> foods, String query, {bool onlyFavorites = false}) {
-    // 1. מקרה קצה - חיפוש ריק
-    if (query.trim().isEmpty) {
-      var list = onlyFavorites ? foods.where((f) => f.isFavorite).toList() : foods;
-      return list.take(100).toList();
-    }
-
-    // 2. שליפת נתוני השאילתה מהמטמון (חישוב מהיר)
-    final queryTokens = _getQueryTokens(query);
-    final normQueryNoSpaces = _getQueryNormNoSpaces(query);
-
-    if (queryTokens.isEmpty) {
-      var list = onlyFavorites ? foods.where((f) => f.isFavorite).toList() : foods;
-      return list.take(100).toList();
-    }
-
-    // 3. סינון מקדים מהיר (ללא חישובי ציון)
-    final preFiltered = <Food>[];
-    for (var food in foods) {
-      if (onlyFavorites && !food.isFavorite) continue;
-
-      final foodData = _getFoodData(food); // שליפה מהמטמון
-
-      // בדיקה מהירה: התאמת משפט מלא (בלי רווחים)
-      if (foodData.normNoSpaces.contains(normQueryNoSpaces)) {
-        preFiltered.add(food);
-        continue;
-      }
-
-      // בדיקה מהירה: התאמת token בודד
-      bool hasMatch = false;
-      for (var qToken in queryTokens) {
-        for (var fToken in foodData.tokens) {
-          if (fToken.contains(qToken) || qToken.contains(fToken)) {
-            hasMatch = true;
-            break;
-          }
-        }
-        if (hasMatch) break;
-      }
-
-      if (hasMatch) preFiltered.add(food);
-    }
-
-    // 4. ניקוד רק על מה שעבר את הסינון
-    final scored = preFiltered.map((f) {
-      final foodData = _getFoodData(f); // שליפה מהמטמון
-      double score = 0;
-
-      // בונוס עצום על התאמת משפט מלא
-      if (foodData.normNoSpaces == normQueryNoSpaces) {
-        score += 100000;
-      } else if (foodData.normNoSpaces.contains(normQueryNoSpaces)) {
-        score += 10000;
-      }
-
-      // בונוס לפי אחוז המילים שנמצאו
-      int matches = 0;
-      for (var qToken in queryTokens) {
-        bool isMatched = false;
-        for (var fToken in foodData.tokens) {
-          if (fToken.contains(qToken) || qToken.contains(fToken)) {
-            isMatched = true;
-            break;
-          }
-        }
-        if (isMatched) matches++;
-      }
-
-      if (matches == queryTokens.length && queryTokens.isNotEmpty) {
-        score += 5000;
-      } else {
-        score += (matches / queryTokens.length) * 1000;
-      }
-
-      // מועדפים מקבלים בונוס
-      if (f.isFavorite) score += 2000;
-
-      return MapEntry(f, score);
-    }).toList();
-
-    // 5. מיון והחזרה
-    scored.sort((a, b) => b.value.compareTo(a.value));
-    return scored.map((e) => e.key).take(150).toList();
-  }
-
-  // --- פונקציות הטסטים הישנות (נשארות ללא שינוי) ---
-  static List<String> variants(String text) {
+  static List<String> _getVariants(String text) {
     if (text.isEmpty) return [''];
     if (_variantCache.containsKey(text)) return _variantCache[text]!;
 
@@ -232,7 +112,20 @@ class SearchUtils {
     return finalList;
   }
 
-  static int _lev(String a, String b) {
+  static _FoodSearchData _getFoodData(Food food) {
+    if (_foodDataCache.containsKey(food.name)) return _foodDataCache[food.name]!;
+
+    final rawTokens = _getRawTokens(food.name);
+    final normTokens = rawTokens.map((t) => normalize(t)).toList();
+    final normNoSpaces = normalize(food.name).replaceAll(' ', '');
+    final normOriginal = normalize(food.name);
+
+    final data = _FoodSearchData(food.name, normTokens, normNoSpaces, normOriginal);
+    _foodDataCache[food.name] = data;
+    return data;
+  }
+
+  static int _levenshtein(String a, String b) {
     if (a == b) return 0;
     if (a.isEmpty) return b.length;
     if (b.isEmpty) return a.length;
@@ -243,136 +136,202 @@ class SearchUtils {
       List<int> curr = [i];
       for (int j = 1; j <= b.length; j++) {
         int cost = a[i - 1] == b[j - 1] ? 0 : 1;
-        curr.add([curr[j - 1] + 1, prev[j] + 1, prev[j - 1] + cost].reduce(math.min));
+        curr.add([
+          curr[j - 1] + 1,
+          prev[j] + 1,
+          prev[j - 1] + cost,
+        ].reduce(math.min));
       }
       prev = curr;
     }
     return prev[b.length];
   }
 
-  static double _ngramScore(String a, String b) {
-    if (a.length < 3 || b.length < 3) return 0.0;
-    Set<String> aGrams = {};
-    for (int i = 0; i <= a.length - 3; i++) aGrams.add(a.substring(i, i + 3));
-    Set<String> bGrams = {};
-    for (int i = 0; i <= b.length - 3; i++) bGrams.add(b.substring(i, i + 3));
-    int overlap = aGrams.intersection(bGrams).length;
-    int total = aGrams.length + bGrams.length - overlap;
-    if (total == 0) return 0.0;
-    return overlap / total;
-  }
+  static double _scoreProduct(Food food, _FoodSearchData foodData, List<String> rawQueryTokens, String normQueryNoSpaces, String rawQuery) {
+    double score = 0;
+    String lowerRawQuery = rawQuery.toLowerCase().trim();
+    String lowerRawProduct = foodData.rawOriginal.toLowerCase();
 
-  static double _tokenScore(String q, String f) {
-    if (q.isEmpty || f.isEmpty) return 0.0;
-    if (q == f) return 100.0;
-
-    if (q.length < 2) {
-      if (f.startsWith(q)) return 60.0;
-      return 0.0;
+    // 1. התאמה אותנטית (טקסט מקורי, ללא תעתיק)
+    if (lowerRawProduct == lowerRawQuery) {
+      score += 30000;
+    } else if (lowerRawProduct.startsWith(lowerRawQuery)) {
+      score += 15000;
+    } else if (lowerRawProduct.contains(lowerRawQuery)) {
+      score += 5000;
     }
 
-    if (f.startsWith(q)) return 80.0;
-    if (q.startsWith(f) && f.length >= 3) return 75.0;
-    if (f.contains(q)) return 55.0;
-    if (q.contains(f) && f.length >= 3) return 45.0;
-
-    int prefixLen = 0;
-    int minLen = math.min(q.length, f.length);
-    for(int i=0; i<minLen; i++) {
-      if(q[i] == f[i]) prefixLen++;
-      else break;
-    }
-    if (prefixLen >= 3) {
-      double ratio = prefixLen / math.max(q.length, f.length);
-      return 30.0 + (ratio * 30.0);
+    // 2. התאמה של כל המשפט המנורמל
+    if (foodData.normNoSpaces == normQueryNoSpaces) {
+      score += 20000;
+    } else if (foodData.normNoSpaces.contains(normQueryNoSpaces)) {
+      score += 8000;
     }
 
-    if (q.length >= 4 && f.length >= 4) {
-      double ngram = _ngramScore(q, f);
-      if (ngram > 0.4) return 20.0 + (ngram * 30.0);
-    }
+    // 3. ניקוד לפי כיסוי מילים
+    int matchedTokens = 0;
+    for (var rawQToken in rawQueryTokens) {
+      String qToken = normalize(rawQToken);
+      double bestTokenScore = 0;
 
-    if ((q.length - f.length).abs() > 3) return 0.0;
-
-    int dist = _lev(q, f);
-    int maxLen = math.max(q.length, f.length);
-    if (maxLen == 0) return 0.0;
-    double similarity = 1.0 - (dist / maxLen);
-
-    if (similarity >= 0.75) return 40.0;
-    if (similarity >= 0.65) return 20.0;
-
-    return 0.0;
-  }
-
-  static double score(String foodName, String query) {
-    if (query.trim().isEmpty) return 1.0;
-
-    String normFood = normalize(foodName);
-    List<String> foodTokens = normFood.split(' ').where((t) => t.isNotEmpty).toList();
-    if (foodTokens.isEmpty) return 0.0;
-
-    List<String> rawQueryTokens = query.toLowerCase().trim().split(' ').where((t) => t.isNotEmpty).toList();
-    if (rawQueryTokens.isEmpty) return 0.0;
-
-    double totalScore = 0.0;
-    int highQuality = 0;
-    int strongMatches = 0;
-
-    for (String rawToken in rawQueryTokens) {
-      List<String> qVariants = variants(rawToken);
-      double bestScore = 0.0;
-
-      for (String qv in qVariants) {
-        for (String fToken in foodTokens) {
-          double s = _tokenScore(qv, fToken);
-          if (s > bestScore) {
-            bestScore = s;
-            if (s >= 100) break;
-          }
+      for (var fToken in foodData.tokens) {
+        if (fToken == qToken) { bestTokenScore = math.max(bestTokenScore, 1000); }
+        else if (fToken.startsWith(qToken)) { bestTokenScore = math.max(bestTokenScore, 500); }
+        else if (fToken.contains(qToken)) { bestTokenScore = math.max(bestTokenScore, 200); }
+        else if (qToken.length >= 2 && (fToken.length - qToken.length).abs() <= 2) {
+          int dist = _levenshtein(qToken, fToken);
+          if (dist <= 2) { bestTokenScore = math.max(bestTokenScore, 100.0 / dist); }
         }
-        if (bestScore >= 100) break;
       }
 
-      String normToken = normalize(rawToken);
-      List<String>? syns = _synonyms[rawToken] ?? _synonyms[normToken];
-      if (syns != null && bestScore < 100) {
-        for (String syn in syns) {
-          for (String sv in variants(syn)) {
-            for (String fToken in foodTokens) {
-              double s = _tokenScore(sv, fToken) * 0.5;
-              if (s > bestScore) bestScore = s;
+      // בדיקת מילים נרדפות
+      if (bestTokenScore == 0) {
+        List<String>? syns = _synonyms[rawQToken] ?? _synonyms[normalize(rawQToken)];
+        if (syns != null) {
+          for (var syn in syns) {
+            String normSyn = normalize(syn);
+            for (var fToken in foodData.tokens) {
+              if (fToken == normSyn) { bestTokenScore = math.max(bestTokenScore, 800); break; }
+              if (fToken.contains(normSyn)) { bestTokenScore = math.max(bestTokenScore, 300); break; }
             }
           }
         }
       }
 
-      totalScore += bestScore;
-      if (bestScore >= 75) highQuality++;
-      if (bestScore >= 45) strongMatches++;
+      if (bestTokenScore > 0) matchedTokens++;
+      score += bestTokenScore;
     }
 
-    double hqRatio = highQuality / rawQueryTokens.length;
-    double strongRatio = strongMatches / rawQueryTokens.length;
+    if (matchedTokens == 0) return 0;
 
-    if (hqRatio >= 1.0) totalScore *= 2.5;
-    else if (hqRatio >= 0.66) totalScore *= 1.6;
-    else if (hqRatio >= 0.33) totalScore *= 1.2;
+    // ==== תיקון 1: דרישת "כל המילים" (AND semantics) ====
+    // אם השאילתה מכילה יותר ממילה משמעותית אחת, נדרוש שכולן יתאימו.
+    // יוצא מן הכלל: אם כל השאילתה מופיעה כתת-מחרוזת בטקסט המקורי
+    // (למשל "קורנפלקס עוף טרי" שמכיל "קורנפלקס עוף"), לא נדרוש את כלל ה-AND.
+    bool fullRawMatch = lowerRawProduct.contains(lowerRawQuery);
+    if (!fullRawMatch &&
+        rawQueryTokens.length > 1 &&
+        matchedTokens < rawQueryTokens.length) {
+      return 0;
+    }
+    // ====================================================
 
-    if (strongRatio >= 1.0) totalScore *= 1.3;
+    if (matchedTokens == rawQueryTokens.length && rawQueryTokens.isNotEmpty) {
+      score *= 1.5;
+    }
 
-    if (rawQueryTokens.isNotEmpty && foodTokens.isNotEmpty) {
-      List<String> firstVariants = variants(rawQueryTokens.first);
-      if (firstVariants.any((v) => v.length >= 2 && foodTokens.first.startsWith(v))) {
-        totalScore *= 1.5;
+    if (rawQueryTokens.isNotEmpty) {
+      String firstToken = rawQueryTokens.first.toLowerCase();
+      if (lowerRawProduct.startsWith(firstToken)) {
+        score += 2000;
       }
     }
 
-    return totalScore;
+    score -= (lowerRawProduct.length * 5.0);
+
+    return score;
   }
 
-  static bool matches(String foodName, String query) {
-    if (query.trim().isEmpty) return true;
-    return score(foodName, query) > 0.5;
+  static List<Food> filterAndSortFoods(List<Food> foods, String query, {bool onlyFavorites = false}) {
+    if (query.trim().isEmpty) {
+      var list = onlyFavorites ? foods.where((f) => f.isFavorite).toList() : foods;
+      return list.take(100).toList();
+    }
+
+    final rawQueryTokens = _getRawTokens(query);
+    final normQueryNoSpaces = normalize(query).replaceAll(' ', '');
+
+    if (rawQueryTokens.isEmpty) {
+      var list = onlyFavorites ? foods.where((f) => f.isFavorite).toList() : foods;
+      return list.take(100).toList();
+    }
+
+    final queryVariantsList = <String>[];
+    final querySynonymsList = <String>[];
+
+    for (var rawQToken in rawQueryTokens) {
+      queryVariantsList.addAll(_getVariants(rawQToken));
+      final syns = _synonyms[rawQToken] ?? _synonyms[normalize(rawQToken)];
+      if (syns != null) {
+        for (var syn in syns) {
+          querySynonymsList.addAll(_getVariants(syn));
+        }
+      }
+    }
+
+    final candidates = <Food>[];
+    for (var food in foods) {
+      if (onlyFavorites && !food.isFavorite) continue;
+
+      final foodData = _getFoodData(food);
+      bool isCandidate = false;
+
+      // 1. התאמה מקורית (טקסט גולמי)
+      if (foodData.rawOriginal.toLowerCase().contains(query.toLowerCase().trim())) {
+        isCandidate = true;
+      }
+
+      // 2. התאמה מנורמלת
+      if (!isCandidate && foodData.normNoSpaces.contains(normQueryNoSpaces)) {
+        isCandidate = true;
+      }
+
+      // 3. וריאציות
+      if (!isCandidate) {
+        for (var variant in queryVariantsList) {
+          if (variant.length >= 2 && foodData.normOriginal.contains(variant)) {
+            isCandidate = true;
+            break;
+          }
+        }
+      }
+
+      // 4. מילים נרדפות
+      if (!isCandidate) {
+        for (var syn in querySynonymsList) {
+          if (syn.length >= 2 && foodData.normOriginal.contains(syn)) {
+            isCandidate = true;
+            break;
+          }
+        }
+      }
+
+      // 5. מרחק Levenshtein
+      if (!isCandidate) {
+        for (var rawQToken in rawQueryTokens) {
+          String qToken = normalize(rawQToken);
+          if (qToken.length < 2) continue;
+
+          for (var fToken in foodData.tokens) {
+            if (fToken.length < 2) continue;
+            if ((fToken.length - qToken.length).abs() <= 2) {
+              if (_levenshtein(qToken, fToken) <= 2) {
+                isCandidate = true;
+                break;
+              }
+            }
+          }
+          if (isCandidate) break;
+        }
+      }
+
+      if (isCandidate) candidates.add(food);
+      if (candidates.length >= 500) break;
+    }
+
+    final scored = candidates.map((f) {
+      final foodData = _getFoodData(f);
+      double score = _scoreProduct(f, foodData, rawQueryTokens, normQueryNoSpaces, query);
+
+      // ==== תיקון 2: בונוס מועדפים רק אם יש ניקוד חיובי ====
+      // כדי שמוצר מועדף שלא באמת מתאים לא "ינצח" בגלל הבונוס.
+      if (score > 0 && f.isFavorite) score += 3000;
+      // ===================================================
+
+      return MapEntry(f, score);
+    }).where((e) => e.value > 0).toList();
+
+    scored.sort((a, b) => b.value.compareTo(a.value));
+    return scored.map((e) => e.key).take(100).toList();
   }
 }

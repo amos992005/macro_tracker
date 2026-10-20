@@ -1,97 +1,109 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:macro_tracker/core/search_utils.dart';
+import 'package:macro_tracker/data/models/food.dart';
 
 void main() {
-  group('SearchUtils Comprehensive Tests', () {
+  group('SearchUtils v3 - Ambitious Tests', () {
+    // מוצרים לדוגמה
+    final matcha = Food(id: 1, name: 'מאצ\'ה', caloriesPer100g: 300, proteinPer100g: 5, carbsPer100g: 50, fatPer100g: 10);
+    final dessert = Food(id: 2, name: 'מעדן שוקולד', caloriesPer100g: 150, proteinPer100g: 4, carbsPer100g: 20, fatPer100g: 5);
+    final chicken = Food(id: 3, name: 'חזה עוף', caloriesPer100g: 165, proteinPer100g: 31, carbsPer100g: 0, fatPer100g: 3.6);
+    final cornflakes = Food(id: 4, name: 'קורנפלקס אלופים', caloriesPer100g: 375, proteinPer100g: 7, carbsPer100g: 84, fatPer100g: 1);
+    final goShake = Food(id: 5, name: 'GO חלבון whey', caloriesPer100g: 380, proteinPer100g: 80, carbsPer100g: 6, fatPer100g: 5);
+    final favoriteFood = Food(id: 6, name: 'שוקולד מריר', caloriesPer100g: 500, proteinPer100g: 5, carbsPer100g: 50, fatPer100g: 30, isFavorite: true);
 
-    // --- 1. בדיקות התאמה בסיסיות (Exact & Case Insensitive) ---
-    test('התאמה מדויקת בעברית', () {
-      expect(SearchUtils.matches('חלב 3%', 'חלב'), isTrue);
-      expect(SearchUtils.score('חלב 3%', 'חלב'), greaterThan(100));
+    final allFoods = [matcha, dessert, chicken, cornflakes, goShake, favoriteFood];
+
+    // --- 1. העדפת התאמה מקורית (הבעיה של "מע") ---
+    test('חיפוש "מע" מעדיף את "מעדן" על פני "מאצ\'ה" (התאמה מקורית)', () {
+      final results = SearchUtils.filterAndSortFoods(allFoods, 'מע');
+      expect(results.first.name, 'מעדן שוקולד'); // הודות להתאמה המדויקת של האותיות מ-ע
     });
 
-    test('התאמה מדויקת באנגלית (Case Insensitive)', () {
-      expect(SearchUtils.matches('GO חלבון whey', 'go'), isTrue);
-      expect(SearchUtils.matches('GO חלבון whey', 'GO'), isTrue);
-      expect(SearchUtils.matches('GO חלבון whey', 'Go'), isTrue);
+    test('חיפוש "מע" לא מחזיר את "מאצ\'ה" במקום הראשון', () {
+      final results = SearchUtils.filterAndSortFoods(allFoods, 'מע');
+      expect(results.first.name, isNot('מאצ\'ה'));
     });
 
-    // --- 2. בדיקות תעתיק (עברית לאנגלית) ---
-    test('חיפוש "גו" מוצא "GO"', () {
-      // "גו" יכול להפוך ל-"go", "gv", "gu". "GO" הוא "go".
-      expect(SearchUtils.matches('GO חלבון whey', 'גו'), isTrue);
+    // --- 2. התאמה חלקית (Partial Match) ---
+    test('חיפוש תחילית של מילה (חל -> חלב/חזה)', () {
+      final results = SearchUtils.filterAndSortFoods(allFoods, 'חז');
+      expect(results.first.name, 'חזה עוף');
     });
 
-    test('חיפוש "ווי" מוצא "whey"', () {
-      // "ווי" יכול להפוך ל-"wy", "vvy", "voy" וכו'.
-      expect(SearchUtils.matches('אבקת whey חלבון', 'ווי'), isTrue);
+    test('חיפוש עם רווחים חסרים (קורן פלקס -> קורנפלקס)', () {
+      final results = SearchUtils.filterAndSortFoods(allFoods, 'קורן פלקס');
+      expect(results.first.name, 'קורנפלקס אלופים');
     });
 
-    // --- 3. בדיקות שגיאות כתיב (Levenshtein) ---
-    test('חיפוש עם שגיאת כתיב קלה (חלכ במקום חלב)', () {
-      expect(SearchUtils.matches('חלב 3%', 'חלכ'), isTrue);
+    // --- 3. שגיאות כתיב (Fuzzy Matching) ---
+    test('חיפוש עם שגיאת כתיב קלה (עווף -> עוף)', () {
+      final results = SearchUtils.filterAndSortFoods(allFoods, 'עווף');
+      expect(results.first.name, 'חזה עוף');
     });
 
-    test('חיפוש עם אות חסרה (עו במקום עוף)', () {
-      expect(SearchUtils.matches('חזה עוף', 'עו'), isTrue);
+    test('חיפוש עם אות חסרה (קרנפלקס -> קורנפלקס)', () {
+      final results = SearchUtils.filterAndSortFoods(allFoods, 'קרנפלקס');
+      expect(results.first.name, 'קורנפלקס אלופים');
     });
 
-    // --- 4. בדיקות שורשים ומילים דומות (Stemming & N-Grams) ---
-    test('חיפוש "פריכיות" מוצא "פריכונים"', () {
-      expect(SearchUtils.matches('פריכונים מחיטה מלאה', 'פריכיות'), isTrue);
+    // --- 4. תעתיקים (עברית <-> אנגלית) ---
+    test('חיפוש גו מוצא GO', () {
+      final results = SearchUtils.filterAndSortFoods(allFoods, 'גו');
+      expect(results.first.name, 'GO חלבון whey');
     });
 
-    test('חיפוש "שוקולד" מוצא "שוקולדים"', () {
-      expect(SearchUtils.matches('שוקולדים מרירים', 'שוקולד'), isTrue);
+    test('חיפוש GO מוצא GO', () {
+      final results = SearchUtils.filterAndSortFoods(allFoods, 'GO');
+      expect(results.first.name, 'GO חלבון whey');
     });
 
-    // --- 5. בדיקות מילים נרדפות (Synonyms) ---
-    test('חיפוש "משקה" מוצא "שייק" (מילון נרדפות)', () {
-      expect(SearchUtils.matches('שייק בננה וחלבון', 'משקה'), isTrue);
+    // --- 5. מילות נרדפות ---
+    test('חיפוש משקה מוצא GO (מילון נרדפות)', () {
+      final results = SearchUtils.filterAndSortFoods(allFoods, 'משקה');
+      expect(results.any((f) => f.name == 'GO חלבון whey'), isTrue);
     });
 
-    test('חיפוש "אבקה" מוצא "חלבון" (מילון נרדפות)', () {
-      expect(SearchUtils.matches('חלבון מי גבינה', 'אבקה'), isTrue);
+    // --- 6. טיפול במספרים ---
+    test('חיפוש עם מספרים (חלב 3%)', () {
+      final milk = Food(id: 7, name: 'חלב 3%', caloriesPer100g: 60, proteinPer100g: 3, carbsPer100g: 4.5, fatPer100g: 3);
+      final testFoods = [...allFoods, milk];
+      final results = SearchUtils.filterAndSortFoods(testFoods, 'חלב 3%');
+      expect(results.first.name, 'חלב 3%');
     });
 
-    // --- 6. בדיקות חיפוש מרובה מילים ---
-    test('חיפוש "משקה חלבון" מוצא "GO חלבון"', () {
-      // "משקה" מתורגם/מתרחב ל-GO, "חלבון" הוא חלבון.
-      expect(SearchUtils.matches('GO חלבון whey', 'משקה חלבון'), isTrue);
-    });
-
-    // --- 7. בדיקות מיון ורלוונטיות (Scoring & Ranking) ---
-    test('מוצר שמתחיל במילה יקבל ציון גבוה ממוצר שמכיל אותה באמצע', () {
-      final score1 = SearchUtils.score('חלב 3%', 'חלב');
-      final score2 = SearchUtils.score('שוקולד חלב', 'חלב');
-
-      expect(score1, greaterThan(score2), reason: 'התאמה בתחילית שווה יותר מאשר התאמה באמצע');
-    });
-
-    test('מוצר שמכיל את כל מילות החיפוש יקבל ציון גבוה מכזה שמכיל רק חלק', () {
-      final score1 = SearchUtils.score('משקה חלבון שוקו', 'משקה חלבון');
-      final score2 = SearchUtils.score('אבקת חלבון', 'משקה חלבון');
-
-      expect(score1, greaterThan(score2), reason: 'התאמה של כל המילים צריכה לנצח');
-    });
-
+    // --- 7. דירוג (Ranking) ---
     test('התאמה מדויקת של מילה שלמה מנצחת התאמה חלקית', () {
-      final score1 = SearchUtils.score('חזה עוף', 'עוף');
-      final score2 = SearchUtils.score('עוגיית שוקולד', 'עוף'); // מתאים רק בגלל N-grams / קרבה
-
-      expect(score1, greaterThan(score2));
+      final results = SearchUtils.filterAndSortFoods(allFoods, 'חזה עוף');
+      expect(results.first.name, 'חזה עוף');
     });
 
-    // --- 8. בדיקות שליליות (לא אמור למצוא) ---
-    test('חיפוש לא קשור לא מחזיר תוצאות', () {
-      expect(SearchUtils.matches('חזה עוף', 'שוקולד'), isFalse);
-      expect(SearchUtils.matches('חזה עוף', 'פיצה'), isFalse);
+    test('מוצר עם שם קצר ומדויק מקבל עדיפות על שם ארוך', () {
+      final results = SearchUtils.filterAndSortFoods(allFoods, 'שוקולד');
+      expect(results.first.name, 'שוקולד מריר'); // זה מועדף, אז הוא מנצח
     });
 
-    test('מילה קצרה מדי לא תגרום ליותר מדי רעש', () {
-      // "א" מופיע בהמון מילים, אבל אם המוצר לא מתחיל ב-א, הוא לא אמור להתאים בצורה חזקה
-      final score = SearchUtils.score('חלב', 'א');
-      expect(score, lessThan(1.0));
+    // --- 8. מועדפים ---
+    test('מועדפים תמיד מופיעים ראשונים (אם יש להם התאמה)', () {
+      final results = SearchUtils.filterAndSortFoods(allFoods, 'מריר');
+      expect(results.first.isFavorite, isTrue);
+    });
+
+    // --- 9. מקרי קצה ---
+    test('חיפוש ריק מחזיר את כל המוצרים (עד 100)', () {
+      final results = SearchUtils.filterAndSortFoods(allFoods, '');
+      expect(results, isNotEmpty);
+    });
+
+    test('חיפוש שאין לו תוצאות בכלל מחזיר רשימה ריקה (פיצה)', () {
+      final results = SearchUtils.filterAndSortFoods(allFoods, 'פיצה');
+      expect(results, isEmpty); // לא אמורים להיות מוצרים רלוונטיים בכלל
+    });
+
+    // --- 10. אתגר: התאמה של שתי מילים לא קשורות ---
+    test('חיפוש "קורנפלקס עוף" - לא אמור להחזיר כלום (אין מוצר כזה)', () {
+      final results = SearchUtils.filterAndSortFoods(allFoods, 'קורנפלקס עוף');
+      expect(results, isEmpty, reason: 'אין מוצר שמכיל גם קורנפלקס וגם עוף');
     });
   });
 }

@@ -92,33 +92,33 @@ class _ManageFoodsScreenState extends State<ManageFoodsScreen> {
         final existingFoodsMap = {for (var f in _foods) f.name: f};
 
         List<Food> newFoodsToInsert = [];
-        List<Food> foodsToUpdate = [];
-        int favoritesUpdatedCount = 0;
+        // מפה של מוצרים שיש לעדכן (לפי ID כדי למנוע כפילויות)
+        Map<int, Food> foodsToUpdate = {};
 
         for (var json in jsonList) {
           final newFood = Food.fromMap(json);
 
           if (existingFoodsMap.containsKey(newFood.name)) {
             final existing = existingFoodsMap[newFood.name]!;
-            // אם המאכל קיים ואנחנו מייבאים מועדפים, נוודא שהוא מסומן כמועדף
-            if (forceFavorite && !existing.isFavorite) {
+
+            // אם מייבאים מועדפים, אנחנו דורסים את הערכים הקיימים עם מה שבקובץ
+            if (forceFavorite) {
               final updatedFood = Food(
                 id: existing.id,
-                name: existing.name,
-                caloriesPer100g: existing.caloriesPer100g,
-                proteinPer100g: existing.proteinPer100g,
-                carbsPer100g: existing.carbsPer100g,
-                fatPer100g: existing.fatPer100g,
-                isLiquid: existing.isLiquid,
-                isRecipe: existing.isRecipe,
-                servings: existing.servings,
-                isFavorite: true,
+                name: newFood.name,
+                caloriesPer100g: newFood.caloriesPer100g,
+                proteinPer100g: newFood.proteinPer100g,
+                carbsPer100g: newFood.carbsPer100g,
+                fatPer100g: newFood.fatPer100g,
+                isLiquid: newFood.isLiquid,
+                isRecipe: newFood.isRecipe,
+                servings: newFood.servings,
+                isFavorite: true, // מבטיחים שיהיה מועדף
               );
-              foodsToUpdate.add(updatedFood);
-              favoritesUpdatedCount++;
+              foodsToUpdate[existing.id!] = updatedFood;
             }
           } else {
-            // אם המאכל לא קיים, נוסיף אותו. אם מייבאים מועדפים, הוא יסומן כמועדף.
+            // אם המאכל לא קיים, נוסיף אותו
             newFoodsToInsert.add(Food(
               name: newFood.name,
               caloriesPer100g: newFood.caloriesPer100g,
@@ -137,7 +137,7 @@ class _ManageFoodsScreenState extends State<ManageFoodsScreen> {
           await _dbHelper.insertFoodsBatch(newFoodsToInsert);
         }
 
-        for (var food in foodsToUpdate) {
+        for (var food in foodsToUpdate.values) {
           await _dbHelper.updateFood(food);
         }
 
@@ -145,10 +145,10 @@ class _ManageFoodsScreenState extends State<ManageFoodsScreen> {
 
         if (mounted) {
           String msg = 'יובאו בהצלחה ${newFoodsToInsert.length} מאכלים חדשים.';
-          if (favoritesUpdatedCount > 0) {
-            msg += '\nעודכנו $favoritesUpdatedCount מאכלים קיימים למועדפים.';
+          if (foodsToUpdate.isNotEmpty) {
+            msg += '\nעודכנו ${foodsToUpdate.length} מאכלים קיימים (הערכים שונו למועדפים).';
           }
-          if (newFoodsToInsert.isEmpty && favoritesUpdatedCount == 0) {
+          if (newFoodsToInsert.isEmpty && foodsToUpdate.isEmpty) {
             msg = 'לא נמצאו מאכלים חדשים או מועדפים לעדכון.';
           }
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
@@ -349,11 +349,11 @@ class _ManageFoodsScreenState extends State<ManageFoodsScreen> {
               const PopupMenuDivider(),
               const PopupMenuItem<String>(
                 value: 'import_all',
-                child: Text('ייבוא מאכלים'),
+                child: Text('ייבוא מאכלים (לא דורס קיימים)'),
               ),
               const PopupMenuItem<String>(
                 value: 'import_favs',
-                child: Text('ייבוא מועדפים (והוספה למועדפים)'),
+                child: Text('ייבוא מועדפים (מעדכן ערכים)'),
               ),
             ],
           ),
