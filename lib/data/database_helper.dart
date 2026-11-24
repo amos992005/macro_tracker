@@ -17,7 +17,7 @@ class DatabaseHelper {
 
   static Database? _database;
   static String? _profileId;
-  static const int _dbVersion = 8;
+  static const int _dbVersion = 9;
 
   /// Each authenticated profile gets a separate local cache/database.
   Future<void> deactivateProfile() async {
@@ -141,6 +141,10 @@ class DatabaseHelper {
     }
     if (oldVersion < 6) await _importSeedFoods(db, skipExisting: true);
     if (oldVersion < 8) await db.execute('ALTER TABLE meal_entries ADD COLUMN is_deleted INTEGER NOT NULL DEFAULT 0');
+    if (oldVersion < 9) {
+      await db.execute('ALTER TABLE meal_entries ADD COLUMN meal_title TEXT');
+      await db.execute('ALTER TABLE meal_entries ADD COLUMN components_json TEXT');
+    }
   }
 
   Future<void> _classifyLegacyCustomFoods(DatabaseExecutor db) async {
@@ -185,6 +189,8 @@ class DatabaseHelper {
         meal_date TEXT NOT NULL,
         client_id TEXT NOT NULL,
         is_deleted INTEGER NOT NULL DEFAULT 0,
+        meal_title TEXT,
+        components_json TEXT,
         FOREIGN KEY (food_id) REFERENCES foods (id)
       )
     ''');
@@ -299,6 +305,8 @@ class DatabaseHelper {
     required double grams,
     required String date,
     bool deleted = false,
+    String? mealTitle,
+    String? componentsJson,
   }) => {
         'client_id': clientId,
         'food_name': food.name,
@@ -312,6 +320,8 @@ class DatabaseHelper {
         'is_recipe': food.isRecipe,
         'servings': food.servings,
         'is_deleted': deleted,
+        if (mealTitle != null) 'meal_title': mealTitle,
+        if (componentsJson != null) 'components_json': componentsJson,
       };
 
   Future<void> insertFoodsBatch(List<Food> foods) async {
@@ -368,6 +378,91 @@ class DatabaseHelper {
     return id;
   }
 
+  Future<int> insertCompositeMeal({
+    required String title,
+    required List<Map<String, dynamic>> components,
+    required String date,
+  }) async {
+    final normalized = _normalizeCompositeComponents(components);
+    if (normalized.isEmpty) throw ArgumentError('At least one component is required.');
+    final totals = _compositeTotals(normalized);
+    final db = await database;
+    final foodId = await db.insert('foods', {
+      'name': title.trim().isEmpty ? 'ארוחה מפוענחת' : title.trim(),
+      'calories_per_100g': totals['calories']!,
+      'protein_per_100g': totals['protein']!,
+      'carbs_per_100g': totals['carbs']!,
+      'fat_per_100g': totals['fat']!,
+      'is_liquid': 0, 'is_recipe': 0, 'servings': 1, 'is_favorite': 0, 'is_custom': 0, 'is_deleted': 1,
+    });
+    final clientId = _newClientId();
+    final componentsJson = jsonEncode(normalized);
+    final id = await db.insert('meal_entries', {
+      'food_id': foodId, 'weight_grams': 100.0, 'meal_date': date, 'client_id': clientId,
+      'is_deleted': 0, 'meal_title': title.trim(), 'components_json': componentsJson,
+    });
+    final food = Food(id: foodId, name: title.trim(), caloriesPer100g: totals['calories']!,
+      proteinPer100g: totals['protein']!, carbsPer100g: totals['carbs']!, fatPer100g: totals['fat']!);
+    await _sync(() async => MacroSyncService.instance.mutate(entity: 'meals', operation: 'upsert', row: _remoteMeal(
+      clientId: clientId, food: food, grams: 100, date: date, mealTitle: title.trim(), componentsJson: componentsJson,
+    )));
+    return id;
+  }
+
+  Future<void> updateCompositeMeal({
+    required int entryId,
+    required String title,
+    required List<Map<String, dynamic>> components,
+  }) async {
+    final normalized = _normalizeCompositeComponents(components);
+    if (normalized.isEmpty) throw ArgumentError('A composite meal must contain at least one component.');
+    final db = await database;
+    final rows = await db.query('meal_entries', where: 'id = ? AND is_deleted = 0', whereArgs: [entryId], limit: 1);
+    if (rows.isEmpty || rows.first['components_json'] == null) return;
+    final meal = rows.first;
+    final totals = _compositeTotals(normalized);
+    final foodId = meal['food_id'] as int;
+    final safeTitle = title.trim().isEmpty ? 'ארוחה מפוענחת' : title.trim();
+    await db.update('foods', {
+      'name': safeTitle, 'calories_per_100g': totals['calories']!, 'protein_per_100g': totals['protein']!,
+      'carbs_per_100g': totals['carbs']!, 'fat_per_100g': totals['fat']!,
+    }, where: 'id = ?', whereArgs: [foodId]);
+    final componentsJson = jsonEncode(normalized);
+    await db.update('meal_entries', {'meal_title': safeTitle, 'components_json': componentsJson}, where: 'id = ?', whereArgs: [entryId]);
+    final foodRows = await db.query('foods', where: 'id = ?', whereArgs: [foodId], limit: 1);
+    if (foodRows.isNotEmpty) {
+      await _sync(() async => MacroSyncService.instance.mutate(entity: 'meals', operation: 'upsert', row: _remoteMeal(
+        clientId: meal['client_id'] as String, food: Food.fromMap(foodRows.first), grams: 100,
+        date: meal['meal_date'] as String, mealTitle: safeTitle, componentsJson: componentsJson,
+      )));
+    }
+  }
+
+  List<Map<String, dynamic>> _normalizeCompositeComponents(List<Map<String, dynamic>> components) => components.map((item) => {
+    'name': item['name']?.toString() ?? 'מאכל',
+    'search_query': item['search_query']?.toString() ?? item['name']?.toString() ?? '',
+    'grams': (item['grams'] as num?)?.toDouble() ?? 0,
+    'is_liquid': item['is_liquid'] == true,
+    'is_assumed_addition': item['is_assumed_addition'] == true,
+    'calories_per_100g': (item['calories_per_100g'] as num?)?.toDouble() ?? 0,
+    'protein_per_100g': (item['protein_per_100g'] as num?)?.toDouble() ?? 0,
+    'carbs_per_100g': (item['carbs_per_100g'] as num?)?.toDouble() ?? 0,
+    'fat_per_100g': (item['fat_per_100g'] as num?)?.toDouble() ?? 0,
+    if (item['variants'] is List) 'variants': item['variants'],
+  }).toList();
+
+  Map<String, double> _compositeTotals(List<Map<String, dynamic>> components) {
+    final totals = <String, double>{'calories': 0, 'protein': 0, 'carbs': 0, 'fat': 0};
+    for (final item in components) {
+      final grams = (item['grams'] as num).toDouble();
+      totals['calories'] = totals['calories']! + grams * ((item['calories_per_100g'] as num).toDouble()) / 100;
+      totals['protein'] = totals['protein']! + grams * ((item['protein_per_100g'] as num).toDouble()) / 100;
+      totals['carbs'] = totals['carbs']! + grams * ((item['carbs_per_100g'] as num).toDouble()) / 100;
+      totals['fat'] = totals['fat']! + grams * ((item['fat_per_100g'] as num).toDouble()) / 100;
+    }
+    return totals;
+  }
+
   Future<void> deleteMealEntry(int entryId) async {
     final db = await database;
     final rows = await db.query('meal_entries', where: 'id = ?', whereArgs: [entryId], limit: 1);
@@ -385,6 +480,8 @@ class DatabaseHelper {
               grams: (meal['weight_grams'] as num).toDouble(),
               date: meal['meal_date'] as String,
               deleted: true,
+              mealTitle: meal['meal_title'] as String?,
+              componentsJson: meal['components_json'] as String?,
             ),
           ));
     }
@@ -395,7 +492,7 @@ class DatabaseHelper {
     final db = await database;
     return db.rawQuery('''
       SELECT m.id as entry_id, m.client_id, m.weight_grams, m.meal_date,
-             f.name as food_name, f.calories_per_100g, f.protein_per_100g, f.carbs_per_100g, f.fat_per_100g, f.is_liquid, f.is_recipe, f.servings
+             m.meal_title, m.components_json, f.name as food_name, f.calories_per_100g, f.protein_per_100g, f.carbs_per_100g, f.fat_per_100g, f.is_liquid, f.is_recipe, f.servings
       FROM meal_entries m JOIN foods f ON m.food_id = f.id
       WHERE m.meal_date = ? AND m.is_deleted = 0 ORDER BY m.id
     ''', [date]);
@@ -523,18 +620,33 @@ class DatabaseHelper {
         if (existing.isNotEmpty) await db.update('meal_entries', {'is_deleted': 1}, where: 'client_id = ?', whereArgs: [clientId]);
         continue;
       }
-      var foodRows = await db.query('foods', where: 'name = ?', whereArgs: [row['food_name']], limit: 1);
+      final isComposite = row['components_json'] is String;
+      var foodRows = isComposite && existing.isNotEmpty
+          ? await db.query('foods', where: 'id = ?', whereArgs: [existing.first['food_id']], limit: 1)
+          : isComposite
+              ? <Map<String, Object?>>[]
+              : await db.query('foods', where: 'name = ?', whereArgs: [row['food_name']], limit: 1);
       if (foodRows.isEmpty) {
-        await db.insert('foods', {
-          'name': row['food_name'], 'calories_per_100g': row['calories'], 'protein_per_100g': row['protein'],
+        final remoteFoodId = await db.insert('foods', {
+          'name': isComposite ? 'ai-composite-$clientId' : row['food_name'],
+          'calories_per_100g': row['calories'], 'protein_per_100g': row['protein'],
           'carbs_per_100g': row['carbs'], 'fat_per_100g': row['fat'], 'is_liquid': row['is_liquid'] == true ? 1 : 0,
-          'is_recipe': row['is_recipe'] == true ? 1 : 0, 'servings': row['servings'] ?? 1, 'is_custom': 1,
+          'is_recipe': row['is_recipe'] == true ? 1 : 0, 'servings': row['servings'] ?? 1,
+          'is_custom': isComposite ? 0 : 1, 'is_deleted': isComposite ? 1 : 0,
         }, conflictAlgorithm: ConflictAlgorithm.ignore);
-        foodRows = await db.query('foods', where: 'name = ?', whereArgs: [row['food_name']], limit: 1);
+        foodRows = await db.query('foods', where: 'id = ?', whereArgs: [remoteFoodId], limit: 1);
+      }
+      if (isComposite && foodRows.isNotEmpty) {
+        await db.update('foods', {
+          'calories_per_100g': row['calories'], 'protein_per_100g': row['protein'],
+          'carbs_per_100g': row['carbs'], 'fat_per_100g': row['fat'], 'is_deleted': 1, 'is_custom': 0,
+        }, where: 'id = ?', whereArgs: [foodRows.first['id']]);
+        foodRows = await db.query('foods', where: 'id = ?', whereArgs: [foodRows.first['id']], limit: 1);
       }
       if (foodRows.isEmpty) continue;
       final meal = {
         'food_id': foodRows.first['id'], 'weight_grams': (row['grams'] as num).toDouble(), 'meal_date': row['date'], 'client_id': clientId, 'is_deleted': 0,
+        'meal_title': row['meal_title'], 'components_json': row['components_json'],
       };
       if (existing.isEmpty) {
         await db.insert('meal_entries', meal, conflictAlgorithm: ConflictAlgorithm.ignore);
@@ -572,11 +684,13 @@ class DatabaseHelper {
     await _uploadRows('user_foods', customFoods.map((row) => _remoteFood(Food.fromMap(row), deleted: row['is_deleted'] == 1)).toList());
     final favorites = await db.query('foods', where: 'is_favorite = 1');
     await _uploadRows('favorites', favorites.map((row) => <String, dynamic>{'food_name': row['name'], 'is_favorite': true}).toList());
-    final mealRows = await db.rawQuery('''SELECT m.client_id, m.weight_grams, m.meal_date, m.is_deleted AS meal_is_deleted, f.* FROM meal_entries m JOIN foods f ON f.id=m.food_id''');
+    final mealRows = await db.rawQuery('''SELECT m.client_id, m.weight_grams, m.meal_date, m.meal_title, m.components_json, m.is_deleted AS meal_is_deleted, f.* FROM meal_entries m JOIN foods f ON f.id=m.food_id''');
     final meals = mealRows.map((row) => <String, dynamic>{
       'client_id': row['client_id'], 'food_name': row['name'], 'grams': row['weight_grams'], 'date': row['meal_date'],
       'calories': row['calories_per_100g'], 'protein': row['protein_per_100g'], 'carbs': row['carbs_per_100g'], 'fat': row['fat_per_100g'],
       'is_liquid': row['is_liquid'] == 1, 'is_recipe': row['is_recipe'] == 1, 'servings': row['servings'], 'is_deleted': row['meal_is_deleted'] == 1,
+      if (row['meal_title'] != null) 'meal_title': row['meal_title'],
+      if (row['components_json'] != null) 'components_json': row['components_json'],
     }).toList();
     await _uploadRows('meals', meals);
     final targets = (await db.query('daily_targets')).map((row) => Map<String, dynamic>.from(row)).toList();

@@ -4,7 +4,9 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:image_picker/image_picker.dart';
 import '../core/file_platform.dart';
+import '../data/macro_sync_service.dart';
 import '../core/search_utils.dart';
 import '../data/database_helper.dart';
 import '../data/models/food.dart';
@@ -228,12 +230,57 @@ class _ManageFoodsScreenState extends State<ManageFoodsScreen> {
 
     bool isLiquid = existingFood?.isLiquid ?? false;
     bool isRecipe = existingFood?.isRecipe ?? false;
+    bool isCompletingAI = false;
+    String? aiMessage;
+    Uint8List? labelImageBytes;
+    String? labelImageMime;
 
-    showDialog(
+    showDialog<void>(
       context: context,
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setDialogState) {
+            Future<void> completeNutrition({ImageSource? source}) async {
+              if (source != null) {
+                final image = await ImagePicker().pickImage(source: source, maxWidth: 1024, maxHeight: 1024, imageQuality: 80);
+                if (image == null) return;
+                labelImageBytes = await image.readAsBytes();
+                if (labelImageBytes!.length > 6 * 1024 * 1024) {
+                  labelImageBytes = null;
+                  setDialogState(() => aiMessage = 'התמונה גדולה מדי. בחרו תמונה קטנה מ-6MB.');
+                  return;
+                }
+                final lowerName = image.name.toLowerCase();
+                labelImageMime = lowerName.endsWith('.png') ? 'image/png' : lowerName.endsWith('.webp') ? 'image/webp' : 'image/jpeg';
+              }
+              if (nameController.text.trim().isEmpty && labelImageBytes == null) {
+                setDialogState(() => aiMessage = 'כתבו שם מוצר או בחרו תמונת תווית.');
+                return;
+              }
+              setDialogState(() { isCompletingAI = true; aiMessage = null; });
+              try {
+                final result = await MacroSyncService.instance.analyzeMeal(
+                  text: nameController.text.trim(), imageBytes: labelImageBytes, mimeType: labelImageMime, mode: 'nutrition_label',
+                );
+                final items = (result['items'] as List? ?? const []).whereType<Map>().toList();
+                if (items.isEmpty) throw StateError('לא התקבלו ערכים מהניתוח.');
+                final values = Map<String, dynamic>.from(items.first);
+                setDialogState(() {
+                  if (nameController.text.trim().isEmpty) nameController.text = values['name']?.toString() ?? '';
+                  calController.text = (values['calories_per_100g'] as num? ?? 0).toString();
+                  proController.text = (values['protein_per_100g'] as num? ?? 0).toString();
+                  carbController.text = (values['carbs_per_100g'] as num? ?? 0).toString();
+                  fatController.text = (values['fat_per_100g'] as num? ?? 0).toString();
+                  isLiquid = values['is_liquid'] == true;
+                  aiMessage = result['confidence_note']?.toString() ?? 'הערכים הושלמו; מומלץ לוודא מול התווית.';
+                });
+              } catch (error) {
+                setDialogState(() => aiMessage = error.toString());
+              } finally {
+                if (context.mounted) setDialogState(() => isCompletingAI = false);
+              }
+            }
+
             return AlertDialog(
               title: Text(existingFood == null ? 'הוספת מאכל חדש' : 'עריכת מאכל'),
               content: SingleChildScrollView(
@@ -244,6 +291,28 @@ class _ManageFoodsScreenState extends State<ManageFoodsScreen> {
                       controller: nameController,
                       decoration: const InputDecoration(labelText: 'שם המאכל / המתכון'),
                     ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      children: [
+                        OutlinedButton.icon(
+                          onPressed: isCompletingAI ? null : () => completeNutrition(),
+                          icon: isCompletingAI ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)) : const Icon(Icons.auto_awesome),
+                          label: const Text('✨ השלם ערכים עם AI'),
+                        ),
+                        IconButton(
+                          tooltip: 'צילום תווית מוצר',
+                          onPressed: isCompletingAI ? null : () => completeNutrition(source: ImageSource.camera),
+                          icon: const Icon(Icons.camera_alt_outlined),
+                        ),
+                        IconButton(
+                          tooltip: 'בחירת תמונת תווית',
+                          onPressed: isCompletingAI ? null : () => completeNutrition(source: ImageSource.gallery),
+                          icon: const Icon(Icons.photo_library_outlined),
+                        ),
+                      ],
+                    ),
+                    if (aiMessage != null) Align(alignment: Alignment.centerRight, child: Text(aiMessage!, style: const TextStyle(fontSize: 12, color: Colors.amber))),
                     const SizedBox(height: 8),
                     Row(
                       children: [

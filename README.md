@@ -20,6 +20,8 @@ The project URL and Edge Function route are configured in `lib/data/macro_sync_s
 
 The workflow at `.github/workflows/deploy_web.yml` runs Flutter tests and builds with `/macro_tracker/` as the base path. Enable GitHub Pages with **GitHub Actions** as the build source. No service-role credential or other private Supabase key is needed by the build. The deployed app uses local SQLite for the 9,240-food base catalog and synchronizes profile data with Supabase when connected.
 
+AI meal and nutrition-label analysis is routed through the authenticated `macro-api` Edge Function. Configure `GEMINI_API_KEY` only as a Supabase Edge Function secret; never add it to Flutter, GitHub Actions, or the repository. The function uses a model fallback chain and stores composite diary entries as per-meal component JSON for cross-device sync.
+
 ## Data and security
 
 Application tables are prefixed `macro_`. Their RLS is enabled and direct `anon`/`authenticated` table access is revoked; the client communicates only with the allow-listed Edge Function API. The existing `public.user_notebooks` table is unrelated and is intentionally untouched. Local SQLite files are separated by authenticated profile; the first signed-in profile imports an existing native `macro_tracker.db` when present.

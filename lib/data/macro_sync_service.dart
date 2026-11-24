@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
@@ -79,6 +80,24 @@ class MacroSyncService {
   }
 
   Future<Map<String, dynamic>> snapshot() => _request({'action': 'snapshot'}, authenticated: true);
+
+  Future<Map<String, dynamic>> analyzeMeal({
+    required String text,
+    Uint8List? imageBytes,
+    String? mimeType,
+    String mode = 'meal',
+    bool pro = false,
+  }) async {
+    final result = await _request({
+      'action': 'analyze_meal',
+      'text': text,
+      'mode': mode,
+      'pro': pro,
+      if (imageBytes != null) 'image_base64': base64Encode(imageBytes),
+      if (mimeType != null) 'mime_type': mimeType,
+    }, authenticated: true);
+    return Map<String, dynamic>.from(result['result'] as Map);
+  }
 
   Future<Map<String, dynamic>> mutate({
     required String entity,

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -7,6 +8,7 @@ import '../../core/meal_optimizer.dart';
 import '../../core/search_utils.dart';
 import '../../data/database_helper.dart';
 import '../../data/models/food.dart';
+import 'ai_meal_editor.dart';
 import '../manage_foods_screen.dart';
 
 class TrackerScreen extends StatefulWidget {
@@ -106,6 +108,47 @@ class _TrackerScreenState extends State<TrackerScreen> {
   Future<void> _deleteMeal(int entryId) async {
     await _dbHelper.deleteMealEntry(entryId);
     _loadData();
+  }
+
+  Future<void> _showAiMealEditor({Map<String, dynamic>? existingMeal}) async {
+    List<Map<String, dynamic>>? initialItems;
+    if (existingMeal != null && existingMeal['components_json'] is String) {
+      try {
+        final decoded = jsonDecode(existingMeal['components_json'] as String) as List;
+        initialItems = decoded.whereType<Map>().map((item) => Map<String, dynamic>.from(item)).toList();
+      } catch (_) {
+        initialItems = [];
+      }
+    }
+    final result = await AiMealEditor.show(
+      context,
+      foods: _foods,
+      title: existingMeal?['meal_title']?.toString() ?? existingMeal?['food_name']?.toString(),
+      items: initialItems,
+    );
+    if (result == null || !mounted) return;
+    final items = (result['items'] as List).whereType<Map>().map((item) => Map<String, dynamic>.from(item)).toList();
+    final title = result['title'] as String;
+    if (existingMeal == null) {
+      await _dbHelper.insertCompositeMeal(title: title, components: items, date: _todayDate);
+      if (result['save_as_recipe'] == true) {
+        double total(String key) => items.fold<double>(0, (sum, item) =>
+            sum + ((item['grams'] as num?)?.toDouble() ?? 0) * ((item['${key}_per_100g'] as num?)?.toDouble() ?? 0) / 100);
+        await _dbHelper.insertFood(Food(
+          name: title,
+          caloriesPer100g: total('calories'),
+          proteinPer100g: total('protein'),
+          carbsPer100g: total('carbs'),
+          fatPer100g: total('fat'),
+          isRecipe: true,
+          servings: 1,
+          isFavorite: true,
+        ));
+      }
+    } else {
+      await _dbHelper.updateCompositeMeal(entryId: existingMeal['entry_id'] as int, title: title, components: items);
+    }
+    await _loadData();
   }
 
   NutritionResult _calculateDailyTotals() {
@@ -964,6 +1007,16 @@ class _TrackerScreenState extends State<TrackerScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                FilledButton.icon(
+                  onPressed: () => _showAiMealEditor(),
+                  icon: const Icon(Icons.auto_awesome),
+                  label: const Text('✨ סורק ומפענח AI'),
+                  style: FilledButton.styleFrom(
+                    backgroundColor: const Color(0xFF00A86B),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                ),
+                const SizedBox(height: 10),
                 Card(
                   elevation: 4,
                   child: Padding(
@@ -1047,6 +1100,8 @@ class _TrackerScreenState extends State<TrackerScreen> {
                     itemCount: _todayMeals.length,
                     itemBuilder: (context, index) {
                       final meal = _todayMeals[index];
+                      final isComposite = meal['components_json'] is String;
+                      final componentCount = isComposite ? _componentCount(meal['components_json']) : 0;
                       final isLiquid = meal['is_liquid'] == 1;
                       final isRecipe = meal['is_recipe'] == 1;
                       final servings = (meal['servings'] as num?)?.toDouble() ?? 1.0;
@@ -1066,8 +1121,16 @@ class _TrackerScreenState extends State<TrackerScreen> {
                       return Card(
                         margin: const EdgeInsets.only(bottom: 8),
                         child: ListTile(
-                          title: Text(meal['food_name'], style: const TextStyle(fontWeight: FontWeight.w600)),
-                          subtitle: Text('${displayAmount.toStringAsFixed(1)} $unit', style: const TextStyle(color: Colors.white60)),
+                          leading: isComposite ? const Icon(Icons.auto_awesome, color: Color(0xFF00FF87)) : null,
+                          title: Text(isComposite ? (meal['meal_title']?.toString().isNotEmpty == true ? meal['meal_title'] : meal['food_name']) : meal['food_name'], style: const TextStyle(fontWeight: FontWeight.w600)),
+                          subtitle: Text(
+                            isComposite
+                                ? '$componentCount רכיבים · ${result.calDisplay} קק״ל · חלבון ${result.protein.toStringAsFixed(1)}ג׳ · פחמימות ${result.carbs.toStringAsFixed(1)}ג׳ · שומן ${result.fat.toStringAsFixed(1)}ג׳\nהקישו לצפייה ועריכה'
+                                : '${displayAmount.toStringAsFixed(1)} $unit',
+                            style: const TextStyle(color: Colors.white60),
+                            maxLines: 2,
+                          ),
+                          onTap: isComposite ? () => _showAiMealEditor(existingMeal: meal) : null,
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -1086,6 +1149,14 @@ class _TrackerScreenState extends State<TrackerScreen> {
         ),
       ),
     );
+  }
+
+  int _componentCount(dynamic raw) {
+    try {
+      return (jsonDecode(raw as String) as List).length;
+    } catch (_) {
+      return 0;
+    }
   }
 
   Widget _buildMacroText(String label, double current, double target, String unit) {
