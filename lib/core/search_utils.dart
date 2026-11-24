@@ -50,6 +50,10 @@ class SearchUtils {
 
   static const Set<String> _usagePrefixes = {'ב', 'ל', 'כ', 'מ', 'ה', 'ו', 'ש'};
   static final Map<String, _FoodSearchData> _foodDataCache = {};
+  static final Map<String, List<String>> _normalizedSynonyms = {
+    for (final entry in _synonyms.entries)
+      normalize(entry.key): entry.value.map(normalize).toList(),
+  };
 
   /// Normalizes Hebrew/English food names without transliterating Hebrew.
   /// Hebrew vowel marks are removed, hyphens and punctuation become word
@@ -164,10 +168,9 @@ class SearchUtils {
     // Synonyms are a final, low-confidence fallback—not a transliteration
     // layer and never a substitute for exact/phrase/token relevance.
     for (final queryForm in queryForms) {
-      final synonyms = _synonyms[queryForm];
+      final synonyms = _normalizedSynonyms[queryForm];
       if (synonyms == null) continue;
-      for (final synonym in synonyms) {
-        final normalizedSynonym = normalize(synonym);
+      for (final normalizedSynonym in synonyms) {
         if (normalizedSynonym.isEmpty) continue;
         for (final foodToken in foodTokens) {
           if (_tokenForms(foodToken).contains(normalizedSynonym)) {

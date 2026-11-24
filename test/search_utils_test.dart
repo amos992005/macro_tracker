@@ -136,10 +136,10 @@ void main() {
     });
 
     test('ניקוד, מקפים, פיסוק ואותיות סופיות מנורמלים בלי תעתיק פונטי', () {
-      expect(SearchUtils.normalize('אָבְקַת-חלבון, שוקולד!'), 'אבקת חלבון שוקולד');
+      expect(SearchUtils.normalize('אָבְקַת-חלבון, שוקולד!'), 'אבקת חלבונ שוקולד');
       expect(SearchUtils.normalize('ךםןףץ'), 'כמנפצ');
       expect(SearchUtils.normalize('קורן'), 'קורנ');
-      expect(SearchUtils.normalize('חלבון'), 'חלבון');
+      expect(SearchUtils.normalize('חלבון'), 'חלבונ');
     });
 
     test('חיפוש שתי מילים מוצא גם שם מאכל שמחבר אותן', () {

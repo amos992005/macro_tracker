@@ -249,11 +249,48 @@ class DatabaseHelper {
     ''', [date]);
   }
 
+  static const String _defaultTargetsDate = 'default';
+  static const double _initialCaloriesTarget = 2000;
+  static const double _initialProteinTarget = 150;
+  static const double _initialCarbsTarget = 200;
+  static const double _initialFatTarget = 60;
+
   Future<Map<String, dynamic>?> getTargetsForDate(String date) async {
     final db = await database;
     final maps = await db.query('daily_targets', where: 'date = ?', whereArgs: [date]);
     if (maps.isNotEmpty) return maps.first;
     return null;
+  }
+
+  /// Returns the user's persistent daily defaults, creating the initial row
+  /// on first use. The existing daily_targets table stores this at date='default'.
+  Future<Map<String, dynamic>> getDefaultTargets() async {
+    final savedTargets = await getTargetsForDate(_defaultTargetsDate);
+    if (savedTargets != null) return savedTargets;
+
+    await saveTargetsForDate(
+      _defaultTargetsDate,
+      _initialCaloriesTarget,
+      _initialProteinTarget,
+      _initialCarbsTarget,
+      _initialFatTarget,
+    );
+    return (await getTargetsForDate(_defaultTargetsDate))!;
+  }
+
+  Future<void> saveDefaultTargets(
+    double calories,
+    double protein,
+    double carbs,
+    double fat,
+  ) async {
+    await saveTargetsForDate(
+      _defaultTargetsDate,
+      calories,
+      protein,
+      carbs,
+      fat,
+    );
   }
 
   Future<void> saveTargetsForDate(String date, double cal, double pro, double carb, double fat) async {

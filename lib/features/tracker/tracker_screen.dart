@@ -51,7 +51,18 @@ class _TrackerScreenState extends State<TrackerScreen> {
   Future<void> _loadData() async {
     final foods = await _dbHelper.getAllFoods();
     final meals = await _dbHelper.getMealsForDate(_todayDate);
-    final targets = await _dbHelper.getTargetsForDate(_todayDate);
+    final defaultTargets = await _dbHelper.getDefaultTargets();
+    final savedDailyTargets = await _dbHelper.getTargetsForDate(_todayDate);
+    final targets = savedDailyTargets ?? defaultTargets;
+    if (savedDailyTargets == null) {
+      await _dbHelper.saveTargetsForDate(
+        _todayDate,
+        (targets['calories'] as num).toDouble(),
+        (targets['protein'] as num).toDouble(),
+        (targets['carbs'] as num).toDouble(),
+        (targets['fat'] as num).toDouble(),
+      );
+    }
     final settings = await _dbHelper.getSettings();
     if (!mounted) return;
 
@@ -59,15 +70,10 @@ class _TrackerScreenState extends State<TrackerScreen> {
       _foods = foods;
       _todayMeals = meals;
       _settings = settings;
-
-      if (targets != null) {
-        _targetCalories = targets['calories'];
-        _targetProtein = targets['protein'];
-        _targetCarbs = targets['carbs'];
-        _targetFat = targets['fat'];
-      } else {
-        _dbHelper.saveTargetsForDate(_todayDate, _targetCalories, _targetProtein, _targetCarbs, _targetFat);
-      }
+      _targetCalories = (targets['calories'] as num).toDouble();
+      _targetProtein = (targets['protein'] as num).toDouble();
+      _targetCarbs = (targets['carbs'] as num).toDouble();
+      _targetFat = (targets['fat'] as num).toDouble();
 
       if (_foods.isEmpty) {
         _selectedFoodId = null;
@@ -118,48 +124,157 @@ class _TrackerScreenState extends State<TrackerScreen> {
     return NutritionResult(totalCal, totalPro, totalCarb, totalFat);
   }
 
-  void _editTargets() {
+  Future<void> _editTargets() async {
+    final defaultTargets = await _dbHelper.getDefaultTargets();
+    if (!mounted) return;
+
     final calController = TextEditingController(text: _targetCalories.toStringAsFixed(0));
     final proController = TextEditingController(text: _targetProtein.toStringAsFixed(0));
     final carbController = TextEditingController(text: _targetCarbs.toStringAsFixed(0));
     final fatController = TextEditingController(text: _targetFat.toStringAsFixed(0));
 
-    showDialog(
+    final defaultCalories = (defaultTargets['calories'] as num).toDouble();
+    final defaultProtein = (defaultTargets['protein'] as num).toDouble();
+    final defaultCarbs = (defaultTargets['carbs'] as num).toDouble();
+    final defaultFat = (defaultTargets['fat'] as num).toDouble();
+    bool isSaving = false;
+
+    await showDialog<void>(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('עדכון יעדים להיום'),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(controller: calController, decoration: const InputDecoration(labelText: 'קלוריות'), keyboardType: const TextInputType.numberWithOptions(decimal: true)),
-                TextField(controller: proController, decoration: const InputDecoration(labelText: 'חלבון (גר)'), keyboardType: const TextInputType.numberWithOptions(decimal: true)),
-                TextField(controller: carbController, decoration: const InputDecoration(labelText: 'פחמימות (גר)'), keyboardType: const TextInputType.numberWithOptions(decimal: true)),
-                TextField(controller: fatController, decoration: const InputDecoration(labelText: 'שומן (גר)'), keyboardType: const TextInputType.numberWithOptions(decimal: true)),
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            Future<void> saveTargets({required bool saveAsDefault}) async {
+              if (isSaving) return;
+              setDialogState(() => isSaving = true);
+
+              final newCalories =
+                  double.tryParse(calController.text) ?? _targetCalories;
+              final newProtein =
+                  double.tryParse(proController.text) ?? _targetProtein;
+              final newCarbs =
+                  double.tryParse(carbController.text) ?? _targetCarbs;
+              final newFat = double.tryParse(fatController.text) ?? _targetFat;
+
+              try {
+                if (saveAsDefault) {
+                  await _dbHelper.saveDefaultTargets(
+                    newCalories,
+                    newProtein,
+                    newCarbs,
+                    newFat,
+                  );
+                }
+                await _dbHelper.saveTargetsForDate(
+                  _todayDate,
+                  newCalories,
+                  newProtein,
+                  newCarbs,
+                  newFat,
+                );
+
+                if (dialogContext.mounted) Navigator.pop(dialogContext);
+                if (mounted) await _loadData();
+              } finally {
+                if (dialogContext.mounted) {
+                  setDialogState(() => isSaving = false);
+                }
+              }
+            }
+
+            Future<void> resetTodayToDefaults() async {
+              if (isSaving) return;
+              setDialogState(() => isSaving = true);
+              try {
+                await _dbHelper.saveTargetsForDate(
+                  _todayDate,
+                  defaultCalories,
+                  defaultProtein,
+                  defaultCarbs,
+                  defaultFat,
+                );
+                if (dialogContext.mounted) Navigator.pop(dialogContext);
+                if (mounted) await _loadData();
+              } finally {
+                if (dialogContext.mounted) {
+                  setDialogState(() => isSaving = false);
+                }
+              }
+            }
+
+            return AlertDialog(
+              title: const Text('עדכון יעדים להיום'),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    TextField(
+                      controller: calController,
+                      decoration: const InputDecoration(labelText: 'קלוריות'),
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    ),
+                    TextField(
+                      controller: proController,
+                      decoration: const InputDecoration(labelText: 'חלבון (גר)'),
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    ),
+                    TextField(
+                      controller: carbController,
+                      decoration: const InputDecoration(labelText: 'פחמימות (גר)'),
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    ),
+                    TextField(
+                      controller: fatController,
+                      decoration: const InputDecoration(labelText: 'שומן (גר)'),
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'ברירת מחדל קבועה נוכחית: '
+                      '${defaultCalories.toStringAsFixed(0)} קלוריות, '
+                      '${defaultProtein.toStringAsFixed(0)} חלבון, '
+                      '${defaultCarbs.toStringAsFixed(0)} פחמימות, '
+                      '${defaultFat.toStringAsFixed(0)} שומן.',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    const SizedBox(height: 8),
+                    OutlinedButton.icon(
+                      onPressed: isSaving ? null : resetTodayToDefaults,
+                      icon: const Icon(Icons.restart_alt),
+                      label: const Text('אפס את היעדים להיום לברירת המחדל'),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: isSaving ? null : () => Navigator.pop(dialogContext),
+                  child: const Text('ביטול'),
+                ),
+                OutlinedButton(
+                  onPressed: isSaving
+                      ? null
+                      : () => saveTargets(saveAsDefault: false),
+                  child: const Text('שמור להיום בלבד'),
+                ),
+                ElevatedButton(
+                  onPressed: isSaving
+                      ? null
+                      : () => saveTargets(saveAsDefault: true),
+                  child: const Text('שמור כברירת מחדל וגם להיום'),
+                ),
               ],
-            ),
-          ),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(context), child: const Text('ביטול')),
-            ElevatedButton(
-              onPressed: () async {
-                double newCal = double.tryParse(calController.text) ?? _targetCalories;
-                double newPro = double.tryParse(proController.text) ?? _targetProtein;
-                double newCarb = double.tryParse(carbController.text) ?? _targetCarbs;
-                double newFat = double.tryParse(fatController.text) ?? _targetFat;
-
-                await _dbHelper.saveTargetsForDate(_todayDate, newCal, newPro, newCarb, newFat);
-
-                if (context.mounted) Navigator.pop(context);
-                _loadData();
-              },
-              child: const Text('שמור'),
-            ),
-          ],
+            );
+          },
         );
       },
     );
+
+    calController.dispose();
+    proController.dispose();
+    carbController.dispose();
+    fatController.dispose();
   }
 
   void _showFoodPicker() {
