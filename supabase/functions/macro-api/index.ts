@@ -359,74 +359,17 @@ async function dataApi(
   return json({ error: "פעולה לא מוכרת." }, 400);
 }
 
-const nutritionItemSchema = {
-  type: "OBJECT",
-  properties: {
-    name: { type: "STRING" },
-    search_query: { type: "STRING" },
-    grams: { type: "NUMBER" },
-    is_liquid: { type: "BOOLEAN" },
-    is_assumed_addition: { type: "BOOLEAN" },
-    calories_per_100g: { type: "NUMBER" },
-    protein_per_100g: { type: "NUMBER" },
-    carbs_per_100g: { type: "NUMBER" },
-    fat_per_100g: { type: "NUMBER" },
-    variants: {
-      type: "ARRAY",
-      items: {
-        type: "OBJECT",
-        properties: {
-          label: { type: "STRING" },
-          calories_per_100g: { type: "NUMBER" },
-          protein_per_100g: { type: "NUMBER" },
-          carbs_per_100g: { type: "NUMBER" },
-          fat_per_100g: { type: "NUMBER" },
-        },
-        required: [
-          "label",
-          "calories_per_100g",
-          "protein_per_100g",
-          "carbs_per_100g",
-          "fat_per_100g",
-        ],
-      },
-    },
-  },
-  required: [
-    "name",
-    "search_query",
-    "grams",
-    "is_liquid",
-    "is_assumed_addition",
-    "calories_per_100g",
-    "protein_per_100g",
-    "carbs_per_100g",
-    "fat_per_100g",
-  ],
-};
+const AI_SYSTEM_INSTRUCTION = `אתה דיאטן קליני ישראלי בכיר ומומחה לראייה ממוחשבת וכימות מזון. נתח ארוחה/מתכון או תווית תזונה והחזר JSON תקין בלבד.
 
-const mealResponseSchema = {
-  type: "OBJECT",
-  properties: {
-    meal_title: { type: "STRING" },
-    servings: { type: "NUMBER" },
-    confidence_note: { type: "STRING" },
-    items: { type: "ARRAY", items: nutritionItemSchema },
-  },
-  required: ["meal_title", "servings", "confidence_note", "items"],
-};
+מבנה הפלט הנדרש: {"meal_title":"שם קצר בעברית","servings":1,"confidence_note":"הערה קצרה על הנחות ואי-ודאות","items":[{"name":"שם רכיב בעברית","search_query":"שם בסיסי קצר לחיפוש","grams":100,"is_liquid":false,"is_assumed_addition":false,"calories_per_100g":130,"protein_per_100g":2.5,"carbs_per_100g":28,"fat_per_100g":0.3,"variants":[{"label":"אפשרות","calories_per_100g":130,"protein_per_100g":2.5,"carbs_per_100g":28,"fat_per_100g":0.3}]}]}. variants אופציונלי; כל שאר שדות הפריט ושדות השורש חובה. החזר מספרים ולא מחרוזות לערכים תזונתיים.
 
-const AI_SYSTEM_INSTRUCTION = `אתה דיאטן קליני ישראלי בכיר ומומחה לראייה ממוחשבת וכימות מזון. נתח ארוחה/מתכון או תווית תזונה והחזר JSON בלבד לפי הסכמה.
+כללי ניתוח תמונה: כייל קנה מידה מול צלחת עיקרית ישראלית 26–28 ס"מ, צלחת קטנה 20 ס"מ, מזלג/כף 19 ס"מ, קופסת אוכל, כוס או כף יד. הערך שטח פנים כפול גובה/עומק לקבלת נפח בסמ"ק והכפל בצפיפות משוערת: אורז/קוסקוס מבושל כ-0.8 g/cm³, בשר/דג/עוף כ-1.05, חומוס/טחינה/גבינה כ-1.1, סלט קצוץ כ-0.5, עלים כ-0.2. אלה אומדנים; ציין אי-ודאות ואל תציג דיוק מזויף.
 
-כללי ניתוח תמונה: תחילה כייל קנה מידה מול עוגנים חזותיים: צלחת מנה עיקרית ישראלית בקוטר כ-26–28 ס"מ, צלחת קטנה כ-20 ס"מ, מזלג או כף כ-19 ס"מ, קופסת אוכל, כוס או כף יד. הערך לכל מזון שטח פנים כפול גובה/עומק כדי לאמוד cm³, ואז הכפל בצפיפות סבירה: אורז/קוסקוס מבושל כ-0.8 g/cm³, בשר/דג/עוף מבושל כ-1.05, חומוס/טחינה/גבינה כ-1.1, סלט קצוץ כ-0.5, עלים כ-0.2. אלה אומדנים; הבהר אי-ודאות ב-confidence_note ולעולם אל תציג דיוק מזויף.
+לעולם אל תכלול שמן בישול/טיגון בערכי המזון הבסיסי. החזר אורז/עוף/חביתה/ירקות נקיים והוסף שמן או רוטב בנפרד כ-is_assumed_addition=true עם כמות והסבר. אם המשתמש אומר שאין שמן, אל תניח שמן. השערות ניתנות להסרה.
 
-חוק חשוב: לעולם אל תכלול שמן בישול/טיגון בערכי המזון הבסיסי. החזר למשל אורז מבושל ללא שמן כפריט נקי, והוסף שמן/רוטב בנפרד כ-is_assumed_addition=true עם כמות והסבר קצר בעברית. אם המשתמש אומר במפורש שאין שמן, אל תניח שמן. רטבים נסתרים יוצגו בנפרד כהשערה שניתנת להסרה.
+כשיש שונות משמעותית לפי מותג/הכנה (חומוס תעשייתי/ביתי, שניצל אפוי/מטוגן, טחינה מוכנה/גולמית, אחוזי גבינה או לחם קל/רגיל), ספק 2–3 וריאציות בעברית עם ערכים ל-100 גרם, בלי להמציא מותג.
 
-כאשר ערכים משתנים משמעותית לפי מותג או הכנה (למשל חומוס תעשייתי/ביתי, שניצל אפוי/מטוגן, טחינה מוכנה/גולמית, גבינה באחוזי שומן שונים, לחם רגיל/קל), ספק 2–3 variants בעברית עם ערכים ל-100 גרם. אל תמציא מותג אם אינו ידוע.
-
-למתכון מסיר/תבנית, חשב סך רכיבים ומשקל אכיל לאחר בישול לפי המידע שנמסר. אם צוין מספר מנות או חלק שנאכל, החזר grams של החלק שנאכל לכל רכיב והגדר servings מתאים; אם לא צוין, החזר אומדן למנה אחת עם servings=1. בתווית תזונה חלץ ערכים ל-100 גרם/מ"ל. אם נמסר רק שם מוצר בלי תווית, תן אומדן שמרני וציין זאת.
-
-כל השמות וההערות בעברית, search_query קצר ונקי לחיפוש. הערכים מספרים לא שליליים ל-100 גרם. החזר JSON בלבד ללא Markdown.`;
+במתכון מסיר/תבנית חשב רכיבים ומשקל אכיל לאחר בישול. אם צוין מספר מנות או חלק שנאכל, התאם grams לכל רכיב והחזר servings מתאים; אחרת אמוד מנה אחת. בתווית חלץ ערכים ל-100 גרם/מ"ל. שם מוצר בלבד יקבל אומדן שמרני. כל שמות/הערות בעברית ו-search_query נקי וקצר.`;
 
 function isNonNegativeNumber(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value) && value >= 0;
@@ -466,6 +409,65 @@ function validateMealResult(value: unknown): value is {
   });
 }
 
+function safeAiText(value: unknown, apiKey?: string): string {
+  let text =
+    typeof value === "string" ? value : String(value ?? "Unknown error");
+  if (apiKey) text = text.split(apiKey).join("[redacted]");
+  return text
+    .replace(/([?&]key=)[^&\s"']+/gi, "$1[redacted]")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 1200);
+}
+
+function geminiErrorMessage(raw: string, apiKey: string): string {
+  try {
+    const parsed = JSON.parse(raw);
+    const message = parsed?.error?.message ?? parsed?.message ?? raw;
+    return safeAiText(message, apiKey);
+  } catch (_) {
+    return safeAiText(raw, apiKey);
+  }
+}
+
+async function recordAiFailure(input: {
+  requestId: string;
+  userId: string;
+  mode: string;
+  model: string;
+  status?: number;
+  type: string;
+  message: string;
+  detail?: string;
+  apiKey?: string;
+}): Promise<void> {
+  const errorMessage = safeAiText(input.message, input.apiKey);
+  const errorDetail = input.detail
+    ? safeAiText(input.detail, input.apiKey)
+    : null;
+  try {
+    await dbJson("macro_ai_logs", {
+      method: "POST",
+      headers: { Prefer: "return=minimal" },
+      body: JSON.stringify({
+        request_id: input.requestId,
+        user_id: input.userId,
+        mode: input.mode,
+        model: input.model,
+        http_status: input.status ?? null,
+        error_type: input.type,
+        error_message: errorMessage,
+        error_detail: errorDetail,
+      }),
+    });
+  } catch (error) {
+    console.error("[macro-ai] Could not persist failure log", {
+      requestId: input.requestId,
+      error: safeAiText(error, input.apiKey),
+    });
+  }
+}
+
 type GeminiModel = { name?: string; supportedGenerationMethods?: string[] };
 
 async function listGeminiModels(apiKey: string): Promise<string[]> {
@@ -481,13 +483,9 @@ async function listGeminiModels(apiKey: string): Promise<string[]> {
     const response = await fetch(url);
     if (!response.ok) {
       const detail = await response.text();
-      console.error("[gemini] ListModels failed", {
+      throw Object.assign(new Error(geminiErrorMessage(detail, apiKey)), {
         status: response.status,
-        endpoint: "/v1beta/models",
-        detail: detail.slice(0, 800),
-      });
-      throw Object.assign(new Error("Gemini ListModels request failed"), {
-        status: response.status,
+        detail,
       });
     }
     const data = await response.json();
@@ -526,23 +524,77 @@ function orderAvailableModels(models: string[], preferPro: boolean): string[] {
     return 3;
   };
   const generation = (name: string): number[] =>
-    (name.match(/\d+/g) ?? []).map((part) => Number(part));
+    (name.match(/\d+/g) ?? []).map(Number);
   return models.sort((a, b) => {
-    const byFamily = familyRank(a) - familyRank(b);
-    if (byFamily) return byFamily;
+    const family = familyRank(a) - familyRank(b);
+    if (family) return family;
     const av = generation(a),
       bv = generation(b);
     for (let i = 0; i < Math.max(av.length, bv.length); i++) {
-      const delta = (bv[i] ?? 0) - (av[i] ?? 0);
-      if (delta) return delta;
+      const difference = (bv[i] ?? 0) - (av[i] ?? 0);
+      if (difference) return difference;
     }
     return a.localeCompare(b);
   });
 }
 
-async function analyzeMeal(body: Json): Promise<Response> {
-  const apiKey = Deno.env.get("GEMINI_API_KEY");
-  if (!apiKey) return json({ error: "שירות ניתוח ה-AI אינו מוגדר בשרת." }, 503);
+function extractJsonObject(candidateText: string): unknown {
+  // Gemini may wrap the JSON in prose or Markdown fences. Find balanced object
+  // boundaries while respecting braces inside quoted strings and escaped quotes.
+  for (let start = 0; start < candidateText.length; start++) {
+    if (candidateText[start] !== "{") continue;
+    let depth = 0;
+    let inString = false;
+    let escaped = false;
+    for (let end = start; end < candidateText.length; end++) {
+      const character = candidateText[end];
+      if (inString) {
+        if (escaped) escaped = false;
+        else if (character === "\\") escaped = true;
+        else if (character === '"') inString = false;
+        continue;
+      }
+      if (character === '"') inString = true;
+      else if (character === "{") depth++;
+      else if (character === "}" && --depth === 0) {
+        try {
+          return JSON.parse(candidateText.slice(start, end + 1));
+        } catch (_) {
+          break;
+        }
+      }
+    }
+  }
+  throw new Error("No complete valid JSON object in Gemini response");
+}
+
+async function analyzeMeal(
+  body: Json,
+  user: { id: string },
+): Promise<Response> {
+  const requestId = crypto.randomUUID();
+  const mode = body.mode === "nutrition_label" ? "nutrition_label" : "meal";
+  const apiKey = Deno.env.get("GEMINI_API_KEY")?.trim();
+  if (!apiKey) {
+    await recordAiFailure({
+      requestId,
+      userId: user.id,
+      mode,
+      model: "configuration",
+      type: "missing_api_key",
+      message:
+        "Missing API key: GEMINI_API_KEY is not set in the Edge Function environment",
+    });
+    return json(
+      {
+        error:
+          "ניתוח ה-AI נכשל (Missing API key: GEMINI_API_KEY אינו מוגדר בשרת).",
+        request_id: requestId,
+      },
+      503,
+    );
+  }
+
   const text =
     typeof body.text === "string" ? body.text.trim().slice(0, 12000) : "";
   const image =
@@ -551,7 +603,6 @@ async function analyzeMeal(body: Json): Promise<Response> {
       : "";
   const mimeType =
     typeof body.mime_type === "string" ? body.mime_type.toLowerCase() : "";
-  const mode = body.mode === "nutrition_label" ? "nutrition_label" : "meal";
   if (!text && !image) return json({ error: "יש להוסיף תיאור או תמונה." }, 400);
   if (
     image &&
@@ -569,7 +620,7 @@ async function analyzeMeal(body: Json): Promise<Response> {
       ? `מצב: חילוץ תווית תזונה. חלץ ערכים ל-100 גרם או מ"ל. אם התמונה כוללת תווית, קרא ממנה. תיאור/שם המוצר: ${text || "אין תיאור נוסף"}. החזר meal_title, confidence_note, servings=1 ופריט יחיד עם ערכים ל-100 גרם.`
       : `מצב: ניתוח ארוחה או מתכון. תיאור והערות המשתמש: ${text || "נתח את המזון שבתמונה בלבד."}. החזר את כל הרכיבים בנפרד.`;
   const parts: Json[] = [{ text: prompt }];
-  if (image) parts.push({ inlineData: { mimeType, data: image } });
+  if (image) parts.push({ inline_data: { mime_type: mimeType, data: image } });
   const preferPro = body.pro === true;
   const fixedModels = preferPro
     ? [
@@ -582,65 +633,168 @@ async function analyzeMeal(body: Json): Promise<Response> {
   const tried = new Set<string>();
   let lastStatus = 503;
   let lastModel = "";
+  let lastDetail = "";
   let sawModelNotFound = false;
 
   const tryModel = async (model: string): Promise<Response | null> => {
     tried.add(model);
     const endpoint = `/v1beta/models/${model}:generateContent`;
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com${endpoint}?key=${encodeURIComponent(apiKey)}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          systemInstruction: { parts: [{ text: AI_SYSTEM_INSTRUCTION }] },
-          contents: [{ role: "user", parts }],
-          generationConfig: {
-            responseMimeType: "application/json",
-            responseSchema: mealResponseSchema,
-            temperature: 0.2,
-          },
-        }),
-      },
-    );
+    let response: Response;
+    try {
+      response = await fetch(
+        `https://generativelanguage.googleapis.com${endpoint}?key=${encodeURIComponent(apiKey)}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            system_instruction: { parts: [{ text: AI_SYSTEM_INSTRUCTION }] },
+            contents: [{ role: "user", parts }],
+            generationConfig: {
+              responseMimeType: "application/json",
+              maxOutputTokens: 8192,
+              temperature: 0.2,
+            },
+          }),
+        },
+      );
+    } catch (error) {
+      const message = safeAiText(error, apiKey);
+      await recordAiFailure({
+        requestId,
+        userId: user.id,
+        mode,
+        model,
+        type: "gemini_network_error",
+        message,
+        apiKey,
+      });
+      return json(
+        {
+          error: `ניתוח ה-AI נכשל (Gemini network error: ${message})`,
+          request_id: requestId,
+        },
+        502,
+      );
+    }
+
     if (!response.ok) {
       lastStatus = response.status;
       lastModel = model;
       const detail = await response.text();
-      console.warn("[gemini] generateContent failed", {
-        status: response.status,
+      const message = geminiErrorMessage(detail, apiKey);
+      lastDetail = message;
+      await recordAiFailure({
+        requestId,
+        userId: user.id,
+        mode,
         model,
-        endpoint,
-        detail: detail.slice(0, 800),
+        status: response.status,
+        type: "gemini_http_error",
+        message,
+        detail,
+        apiKey,
       });
       if (response.status === 404) sawModelNotFound = true;
-      return null;
+      if ([404, 429, 503].includes(response.status)) return null;
+      return json(
+        {
+          error: `ניתוח ה-AI נכשל (Gemini ${response.status}: ${message})`,
+          request_id: requestId,
+        },
+        502,
+      );
     }
+
     try {
       const responseBody = await response.json();
-      const candidateText = responseBody?.candidates?.[0]?.content?.parts
-        ?.map((part: Json) => part.text ?? "")
-        .join("");
-      const result = JSON.parse(candidateText);
-      if (!validateMealResult(result))
-        throw new Error("Gemini returned invalid nutrition schema");
-      return json({ result, model });
+      const candidate = responseBody?.candidates?.[0];
+      const candidateText =
+        candidate?.content?.parts
+          ?.map((part: Json) =>
+            typeof part.text === "string" ? part.text : "",
+          )
+          .join("") ?? "";
+      if (!candidateText.trim()) {
+        const reason =
+          candidate?.finishReason === "MAX_TOKENS"
+            ? "Gemini output truncated (MAX_TOKENS)"
+            : `Gemini returned no text (finishReason=${candidate?.finishReason ?? "unknown"})`;
+        await recordAiFailure({
+          requestId,
+          userId: user.id,
+          mode,
+          model,
+          type: "empty_candidate",
+          message: reason,
+          apiKey,
+        });
+        return json(
+          { error: `ניתוח ה-AI נכשל (${reason})`, request_id: requestId },
+          502,
+        );
+      }
+      let result: unknown;
+      try {
+        result = extractJsonObject(candidateText);
+      } catch (error) {
+        const message = `JSON parse error: ${safeAiText(error, apiKey)}`;
+        await recordAiFailure({
+          requestId,
+          userId: user.id,
+          mode,
+          model,
+          type: "json_parse_error",
+          message,
+          detail: `finishReason=${candidate?.finishReason ?? "unknown"}`,
+          apiKey,
+        });
+        return json(
+          { error: `ניתוח ה-AI נכשל (${message})`, request_id: requestId },
+          502,
+        );
+      }
+      if (!validateMealResult(result)) {
+        const message =
+          "JSON validation error: response does not match meal result fields";
+        await recordAiFailure({
+          requestId,
+          userId: user.id,
+          mode,
+          model,
+          type: "json_validation_error",
+          message,
+          apiKey,
+        });
+        return json(
+          { error: `ניתוח ה-AI נכשל (${message})`, request_id: requestId },
+          502,
+        );
+      }
+      return json({ result, model, request_id: requestId });
     } catch (error) {
-      console.error(`[gemini] invalid JSON/schema from ${model}:`, error);
-      return json({ error: "התקבלה תשובה לא תקינה מה-AI. נסו שוב." }, 502);
+      const message = `Gemini response handling error: ${safeAiText(error, apiKey)}`;
+      await recordAiFailure({
+        requestId,
+        userId: user.id,
+        mode,
+        model,
+        status: 200,
+        type: "response_handling_error",
+        message,
+        apiKey,
+      });
+      return json(
+        { error: `ניתוח ה-AI נכשל (${message})`, request_id: requestId },
+        502,
+      );
     }
   };
 
   for (const model of fixedModels) {
     const result = await tryModel(model);
     if (result) return result;
-    if (![404, 429, 503].includes(lastStatus)) {
-      return json({ error: "ניתוח ה-AI נכשל. נסו שוב בעוד רגע." }, 502);
-    }
   }
 
-  // Fixed model aliases can be retired or unavailable to a particular API key.
-  // Discover the exact callable model IDs from that key and try newest flash/pro models.
   if (sawModelNotFound) {
     try {
       const discovered = orderAvailableModels(
@@ -648,15 +802,27 @@ async function analyzeMeal(body: Json): Promise<Response> {
         preferPro,
       ).filter((model) => !tried.has(model));
       console.info("[gemini] discovered callable models", {
+        requestId,
         count: discovered.length,
         models: discovered.slice(0, 20),
       });
       for (const model of discovered) {
         const result = await tryModel(model);
         if (result) return result;
-        if (![404, 429, 503].includes(lastStatus)) {
-          return json({ error: "ניתוח ה-AI נכשל. נסו שוב בעוד רגע." }, 502);
-        }
+      }
+      if (discovered.length === 0) {
+        lastModel = "ListModels";
+        lastDetail =
+          "ListModels returned no Gemini models supporting generateContent";
+        await recordAiFailure({
+          requestId,
+          userId: user.id,
+          mode,
+          model: lastModel,
+          type: "no_compatible_models",
+          message: lastDetail,
+          apiKey,
+        });
       }
     } catch (error) {
       const status =
@@ -665,22 +831,45 @@ async function analyzeMeal(body: Json): Promise<Response> {
           : 503;
       lastStatus = Number.isFinite(status) ? status : 503;
       lastModel = "ListModels";
+      lastDetail = safeAiText(error, apiKey);
+      await recordAiFailure({
+        requestId,
+        userId: user.id,
+        mode,
+        model: lastModel,
+        status: lastStatus,
+        type: "list_models_error",
+        message: lastDetail,
+        apiKey,
+      });
     }
   }
 
-  console.error("[gemini] exhausted model fallback chain", {
+  const message =
+    lastDetail ||
+    `No available Gemini model after trying ${[...tried].join(", ")}`;
+  await recordAiFailure({
+    requestId,
+    userId: user.id,
+    mode,
+    model: lastModel || "fallback",
     status: lastStatus,
-    lastModel,
-    modelDiscoveryAttempted: sawModelNotFound,
-    attemptedModels: [...tried],
+    type: "fallback_exhausted",
+    message,
+    apiKey,
   });
+  const reason =
+    lastModel === "ListModels"
+      ? `Gemini ListModels ${lastStatus}: ${message}`
+      : `Gemini ${lastStatus}${lastModel ? ` ${lastModel}` : ""}: ${message}`;
   return json(
     {
-      error: `מודלי ה-AI אינם זמינים כרגע (${lastStatus}). נסו שוב מאוחר יותר.`,
+      error: `ניתוח ה-AI נכשל (${safeAiText(reason, apiKey)})`,
+      request_id: requestId,
       provider_status: lastStatus,
       provider_model: lastModel,
     },
-    503,
+    502,
   );
 }
 
@@ -709,7 +898,7 @@ Deno.serve(async (request: Request) => {
     const user = await authenticate(request);
     if (!user)
       return json({ error: "ההתחברות פגה או אינה תקפה. התחברו שוב." }, 401);
-    if (body.action === "analyze_meal") return await analyzeMeal(body);
+    if (body.action === "analyze_meal") return await analyzeMeal(body, user);
     return await dataApi(request, user, body);
   } catch (error) {
     console.error("macro-api request failed:", error);

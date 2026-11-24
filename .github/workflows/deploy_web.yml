@@ -38,6 +38,90 @@ jobs:
       - name: Run Flutter tests
         run: flutter test
 
+      - name: Verify live Gemini meal analysis through Supabase
+        timeout-minutes: 5
+        env:
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          GITHUB_RUN_ATTEMPT: ${{ github.run_attempt }}
+        run: |
+          python3 - <<'PY'
+          import base64
+          import json
+          import os
+          import re
+          import secrets
+          import struct
+          import urllib.error
+          import urllib.request
+          import zlib
+          from pathlib import Path
+
+          client = Path('lib/data/macro_sync_service.dart').read_text()
+          project_url = re.search(r"static const _projectUrl = '([^']+)'", client).group(1)
+          public_key = re.search(r"defaultValue: '([^']+)'", client).group(1)
+          endpoint = f"{project_url}/functions/v1/macro-api"
+          headers = {'apikey': public_key, 'Content-Type': 'application/json'}
+
+          def post(payload, token=None):
+              request_headers = dict(headers)
+              if token:
+                  request_headers['Authorization'] = f'Bearer {token}'
+              request = urllib.request.Request(endpoint, data=json.dumps(payload).encode(), headers=request_headers, method='POST')
+              try:
+                  with urllib.request.urlopen(request, timeout=240) as response:
+                      return response.status, json.loads(response.read())
+              except urllib.error.HTTPError as error:
+                  raw = error.read().decode('utf-8', errors='replace')
+                  try:
+                      body = json.loads(raw)
+                  except Exception:
+                      body = {'error': raw[:1000]}
+                  return error.code, body
+
+          def png_chunk(kind, data):
+              return struct.pack('>I', len(data)) + kind + data + struct.pack('>I', zlib.crc32(kind + data) & 0xffffffff)
+
+          # Tiny valid RGBA PNG, sufficient to exercise Gemini's image input path.
+          row = b'\x00' + bytes([196, 96, 40, 255, 48, 128, 56, 255])
+          image = b'\x89PNG\r\n\x1a\n'
+          image += png_chunk(b'IHDR', struct.pack('>IIBBBBB', 2, 1, 8, 6, 0, 0, 0))
+          image += png_chunk(b'IDAT', zlib.compress(row))
+          image += png_chunk(b'IEND', b'')
+
+          run_id = os.environ['GITHUB_RUN_ID']
+          attempt = os.environ['GITHUB_RUN_ATTEMPT']
+          username = f'ci-{run_id}-{attempt}'
+          pin = f"{secrets.randbelow(900000) + 100000}"
+          status, signed_up = post({'action': 'signup', 'username': username, 'pin': pin})
+          if status != 200 or not signed_up.get('token'):
+              # Never print the response object: a partial success may include a session token.
+              safe_error = signed_up.get('error', 'unexpected signup response')
+              raise SystemExit(f'CI profile signup failed: HTTP {status}: {safe_error}')
+          token = signed_up['token']
+          try:
+              text = 'אורז עם פרגיות ואפונה וגזר מבושל בסיר עם 15 גרם שמן, 4 מנות'
+              status, response = post({
+                  'action': 'analyze_meal',
+                  'mode': 'meal',
+                  'pro': False,
+                  'text': text,
+                  'image_base64': base64.b64encode(image).decode(),
+                  'mime_type': 'image/png',
+              }, token)
+              if status != 200:
+                  raise SystemExit(f'Live analyze_meal failed: HTTP {status}: {response}')
+              result = response.get('result')
+              if not isinstance(result, dict) or not isinstance(result.get('items'), list) or not result['items']:
+                  raise SystemExit(f'Gemini returned no parsed items: {response}')
+              required = {'name', 'search_query', 'grams', 'is_liquid', 'is_assumed_addition', 'calories_per_100g', 'protein_per_100g', 'carbs_per_100g', 'fat_per_100g'}
+              for index, item in enumerate(result['items']):
+                  if not isinstance(item, dict) or not required.issubset(item):
+                      raise SystemExit(f'Invalid item #{index} in Gemini JSON: {item}')
+              print(f"Live Gemini E2E passed: HTTP 200, model={response.get('model')}, items={len(result['items'])}, request_id={response.get('request_id')}")
+          finally:
+              post({'action': 'logout'}, token)
+          PY
+
       - name: Prepare SQLite WebAssembly assets
         run: dart run sqflite_common_ffi_web:setup
 
