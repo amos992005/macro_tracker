@@ -380,93 +380,95 @@ class _ManageFoodsScreenState extends State<ManageFoodsScreen> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                TextField(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                    labelText: 'חפש מאכל...',
-                    prefixIcon: const Icon(Icons.search),
-                    suffixIcon: _searchQuery.isNotEmpty
-                        ? IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: () {
-                          _searchDebounce?.cancel();
-                          _searchController.clear();
-                          setState(() => _searchQuery = '');
-                        }
-                    ) : null,
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      labelText: 'חפש מאכל...',
+                      prefixIcon: const Icon(Icons.search),
+                      suffixIcon: _searchQuery.isNotEmpty
+                          ? IconButton(
+                          icon: const Icon(Icons.clear),
+                          onPressed: () {
+                            _searchDebounce?.cancel();
+                            _searchController.clear();
+                            setState(() => _searchQuery = '');
+                          }
+                      ) : null,
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+                    ),
+                    onChanged: (val) {
+                      _searchDebounce?.cancel();
+                      _searchDebounce = Timer(const Duration(milliseconds: 200), () {
+                        if (!mounted) return;
+                        setState(() => _searchQuery = val);
+                      });
+                    },
                   ),
-                  onChanged: (val) {
-                    _searchDebounce?.cancel();
-                    _searchDebounce = Timer(const Duration(milliseconds: 200), () {
-                      if (!mounted) return;
-                      setState(() => _searchQuery = val);
-                    });
-                  },
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  _searchQuery.isEmpty
-                      ? 'סה"כ מוצרים במאגר: ${_foods.length}'
-                      : 'נמצאו ${_filteredFoods.length} תוצאות',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: _searchQuery.isEmpty ? Colors.blueGrey : Colors.blue,
+                  const SizedBox(height: 8),
+                  Text(
+                    _searchQuery.isEmpty
+                        ? 'סה"כ מוצרים במאגר: ${_foods.length}'
+                        : 'נמצאו ${_filteredFoods.length} תוצאות',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: _searchQuery.isEmpty ? Colors.blueGrey : Colors.blue,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
 
-          Expanded(
-            child: _filteredFoods.isEmpty
-                ? const Center(child: Text('לא נמצאו מאכלים'))
-                : ListView.builder(
-              itemCount: _filteredFoods.length,
-              itemBuilder: (context, index) {
-                final food = _filteredFoods[index];
-                return Card(
-                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                  child: ListTile(
-                    onTap: () => _showFoodDialog(existingFood: food),
-                    title: Text(food.name),
-                    subtitle: Text(
-                        food.isRecipe
-                            ? 'מתכון: ${food.servings.toStringAsFixed(0)} מנות'
-                            : '${food.caloriesPer100g} קק"ל ל-100${food.isLiquid ? 'מ"ל' : 'גרם'}'
+            Expanded(
+              child: _filteredFoods.isEmpty
+                  ? const Center(child: Text('לא נמצאו מאכלים'))
+                  : ListView.builder(
+                itemCount: _filteredFoods.length,
+                itemBuilder: (context, index) {
+                  final food = _filteredFoods[index];
+                  return Card(
+                    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                    child: ListTile(
+                      onTap: () => _showFoodDialog(existingFood: food),
+                      title: Text(food.name),
+                      subtitle: Text(
+                          food.isRecipe
+                              ? 'מתכון: ${food.servings.toStringAsFixed(0)} מנות'
+                              : '${food.caloriesPer100g} קק"ל ל-100${food.isLiquid ? 'מ"ל' : 'גרם'}'
+                      ),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: Icon(food.isFavorite ? Icons.star : Icons.star_border, color: Colors.amber),
+                            onPressed: () async {
+                              await _dbHelper.toggleFavorite(food.id!, !food.isFavorite);
+                              _loadFoods();
+                            },
+                          ),
+                          const SizedBox(width: 8),
+                          IconButton(
+                            icon: const Icon(Icons.delete, color: Colors.red),
+                            onPressed: () => _deleteFood(food),
+                          ),
+                        ],
+                      ),
                     ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: Icon(food.isFavorite ? Icons.star : Icons.star_border, color: Colors.amber),
-                          onPressed: () async {
-                            await _dbHelper.toggleFavorite(food.id!, !food.isFavorite);
-                            _loadFoods();
-                          },
-                        ),
-                        const SizedBox(width: 8),
-                        IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.red),
-                          onPressed: () => _deleteFood(food),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
-          ),
-        ],
+            ],
+        ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showFoodDialog(),

@@ -19,7 +19,7 @@ class MacroTrackerApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const Color neonGreen = Color(0xFF00FF87);
-    const Color deepPurple = Color(0xFF1A1A2E);
+    const Color deepPurple = Color(0xFF0A0E21);
     const Color darkBlue = Color(0xFF16213E);
 
     return MaterialApp(
