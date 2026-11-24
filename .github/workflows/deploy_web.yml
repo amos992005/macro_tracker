@@ -32,9 +32,6 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-
       - name: Install dependencies
         run: flutter pub get
 
@@ -46,6 +43,9 @@ jobs:
 
       - name: Build Flutter Web
         run: flutter build web --release --base-href "/macro_tracker/"
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
