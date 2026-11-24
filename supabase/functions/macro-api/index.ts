@@ -466,6 +466,80 @@ function validateMealResult(value: unknown): value is {
   });
 }
 
+type GeminiModel = { name?: string; supportedGenerationMethods?: string[] };
+
+async function listGeminiModels(apiKey: string): Promise<string[]> {
+  const models: GeminiModel[] = [];
+  let pageToken: string | undefined;
+  for (let page = 0; page < 5; page++) {
+    const url = new URL(
+      "https://generativelanguage.googleapis.com/v1beta/models",
+    );
+    url.searchParams.set("key", apiKey);
+    url.searchParams.set("pageSize", "1000");
+    if (pageToken) url.searchParams.set("pageToken", pageToken);
+    const response = await fetch(url);
+    if (!response.ok) {
+      const detail = await response.text();
+      console.error("[gemini] ListModels failed", {
+        status: response.status,
+        endpoint: "/v1beta/models",
+        detail: detail.slice(0, 800),
+      });
+      throw Object.assign(new Error("Gemini ListModels request failed"), {
+        status: response.status,
+      });
+    }
+    const data = await response.json();
+    if (Array.isArray(data?.models)) models.push(...data.models);
+    pageToken =
+      typeof data?.nextPageToken === "string" ? data.nextPageToken : undefined;
+    if (!pageToken) break;
+  }
+  return [
+    ...new Set(
+      models
+        .filter(
+          (model) =>
+            model.name &&
+            model.supportedGenerationMethods?.includes("generateContent"),
+        )
+        .map((model) => model.name!.replace(/^models\//, ""))
+        .filter((name) => /^gemini-/i.test(name)),
+    ),
+  ];
+}
+
+function orderAvailableModels(models: string[], preferPro: boolean): string[] {
+  const familyRank = (name: string): number => {
+    const normalized = name.toLowerCase();
+    if (preferPro) {
+      if (normalized.includes("pro")) return 0;
+      if (normalized.includes("flash") && !normalized.includes("lite"))
+        return 1;
+      if (normalized.includes("flash-lite")) return 2;
+      return 3;
+    }
+    if (normalized.includes("flash") && !normalized.includes("lite")) return 0;
+    if (normalized.includes("flash-lite")) return 1;
+    if (normalized.includes("pro")) return 2;
+    return 3;
+  };
+  const generation = (name: string): number[] =>
+    (name.match(/\d+/g) ?? []).map((part) => Number(part));
+  return models.sort((a, b) => {
+    const byFamily = familyRank(a) - familyRank(b);
+    if (byFamily) return byFamily;
+    const av = generation(a),
+      bv = generation(b);
+    for (let i = 0; i < Math.max(av.length, bv.length); i++) {
+      const delta = (bv[i] ?? 0) - (av[i] ?? 0);
+      if (delta) return delta;
+    }
+    return a.localeCompare(b);
+  });
+}
+
 async function analyzeMeal(body: Json): Promise<Response> {
   const apiKey = Deno.env.get("GEMINI_API_KEY");
   if (!apiKey) return json({ error: "שירות ניתוח ה-AI אינו מוגדר בשרת." }, 503);
@@ -492,13 +566,12 @@ async function analyzeMeal(body: Json): Promise<Response> {
 
   const prompt =
     mode === "nutrition_label"
-      ? `מצב: חילוץ תווית תזונה. חלץ ערכים ל-100 גרם או מ"ל. אם התמונה כוללת תווית, קרא ממנה. תיאור/שם המוצר: ${text || "אין תיאור נוסף"}. החזר meal_title, confidence_note, servings=1 ופריט יחיד (או רכיבי תווית נדרשים) עם ערכים ל-100 גרם.`
+      ? `מצב: חילוץ תווית תזונה. חלץ ערכים ל-100 גרם או מ"ל. אם התמונה כוללת תווית, קרא ממנה. תיאור/שם המוצר: ${text || "אין תיאור נוסף"}. החזר meal_title, confidence_note, servings=1 ופריט יחיד עם ערכים ל-100 גרם.`
       : `מצב: ניתוח ארוחה או מתכון. תיאור והערות המשתמש: ${text || "נתח את המזון שבתמונה בלבד."}. החזר את כל הרכיבים בנפרד.`;
   const parts: Json[] = [{ text: prompt }];
   if (image) parts.push({ inlineData: { mimeType, data: image } });
-  const modelSchema = mealResponseSchema;
   const preferPro = body.pro === true;
-  const models = preferPro
+  const fixedModels = preferPro
     ? [
         "gemini-2.5-pro",
         "gemini-2.5-flash",
@@ -506,10 +579,16 @@ async function analyzeMeal(body: Json): Promise<Response> {
         "gemini-2.0-flash",
       ]
     : ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-2.0-flash"];
+  const tried = new Set<string>();
   let lastStatus = 503;
-  for (const model of models) {
+  let lastModel = "";
+  let sawModelNotFound = false;
+
+  const tryModel = async (model: string): Promise<Response | null> => {
+    tried.add(model);
+    const endpoint = `/v1beta/models/${model}:generateContent`;
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`,
+      `https://generativelanguage.googleapis.com${endpoint}?key=${encodeURIComponent(apiKey)}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -518,7 +597,7 @@ async function analyzeMeal(body: Json): Promise<Response> {
           contents: [{ role: "user", parts }],
           generationConfig: {
             responseMimeType: "application/json",
-            responseSchema: modelSchema,
+            responseSchema: mealResponseSchema,
             temperature: 0.2,
           },
         }),
@@ -526,13 +605,16 @@ async function analyzeMeal(body: Json): Promise<Response> {
     );
     if (!response.ok) {
       lastStatus = response.status;
-      if ([404, 429, 503].includes(response.status)) continue;
+      lastModel = model;
       const detail = await response.text();
-      console.error(
-        `Gemini ${model} failed (${response.status}):`,
-        detail.slice(0, 500),
-      );
-      return json({ error: "ניתוח ה-AI נכשל. נסו שוב בעוד רגע." }, 502);
+      console.warn("[gemini] generateContent failed", {
+        status: response.status,
+        model,
+        endpoint,
+        detail: detail.slice(0, 800),
+      });
+      if (response.status === 404) sawModelNotFound = true;
+      return null;
     }
     try {
       const responseBody = await response.json();
@@ -544,13 +626,59 @@ async function analyzeMeal(body: Json): Promise<Response> {
         throw new Error("Gemini returned invalid nutrition schema");
       return json({ result, model });
     } catch (error) {
-      console.error(`Could not parse Gemini ${model} response:`, error);
+      console.error(`[gemini] invalid JSON/schema from ${model}:`, error);
       return json({ error: "התקבלה תשובה לא תקינה מה-AI. נסו שוב." }, 502);
     }
+  };
+
+  for (const model of fixedModels) {
+    const result = await tryModel(model);
+    if (result) return result;
+    if (![404, 429, 503].includes(lastStatus)) {
+      return json({ error: "ניתוח ה-AI נכשל. נסו שוב בעוד רגע." }, 502);
+    }
   }
+
+  // Fixed model aliases can be retired or unavailable to a particular API key.
+  // Discover the exact callable model IDs from that key and try newest flash/pro models.
+  if (sawModelNotFound) {
+    try {
+      const discovered = orderAvailableModels(
+        await listGeminiModels(apiKey),
+        preferPro,
+      ).filter((model) => !tried.has(model));
+      console.info("[gemini] discovered callable models", {
+        count: discovered.length,
+        models: discovered.slice(0, 20),
+      });
+      for (const model of discovered) {
+        const result = await tryModel(model);
+        if (result) return result;
+        if (![404, 429, 503].includes(lastStatus)) {
+          return json({ error: "ניתוח ה-AI נכשל. נסו שוב בעוד רגע." }, 502);
+        }
+      }
+    } catch (error) {
+      const status =
+        typeof error === "object" && error !== null && "status" in error
+          ? Number((error as { status: unknown }).status)
+          : 503;
+      lastStatus = Number.isFinite(status) ? status : 503;
+      lastModel = "ListModels";
+    }
+  }
+
+  console.error("[gemini] exhausted model fallback chain", {
+    status: lastStatus,
+    lastModel,
+    modelDiscoveryAttempted: sawModelNotFound,
+    attemptedModels: [...tried],
+  });
   return json(
     {
       error: `מודלי ה-AI אינם זמינים כרגע (${lastStatus}). נסו שוב מאוחר יותר.`,
+      provider_status: lastStatus,
+      provider_model: lastModel,
     },
     503,
   );
