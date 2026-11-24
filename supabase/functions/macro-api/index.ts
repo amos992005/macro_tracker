@@ -449,6 +449,7 @@ async function recordAiFailure(input: {
     await dbJson("macro_ai_logs", {
       method: "POST",
       headers: { Prefer: "return=minimal" },
+      signal: AbortSignal.timeout(2000),
       body: JSON.stringify({
         request_id: input.requestId,
         user_id: input.userId,
@@ -468,74 +469,35 @@ async function recordAiFailure(input: {
   }
 }
 
-type GeminiModel = { name?: string; supportedGenerationMethods?: string[] };
-
-async function listGeminiModels(apiKey: string): Promise<string[]> {
-  const models: GeminiModel[] = [];
-  let pageToken: string | undefined;
-  for (let page = 0; page < 5; page++) {
-    const url = new URL(
-      "https://generativelanguage.googleapis.com/v1beta/models",
-    );
-    url.searchParams.set("key", apiKey);
-    url.searchParams.set("pageSize", "1000");
-    if (pageToken) url.searchParams.set("pageToken", pageToken);
-    const response = await fetch(url);
-    if (!response.ok) {
-      const detail = await response.text();
-      throw Object.assign(new Error(geminiErrorMessage(detail, apiKey)), {
-        status: response.status,
-        detail,
-      });
-    }
-    const data = await response.json();
-    if (Array.isArray(data?.models)) models.push(...data.models);
-    pageToken =
-      typeof data?.nextPageToken === "string" ? data.nextPageToken : undefined;
-    if (!pageToken) break;
+async function recordAiSuccess(input: {
+  requestId: string;
+  userId: string;
+  mode: string;
+  model: string;
+  durationMs: number;
+}): Promise<void> {
+  try {
+    await dbJson("macro_ai_logs", {
+      method: "POST",
+      headers: { Prefer: "return=minimal" },
+      signal: AbortSignal.timeout(2000),
+      body: JSON.stringify({
+        request_id: input.requestId,
+        user_id: input.userId,
+        mode: input.mode,
+        model: input.model,
+        http_status: 200,
+        error_type: "success",
+        error_message: "Gemini response parsed and validated",
+        error_detail: `duration_ms=${input.durationMs}`,
+      }),
+    });
+  } catch (error) {
+    console.error("[macro-ai] Could not persist success log", {
+      requestId: input.requestId,
+      error: safeAiText(error),
+    });
   }
-  return [
-    ...new Set(
-      models
-        .filter(
-          (model) =>
-            model.name &&
-            model.supportedGenerationMethods?.includes("generateContent"),
-        )
-        .map((model) => model.name!.replace(/^models\//, ""))
-        .filter((name) => /^gemini-/i.test(name)),
-    ),
-  ];
-}
-
-function orderAvailableModels(models: string[], preferPro: boolean): string[] {
-  const familyRank = (name: string): number => {
-    const normalized = name.toLowerCase();
-    if (preferPro) {
-      if (normalized.includes("pro")) return 0;
-      if (normalized.includes("flash") && !normalized.includes("lite"))
-        return 1;
-      if (normalized.includes("flash-lite")) return 2;
-      return 3;
-    }
-    if (normalized.includes("flash") && !normalized.includes("lite")) return 0;
-    if (normalized.includes("flash-lite")) return 1;
-    if (normalized.includes("pro")) return 2;
-    return 3;
-  };
-  const generation = (name: string): number[] =>
-    (name.match(/\d+/g) ?? []).map(Number);
-  return models.sort((a, b) => {
-    const family = familyRank(a) - familyRank(b);
-    if (family) return family;
-    const av = generation(a),
-      bv = generation(b);
-    for (let i = 0; i < Math.max(av.length, bv.length); i++) {
-      const difference = (bv[i] ?? 0) - (av[i] ?? 0);
-      if (difference) return difference;
-    }
-    return a.localeCompare(b);
-  });
 }
 
 function extractJsonObject(candidateText: string): unknown {
@@ -573,6 +535,7 @@ async function analyzeMeal(
   user: { id: string },
 ): Promise<Response> {
   const requestId = crypto.randomUUID();
+  const startedAt = Date.now();
   const mode = body.mode === "nutrition_label" ? "nutrition_label" : "meal";
   const apiKey = Deno.env.get("GEMINI_API_KEY")?.trim();
   if (!apiKey) {
@@ -621,91 +584,62 @@ async function analyzeMeal(
       : `מצב: ניתוח ארוחה או מתכון. תיאור והערות המשתמש: ${text || "נתח את המזון שבתמונה בלבד."}. החזר את כל הרכיבים בנפרד.`;
   const parts: Json[] = [{ text: prompt }];
   if (image) parts.push({ inline_data: { mime_type: mimeType, data: image } });
+
   const preferPro = body.pro === true;
-  const fixedModels = preferPro
-    ? [
-        "gemini-2.5-pro",
-        "gemini-2.5-flash",
-        "gemini-2.5-flash-lite",
-        "gemini-2.0-flash",
-      ]
-    : ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-2.0-flash"];
-  const tried = new Set<string>();
-  let lastStatus = 503;
-  let lastModel = "";
-  let lastDetail = "";
-  let sawModelNotFound = false;
+  const attempts = [
+    { model: "gemini-2.5-flash", thinkingBudget: preferPro ? 512 : 0 },
+    { model: "gemini-2.0-flash", thinkingBudget: undefined },
+  ];
+  let lastStatus = 502;
+  let lastModel = "gemini-2.5-flash";
+  let lastMessage = "No Gemini response";
+  let lastType = "gemini_error";
 
-  const tryModel = async (model: string): Promise<Response | null> => {
-    tried.add(model);
-    const endpoint = `/v1beta/models/${model}:generateContent`;
-    let response: Response;
+  for (const attempt of attempts) {
+    const { model } = attempt;
+    lastModel = model;
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 15_000);
     try {
-      response = await fetch(
-        `https://generativelanguage.googleapis.com${endpoint}?key=${encodeURIComponent(apiKey)}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            system_instruction: { parts: [{ text: AI_SYSTEM_INSTRUCTION }] },
-            contents: [{ role: "user", parts }],
-            generationConfig: {
-              responseMimeType: "application/json",
-              maxOutputTokens: 8192,
-              temperature: 0.2,
-            },
-          }),
-        },
-      );
-    } catch (error) {
-      const message = safeAiText(error, apiKey);
-      await recordAiFailure({
-        requestId,
-        userId: user.id,
-        mode,
-        model,
-        type: "gemini_network_error",
-        message,
-        apiKey,
+      const generationConfig: Json = {
+        responseMimeType: "application/json",
+        maxOutputTokens: 4096,
+        temperature: 0.2,
+      };
+      if (attempt.thinkingBudget !== undefined) {
+        generationConfig.thinkingConfig = {
+          thinkingBudget: attempt.thinkingBudget,
+        };
+      }
+      const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
+        body: JSON.stringify({
+          system_instruction: { parts: [{ text: AI_SYSTEM_INSTRUCTION }] },
+          contents: [{ role: "user", parts }],
+          generationConfig,
+        }),
       });
-      return json(
-        {
-          error: `ניתוח ה-AI נכשל (Gemini network error: ${message})`,
-          request_id: requestId,
-        },
-        502,
-      );
-    }
+      if (!response.ok) {
+        lastStatus = response.status;
+        lastMessage = geminiErrorMessage(await response.text(), apiKey);
+        lastType =
+          response.status === 429 ? "gemini_rate_limit" : "gemini_http_error";
+        await recordAiFailure({
+          requestId,
+          userId: user.id,
+          mode,
+          model,
+          status: response.status,
+          type: lastType,
+          message: lastMessage,
+          apiKey,
+        });
+        continue;
+      }
 
-    if (!response.ok) {
-      lastStatus = response.status;
-      lastModel = model;
-      const detail = await response.text();
-      const message = geminiErrorMessage(detail, apiKey);
-      lastDetail = message;
-      await recordAiFailure({
-        requestId,
-        userId: user.id,
-        mode,
-        model,
-        status: response.status,
-        type: "gemini_http_error",
-        message,
-        detail,
-        apiKey,
-      });
-      if (response.status === 404) sawModelNotFound = true;
-      if ([404, 429, 503].includes(response.status)) return null;
-      return json(
-        {
-          error: `ניתוח ה-AI נכשל (Gemini ${response.status}: ${message})`,
-          request_id: requestId,
-        },
-        502,
-      );
-    }
-
-    try {
       const responseBody = await response.json();
       const candidate = responseBody?.candidates?.[0];
       const candidateText =
@@ -714,157 +648,91 @@ async function analyzeMeal(
             typeof part.text === "string" ? part.text : "",
           )
           .join("") ?? "";
-      if (!candidateText.trim()) {
-        const reason =
-          candidate?.finishReason === "MAX_TOKENS"
-            ? "Gemini output truncated (MAX_TOKENS)"
-            : `Gemini returned no text (finishReason=${candidate?.finishReason ?? "unknown"})`;
-        await recordAiFailure({
-          requestId,
-          userId: user.id,
-          mode,
-          model,
-          type: "empty_candidate",
-          message: reason,
-          apiKey,
-        });
-        return json(
-          { error: `ניתוח ה-AI נכשל (${reason})`, request_id: requestId },
-          502,
-        );
-      }
       let result: unknown;
       try {
+        if (!candidateText.trim()) {
+          const reason =
+            candidate?.finishReason === "MAX_TOKENS"
+              ? "Gemini output truncated (MAX_TOKENS)"
+              : `Gemini returned no text (finishReason=${candidate?.finishReason ?? "unknown"})`;
+          throw new Error(reason);
+        }
         result = extractJsonObject(candidateText);
       } catch (error) {
-        const message = `JSON parse error: ${safeAiText(error, apiKey)}`;
+        lastStatus = 502;
+        lastType =
+          candidate?.finishReason === "MAX_TOKENS"
+            ? "gemini_output_truncated"
+            : "json_parse_error";
+        lastMessage = safeAiText(error, apiKey);
         await recordAiFailure({
           requestId,
           userId: user.id,
           mode,
           model,
-          type: "json_parse_error",
-          message,
+          status: 200,
+          type: lastType,
+          message: lastMessage,
           detail: `finishReason=${candidate?.finishReason ?? "unknown"}`,
           apiKey,
         });
-        return json(
-          { error: `ניתוח ה-AI נכשל (${message})`, request_id: requestId },
-          502,
-        );
+        continue;
       }
       if (!validateMealResult(result)) {
-        const message =
+        lastStatus = 502;
+        lastType = "json_validation_error";
+        lastMessage =
           "JSON validation error: response does not match meal result fields";
         await recordAiFailure({
           requestId,
           userId: user.id,
           mode,
           model,
-          type: "json_validation_error",
-          message,
+          status: 200,
+          type: lastType,
+          message: lastMessage,
           apiKey,
         });
-        return json(
-          { error: `ניתוח ה-AI נכשל (${message})`, request_id: requestId },
-          502,
-        );
+        continue;
       }
+
+      await recordAiSuccess({
+        requestId,
+        userId: user.id,
+        mode,
+        model,
+        durationMs: Date.now() - startedAt,
+      });
       return json({ result, model, request_id: requestId });
     } catch (error) {
-      const message = `Gemini response handling error: ${safeAiText(error, apiKey)}`;
+      lastStatus =
+        error instanceof DOMException && error.name === "AbortError"
+          ? 504
+          : 502;
+      lastType = lastStatus === 504 ? "gemini_timeout" : "gemini_network_error";
+      lastMessage =
+        lastStatus === 504
+          ? "Gemini request timed out after 15000ms"
+          : safeAiText(error, apiKey);
       await recordAiFailure({
         requestId,
         userId: user.id,
         mode,
         model,
-        status: 200,
-        type: "response_handling_error",
-        message,
-        apiKey,
-      });
-      return json(
-        { error: `ניתוח ה-AI נכשל (${message})`, request_id: requestId },
-        502,
-      );
-    }
-  };
-
-  for (const model of fixedModels) {
-    const result = await tryModel(model);
-    if (result) return result;
-  }
-
-  if (sawModelNotFound) {
-    try {
-      const discovered = orderAvailableModels(
-        await listGeminiModels(apiKey),
-        preferPro,
-      ).filter((model) => !tried.has(model));
-      console.info("[gemini] discovered callable models", {
-        requestId,
-        count: discovered.length,
-        models: discovered.slice(0, 20),
-      });
-      for (const model of discovered) {
-        const result = await tryModel(model);
-        if (result) return result;
-      }
-      if (discovered.length === 0) {
-        lastModel = "ListModels";
-        lastDetail =
-          "ListModels returned no Gemini models supporting generateContent";
-        await recordAiFailure({
-          requestId,
-          userId: user.id,
-          mode,
-          model: lastModel,
-          type: "no_compatible_models",
-          message: lastDetail,
-          apiKey,
-        });
-      }
-    } catch (error) {
-      const status =
-        typeof error === "object" && error !== null && "status" in error
-          ? Number((error as { status: unknown }).status)
-          : 503;
-      lastStatus = Number.isFinite(status) ? status : 503;
-      lastModel = "ListModels";
-      lastDetail = safeAiText(error, apiKey);
-      await recordAiFailure({
-        requestId,
-        userId: user.id,
-        mode,
-        model: lastModel,
         status: lastStatus,
-        type: "list_models_error",
-        message: lastDetail,
+        type: lastType,
+        message: lastMessage,
         apiKey,
       });
+    } finally {
+      clearTimeout(timer);
     }
   }
 
-  const message =
-    lastDetail ||
-    `No available Gemini model after trying ${[...tried].join(", ")}`;
-  await recordAiFailure({
-    requestId,
-    userId: user.id,
-    mode,
-    model: lastModel || "fallback",
-    status: lastStatus,
-    type: "fallback_exhausted",
-    message,
-    apiKey,
-  });
-  const reason =
-    lastModel === "ListModels"
-      ? `Gemini ListModels ${lastStatus}: ${message}`
-      : `Gemini ${lastStatus}${lastModel ? ` ${lastModel}` : ""}: ${message}`;
+  const detail = `${lastModel} ${lastStatus}: ${lastMessage}`;
   return json(
     {
-      error: `ניתוח ה-AI נכשל (${safeAiText(reason, apiKey)})`,
+      error: `ניתוח ה-AI נכשל (${safeAiText(detail, apiKey)})`,
       request_id: requestId,
       provider_status: lastStatus,
       provider_model: lastModel,
@@ -872,7 +740,6 @@ async function analyzeMeal(
     502,
   );
 }
-
 Deno.serve(async (request: Request) => {
   if (request.method === "OPTIONS")
     return new Response("ok", { headers: corsHeaders });

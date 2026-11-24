@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -150,7 +151,17 @@ class MacroSyncService {
       'apikey': _publicKey,
     };
     if (authenticated && _token != null) headers['Authorization'] = 'Bearer $_token';
-    final response = await http.post(_endpoint, headers: headers, body: jsonEncode(body));
+    late final http.Response response;
+    try {
+      response = await http
+          .post(_endpoint, headers: headers, body: jsonEncode(body))
+          .timeout(const Duration(seconds: 25));
+    } on TimeoutException {
+      throw const MacroApiException(
+        'הבקשה נמשכה יותר מ-25 שניות. בדקו את החיבור ונסו שוב.',
+        statusCode: 408,
+      );
+    }
     Map<String, dynamic> data = {};
     try {
       data = Map<String, dynamic>.from(jsonDecode(response.body) as Map);
