@@ -1,17 +1,25 @@
-# macro_tracker
+# Macro Tracker
 
-A new Flutter project.
+A Hebrew Flutter macro tracker with a local food catalog, profile-scoped SQLite cache, Supabase synchronization and a web/PWA build.
 
-## Getting Started
+## Run locally
 
-This project is a starting point for a Flutter application.
+Install Flutter, then run (never use a `service_role`/secret key in the client):
 
-A few resources to get you started if this is your first Flutter project:
+```sh
+flutter pub get
+dart run sqflite_common_ffi_web:setup
+flutter run -d chrome
+```
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+A public Supabase publishable key is configured in `MacroSyncService`; it is intentionally client-visible. You can override it with `--dart-define=SUPABASE_ANON_KEY=...` if you rotate the project's publishable key.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+The project URL and Edge Function route are configured in `lib/data/macro_sync_service.dart`. Authentication is performed by the deployed `macro-api` Edge Function; the function keeps the service-role credential on the server, stores salted PBKDF2 PIN hashes, enforces account- and client-level throttles, and issues revocable session tokens. PINs are not saved on the device. A PIN is still a low-entropy credential and there is no PIN recovery flow at this time.
+
+## GitHub Pages
+
+The workflow at `.github/workflows/deploy_web.yml` runs Flutter tests and builds with `/macro_tracker/` as the base path. Enable GitHub Pages with **GitHub Actions** as the build source. No service-role credential or other private Supabase key is needed by the build. The deployed app uses local SQLite for the 9,240-food base catalog and synchronizes profile data with Supabase when connected.
+
+## Data and security
+
+Application tables are prefixed `macro_`. Their RLS is enabled and direct `anon`/`authenticated` table access is revoked; the client communicates only with the allow-listed Edge Function API. The existing `public.user_notebooks` table is unrelated and is intentionally untouched. Local SQLite files are separated by authenticated profile; the first signed-in profile imports an existing native `macro_tracker.db` when present.

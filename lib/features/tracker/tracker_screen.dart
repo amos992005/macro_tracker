@@ -10,7 +10,9 @@ import '../../data/models/food.dart';
 import '../manage_foods_screen.dart';
 
 class TrackerScreen extends StatefulWidget {
-  const TrackerScreen({super.key});
+  final String? username;
+  final Future<void> Function()? onSignOut;
+  const TrackerScreen({super.key, this.username, this.onSignOut});
 
   @override
   State<TrackerScreen> createState() => _TrackerScreenState();
@@ -927,6 +929,21 @@ class _TrackerScreenState extends State<TrackerScreen> {
             tooltip: 'הגדרות חוקי ברזל',
             onPressed: _showRuleSettingsDialog,
           ),
+          if (widget.username != null)
+            PopupMenuButton<String>(
+              tooltip: 'מחובר בתור ${widget.username}',
+              onSelected: (value) {
+                if (value == 'signout') widget.onSignOut?.call();
+              },
+              itemBuilder: (context) => [
+                PopupMenuItem<String>(
+                  enabled: false,
+                  child: Row(children: [const Icon(Icons.person_outline), const SizedBox(width: 8), Text(widget.username!)]),
+                ),
+                const PopupMenuDivider(),
+                const PopupMenuItem<String>(value: 'signout', child: Text('התנתקות / החלפת משתמש')),
+              ],
+            ),
         ],
       ),
       body: Container(

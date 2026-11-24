@@ -1,19 +1,15 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart'; // <-- הוספת החבילה
+
+import 'data/database_platform.dart';
+import 'data/database_helper.dart';
+import 'data/macro_sync_service.dart';
+import 'features/auth/login_screen.dart';
 import 'features/tracker/tracker_screen.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // --- התיקון הקריטי ל-Windows! ---
-  if (Platform.isWindows || Platform.isLinux) {
-    sqfliteFfiInit();
-    databaseFactory = databaseFactoryFfi;
-  }
-  // ---------------------------------
-
+  await initializeDatabasePlatform();
   runApp(const MacroTrackerApp());
 }
 
@@ -92,7 +88,77 @@ class MacroTrackerApp extends StatelessWidget {
           labelStyle: const TextStyle(color: Colors.white70),
         ),
       ),
-      home: const TrackerScreen(),
+      home: const SessionGate(),
     );
+  }
+}
+
+class SessionGate extends StatefulWidget {
+  const SessionGate({super.key});
+
+  @override
+  State<SessionGate> createState() => _SessionGateState();
+}
+
+class _SessionGateState extends State<SessionGate> {
+  MacroProfile? _profile;
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _restore();
+  }
+
+  Future<void> _restore() async {
+    try {
+      final profile = await MacroSyncService.instance.restoreSession();
+      if (profile != null) {
+        await DatabaseHelper().activateProfile(profile.id);
+        try {
+          await DatabaseHelper().synchronizeFromRemote();
+        } catch (error) {
+          debugPrint('Could not refresh profile snapshot; continuing with local cache: $error');
+        }
+      }
+      if (mounted) setState(() => _profile = profile);
+    } catch (error) {
+      // A temporary network failure should not prevent access to a saved local profile.
+      final savedProfile = MacroSyncService.instance.profile;
+      if (savedProfile != null) {
+        await DatabaseHelper().activateProfile(savedProfile.id);
+        if (mounted) setState(() => _profile = savedProfile);
+      } else {
+        debugPrint('No local session could be restored: $error');
+      }
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _onAuthenticated(MacroProfile profile) async {
+    await DatabaseHelper().activateProfile(profile.id);
+    try {
+      await DatabaseHelper().synchronizeFromRemote();
+    } catch (error) {
+      debugPrint('Initial cloud sync failed; profile remains available locally: $error');
+    }
+    if (mounted) setState(() => _profile = profile);
+  }
+
+  Future<void> _signOut() async {
+    await MacroSyncService.instance.signOut();
+    await DatabaseHelper().deactivateProfile();
+    if (mounted) setState(() => _profile = null);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_loading) return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    final profile = _profile;
+    if (profile != null) {
+      return TrackerScreen(username: profile.username, onSignOut: _signOut);
+    }
+    return LoginScreen(onAuthenticated: _onAuthenticated);
   }
 }

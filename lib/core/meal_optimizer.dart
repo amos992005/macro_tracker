@@ -1,5 +1,6 @@
 import 'dart:isolate';
 import 'dart:math';
+import 'package:flutter/foundation.dart';
 import '../data/models/food.dart';
 
 class OptimizationResult {
@@ -316,6 +317,19 @@ class MealOptimizer {
     required Map<String, dynamic> settings,
     Map<int, double>? initialWeights,
   }) async {
+    if (kIsWeb) {
+      // Web does not support Dart isolates in this code path; run the same
+      // optimizer on the current event loop instead.
+      return optimizeWithFixed(
+        allFoods: allFoods,
+        fixedWeights: fixedWeights,
+        targets: targets,
+        preferences: preferences,
+        settings: settings,
+        initialWeights: initialWeights,
+      );
+    }
+
     final payload = <String, dynamic>{
       'foods': allFoods.map((food) => food.toMap()).toList(),
       'fixed_weights': {

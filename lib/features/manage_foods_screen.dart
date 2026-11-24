@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import '../core/file_platform.dart';
 import '../core/search_utils.dart';
 import '../data/database_helper.dart';
 import '../data/models/food.dart';
@@ -69,13 +71,12 @@ class _ManageFoodsScreenState extends State<ManageFoodsScreen> {
         fileName: onlyFavorites ? 'macro_tracker_favorites.json' : 'macro_tracker_foods.json',
         type: FileType.custom,
         allowedExtensions: ['json'],
-        bytes: utf8.encode(jsonString),
+        bytes: Uint8List.fromList(utf8.encode(jsonString)),
       );
 
       if (outputFile != null) {
-        if (!Platform.isIOS && !Platform.isAndroid) {
-          final file = File(outputFile);
-          await file.writeAsString(jsonString);
+        if (!kIsWeb && defaultTargetPlatform != TargetPlatform.iOS && defaultTargetPlatform != TargetPlatform.android) {
+          await writeTextToPath(outputFile, jsonString);
         }
         if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('הקובץ נשמר בהצלחה!')));
       }
@@ -88,11 +89,16 @@ class _ManageFoodsScreenState extends State<ManageFoodsScreen> {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['json'],
+      withData: true,
     );
 
-    if (result != null && result.files.single.path != null) {
-      File file = File(result.files.single.path!);
-      String jsonString = await file.readAsString();
+    if (result != null) {
+      final pickedFile = result.files.single;
+      final bytes = pickedFile.bytes;
+      if (bytes == null && pickedFile.path == null) return;
+      final jsonString = bytes != null
+          ? utf8.decode(bytes)
+          : await readTextFromPath(pickedFile.path!);
 
       try {
         List<dynamic> jsonList = jsonDecode(jsonString);
