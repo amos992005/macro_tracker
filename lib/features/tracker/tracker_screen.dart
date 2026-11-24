@@ -53,6 +53,7 @@ class _TrackerScreenState extends State<TrackerScreen> {
     final meals = await _dbHelper.getMealsForDate(_todayDate);
     final targets = await _dbHelper.getTargetsForDate(_todayDate);
     final settings = await _dbHelper.getSettings();
+    if (!mounted) return;
 
     setState(() {
       _foods = foods;
@@ -361,6 +362,7 @@ class _TrackerScreenState extends State<TrackerScreen> {
 
     OptimizationResult? result;
     bool isSaving = false;
+    bool isCalculating = false;
 
     bool showOnlyFavorites = false;
     Timer? debounce;
@@ -389,8 +391,8 @@ class _TrackerScreenState extends State<TrackerScreen> {
         return StatefulBuilder(
           builder: (context, setDialogState) {
 
-            void runOptimization() {
-              if (selectedFoodIds.isEmpty) return;
+            Future<void> runOptimization() async {
+              if (selectedFoodIds.isEmpty || isCalculating) return;
               double tCal = double.tryParse(calController.text) ?? 0;
               double tPro = double.tryParse(proController.text) ?? 0;
               double tCarb = double.tryParse(carbController.text) ?? 0;
@@ -400,17 +402,24 @@ class _TrackerScreenState extends State<TrackerScreen> {
               final selectedFoods = _foods.where((f) => selectedFoodIds.contains(f.id)).toList();
               final prefsList = selectedFoods.map((f) => preferences[f.id] ?? 3).toList();
 
-              final optResult = MealOptimizer.optimizeWithFixed(
-                allFoods: selectedFoods,
-                fixedWeights: lockedWeights,
-                targets: [tCal, tPro, tCarb, tFat],
-                preferences: prefsList,
-                settings: _settings,
-              );
+              setDialogState(() => isCalculating = true);
+              OptimizationResult? optResult;
+              try {
+                optResult = await MealOptimizer.optimizeWithFixedInIsolate(
+                  allFoods: selectedFoods,
+                  fixedWeights: lockedWeights,
+                  targets: [tCal, tPro, tCarb, tFat],
+                  preferences: prefsList,
+                  settings: _settings,
+                );
+              } finally {
+                if (context.mounted) setDialogState(() => isCalculating = false);
+              }
 
-              setDialogState(() { result = optResult; });
+              if (!context.mounted) return;
+              setDialogState(() => result = optResult);
 
-              if (optResult == null) {
+              if (optResult == null && this.mounted) {
                 final errorMsg = MealOptimizer.lastErrorMessage ?? 'לא נמצא שילוב חוקי שעומד ביעדים ובחוקי הברזל.';
                 showDialog(
                   context: this.context,
@@ -425,7 +434,8 @@ class _TrackerScreenState extends State<TrackerScreen> {
               }
             }
 
-            void adjustItem(int foodId, double currentWeight, double change) {
+            Future<void> adjustItem(int foodId, double currentWeight, double change) async {
+              if (isCalculating) return;
               double tCal = double.tryParse(calController.text) ?? 0;
               double tPro = double.tryParse(proController.text) ?? 0;
               double tCarb = double.tryParse(carbController.text) ?? 0;
@@ -439,24 +449,28 @@ class _TrackerScreenState extends State<TrackerScreen> {
                 currentMealWeights[id] = result?.weights[id] ?? 0.0;
               }
 
-              final optResult = MealOptimizer.adjustWeight(
-                selectedFoods: selectedFoods,
-                targets: [tCal, tPro, tCarb, tFat],
-                preferences: prefsList,
-                settings: _settings,
-                lockedWeights: lockedWeights,
-                currentWeights: currentMealWeights,
-                adjustedFoodId: foodId,
-                changeAmount: change,
-              );
+              setDialogState(() => isCalculating = true);
+              OptimizationResult? optResult;
+              try {
+                optResult = await MealOptimizer.adjustWeightInIsolate(
+                  selectedFoods: selectedFoods,
+                  targets: [tCal, tPro, tCarb, tFat],
+                  preferences: prefsList,
+                  settings: _settings,
+                  lockedWeights: lockedWeights,
+                  currentWeights: currentMealWeights,
+                  adjustedFoodId: foodId,
+                  changeAmount: change,
+                );
+              } finally {
+                if (context.mounted) setDialogState(() => isCalculating = false);
+              }
 
+              if (!context.mounted) return;
               if (optResult != null) {
-                setDialogState(() {
-                  result = optResult;
-                });
-              } else {
+                setDialogState(() => result = optResult);
+              } else if (this.mounted) {
                 final errorMsg = MealOptimizer.lastErrorMessage ?? 'לא ניתן להוסיף יותר מהמוצר הזה בלי לחרוג מהיעדים ובחוקי הברזל.';
-
                 showDialog(
                   context: this.context,
                   builder: (popupContext) {
@@ -643,9 +657,15 @@ class _TrackerScreenState extends State<TrackerScreen> {
                       ),
                       const SizedBox(height: 16),
                       ElevatedButton.icon(
-                        onPressed: runOptimization,
-                        icon: const Icon(Icons.auto_awesome),
-                        label: const Text('חשב משקלים'),
+                        onPressed: isCalculating ? null : runOptimization,
+                        icon: isCalculating
+                            ? const SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              )
+                            : const Icon(Icons.auto_awesome),
+                        label: Text(isCalculating ? 'מחשב...' : 'חשב משקלים'),
                       ),
                       if (result != null) ...[
                         const Divider(height: 30),
@@ -680,12 +700,12 @@ class _TrackerScreenState extends State<TrackerScreen> {
                                   ),
                                   IconButton(
                                     icon: const Icon(Icons.remove_circle_outline, color: Colors.red, size: 20),
-                                    onPressed: weight > 0 ? () => adjustItem(id, weight, -5) : null,
+                                    onPressed: weight > 0 && !isCalculating ? () => adjustItem(id, weight, -5) : null,
                                   ),
                                   Text('${weight.toStringAsFixed(1)} ${food.isLiquid ? 'מ"ל' : 'גרם'}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.blue)),
                                   IconButton(
                                     icon: const Icon(Icons.add_circle_outline, color: Colors.green, size: 20),
-                                    onPressed: () => adjustItem(id, weight, 5),
+                                    onPressed: isCalculating ? null : () => adjustItem(id, weight, 5),
                                   ),
                                 ],
                               ),

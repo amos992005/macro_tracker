@@ -1,30 +1,32 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
+import 'package:macro_tracker/core/calculator.dart';
+import 'package:macro_tracker/data/models/food.dart';
 import 'package:macro_tracker/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  test('MacroTrackerApp entry point and core nutrition model load', () {
+    // Constructing the root widget does not initialize the SQLite plugin, so
+    // this smoke test also runs on test platforms without SQLite FFI setup.
+    expect(const MacroTrackerApp(), isA<MacroTrackerApp>());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    final food = Food(
+      name: 'בדיקת מזון',
+      caloriesPer100g: 100,
+      proteinPer100g: 10,
+      carbsPer100g: 20,
+      fatPer100g: 5,
+    );
+    final restoredFood = Food.fromMap(food.toMap());
+    expect(restoredFood.name, food.name);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    final nutrition = Calculator.calculateFromWeight(
+      weightGrams: 50,
+      calPer100g: restoredFood.caloriesPer100g,
+      proPer100g: restoredFood.proteinPer100g,
+      carbPer100g: restoredFood.carbsPer100g,
+      fatPer100g: restoredFood.fatPer100g,
+    );
+    expect(nutrition.calories, 50);
+    expect(nutrition.protein, 5);
   });
 }

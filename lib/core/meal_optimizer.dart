@@ -1,3 +1,4 @@
+import 'dart:isolate';
 import 'dart:math';
 import '../data/models/food.dart';
 
@@ -304,6 +305,91 @@ class MealOptimizer {
     return best ?? scored.first.key;
   }
 
+  /// Runs the optimizer in a worker isolate. Only primitive maps/lists cross the
+  /// isolate boundary; Food instances and OptimizationResult are reconstructed
+  /// on their respective sides.
+  static Future<OptimizationResult?> optimizeWithFixedInIsolate({
+    required List<Food> allFoods,
+    required Map<int, double> fixedWeights,
+    required List<double> targets,
+    required List<int> preferences,
+    required Map<String, dynamic> settings,
+    Map<int, double>? initialWeights,
+  }) async {
+    final payload = <String, dynamic>{
+      'foods': allFoods.map((food) => food.toMap()).toList(),
+      'fixed_weights': {
+        for (final entry in fixedWeights.entries) entry.key.toString(): entry.value,
+      },
+      'targets': targets,
+      'preferences': preferences,
+      'settings': settings,
+      'initial_weights': initialWeights == null
+          ? null
+          : {
+              for (final entry in initialWeights.entries)
+                entry.key.toString(): entry.value,
+            },
+    };
+
+    try {
+      final response = await Isolate.run<Map<String, dynamic>>(
+        () => _runOptimizerInIsolate(payload),
+      );
+      lastErrorMessage = response['error'] as String?;
+      final rawWeights = response['weights'];
+      if (rawWeights == null) return null;
+
+      final weights = <int, double>{};
+      for (final entry in Map<String, dynamic>.from(rawWeights as Map).entries) {
+        final weight = entry.value as num;
+        weights[int.parse(entry.key as String)] = weight.toDouble();
+      }
+
+      return OptimizationResult(
+        weights: weights,
+        totalCalories: (response['total_calories'] as num).toDouble(),
+        totalProtein: (response['total_protein'] as num).toDouble(),
+        totalCarbs: (response['total_carbs'] as num).toDouble(),
+        totalFat: (response['total_fat'] as num).toDouble(),
+      );
+    } catch (error) {
+      lastErrorMessage = 'שגיאה בחישוב הארוחה: $error';
+      return null;
+    }
+  }
+
+  /// Isolate-backed variant used by the UI for manual weight adjustments.
+  static Future<OptimizationResult?> adjustWeightInIsolate({
+    required List<Food> selectedFoods,
+    required List<double> targets,
+    required List<int> preferences,
+    required Map<String, dynamic> settings,
+    required Map<int, double> lockedWeights,
+    required Map<int, double> currentWeights,
+    required int adjustedFoodId,
+    required double changeAmount,
+  }) {
+    final newTargetWeight =
+        ((currentWeights[adjustedFoodId] ?? 0) + changeAmount)
+            .clamp(0, 2000)
+            .toDouble();
+    final fixedWeights = Map<int, double>.from(lockedWeights)
+      ..[adjustedFoodId] = newTargetWeight;
+    final adjustedPreferences = List<int>.from(preferences);
+    final foodIndex = selectedFoods.indexWhere((food) => food.id == adjustedFoodId);
+    if (foodIndex != -1) adjustedPreferences[foodIndex] = 100;
+
+    return optimizeWithFixedInIsolate(
+      allFoods: selectedFoods,
+      fixedWeights: fixedWeights,
+      targets: targets,
+      preferences: adjustedPreferences,
+      settings: settings,
+      initialWeights: currentWeights,
+    );
+  }
+
   static OptimizationResult? adjustWeight({
     required List<Food> selectedFoods,
     required List<double> targets,
@@ -413,4 +499,60 @@ class _EvalResult {
   final double score;
   final double cal, pro, carb, fat;
   _EvalResult(this.score, this.cal, this.pro, this.carb, this.fat);
+}
+
+Map<String, dynamic> _runOptimizerInIsolate(Map<String, dynamic> payload) {
+  try {
+    final foods = (payload['foods'] as List)
+        .map((item) => Food.fromMap(Map<String, dynamic>.from(item as Map)))
+        .toList();
+    final fixedWeights = _decodeWeights(payload['fixed_weights']);
+    final initialWeights = _decodeWeights(payload['initial_weights']);
+    final targets = (payload['targets'] as List)
+        .map((value) => (value as num).toDouble())
+        .toList();
+    final preferences = (payload['preferences'] as List)
+        .map((value) => (value as num).toInt())
+        .toList();
+    final settings = Map<String, dynamic>.from(payload['settings'] as Map);
+
+    final result = MealOptimizer.optimizeWithFixed(
+      allFoods: foods,
+      fixedWeights: fixedWeights,
+      targets: targets,
+      preferences: preferences,
+      settings: settings,
+      initialWeights: initialWeights.isEmpty ? null : initialWeights,
+    );
+
+    return <String, dynamic>{
+      'weights': result == null
+          ? null
+          : {
+              for (final entry in result.weights.entries)
+                entry.key.toString(): entry.value,
+            },
+      'total_calories': result?.totalCalories ?? 0.0,
+      'total_protein': result?.totalProtein ?? 0.0,
+      'total_carbs': result?.totalCarbs ?? 0.0,
+      'total_fat': result?.totalFat ?? 0.0,
+      'error': MealOptimizer.lastErrorMessage,
+    };
+  } catch (error) {
+    return <String, dynamic>{
+      'weights': null,
+      'total_calories': 0.0,
+      'total_protein': 0.0,
+      'total_carbs': 0.0,
+      'total_fat': 0.0,
+      'error': 'שגיאה בחישוב הארוחה: $error',
+    };
+  }
+}
+
+Map<int, double> _decodeWeights(dynamic serializedWeights) {
+  if (serializedWeights == null) return {};
+  return Map<String, dynamic>.from(serializedWeights as Map).map(
+    (key, value) => MapEntry(int.parse(key), (value as num).toDouble()),
+  );
 }

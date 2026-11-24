@@ -19,6 +19,7 @@ class _ManageFoodsScreenState extends State<ManageFoodsScreen> {
   List<Food> _foods = [];
   String _searchQuery = '';
   final TextEditingController _searchController = TextEditingController();
+  Timer? _searchDebounce;
 
   @override
   void initState() {
@@ -28,9 +29,17 @@ class _ManageFoodsScreenState extends State<ManageFoodsScreen> {
 
   Future<void> _loadFoods() async {
     final foods = await _dbHelper.getAllFoods();
+    if (!mounted) return;
     setState(() {
       _foods = foods;
     });
+  }
+
+  @override
+  void dispose() {
+    _searchDebounce?.cancel();
+    _searchController.dispose();
+    super.dispose();
   }
 
   List<Food> get _filteredFoods {
@@ -88,8 +97,11 @@ class _ManageFoodsScreenState extends State<ManageFoodsScreen> {
       try {
         List<dynamic> jsonList = jsonDecode(jsonString);
 
-        // מפה של המאכלים הקיימים לצורך חיפוש מהיר
-        final existingFoodsMap = {for (var f in _foods) f.name: f};
+        // מפה של המאכלים הקיימים לצורך חיפוש מהיר, לפי שם מנורמל.
+        final existingFoodsMap = {
+          for (var food in _foods) food.name.trim().toLowerCase(): food,
+        };
+        final processedNames = <String>{};
 
         List<Food> newFoodsToInsert = [];
         // מפה של מוצרים שיש לעדכן (לפי ID כדי למנוע כפילויות)
@@ -97,15 +109,18 @@ class _ManageFoodsScreenState extends State<ManageFoodsScreen> {
 
         for (var json in jsonList) {
           final newFood = Food.fromMap(json);
+          final normalizedName = newFood.name.trim().toLowerCase();
+          if (normalizedName.isEmpty || !processedNames.add(normalizedName)) continue;
 
-          if (existingFoodsMap.containsKey(newFood.name)) {
-            final existing = existingFoodsMap[newFood.name]!;
+          final existingFood = existingFoodsMap[normalizedName];
+          if (existingFood != null) {
+            final existing = existingFood;
 
             // אם מייבאים מועדפים, אנחנו דורסים את הערכים הקיימים עם מה שבקובץ
             if (forceFavorite) {
               final updatedFood = Food(
                 id: existing.id,
-                name: newFood.name,
+                name: newFood.name.trim(),
                 caloriesPer100g: newFood.caloriesPer100g,
                 proteinPer100g: newFood.proteinPer100g,
                 carbsPer100g: newFood.carbsPer100g,
@@ -120,7 +135,7 @@ class _ManageFoodsScreenState extends State<ManageFoodsScreen> {
           } else {
             // אם המאכל לא קיים, נוסיף אותו
             newFoodsToInsert.add(Food(
-              name: newFood.name,
+              name: newFood.name.trim(),
               caloriesPer100g: newFood.caloriesPer100g,
               proteinPer100g: newFood.proteinPer100g,
               carbsPer100g: newFood.carbsPer100g,
@@ -375,13 +390,20 @@ class _ManageFoodsScreenState extends State<ManageFoodsScreen> {
                         ? IconButton(
                         icon: const Icon(Icons.clear),
                         onPressed: () {
+                          _searchDebounce?.cancel();
                           _searchController.clear();
                           setState(() => _searchQuery = '');
                         }
                     ) : null,
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
                   ),
-                  onChanged: (val) => setState(() => _searchQuery = val),
+                  onChanged: (val) {
+                    _searchDebounce?.cancel();
+                    _searchDebounce = Timer(const Duration(milliseconds: 200), () {
+                      if (!mounted) return;
+                      setState(() => _searchQuery = val);
+                    });
+                  },
                 ),
                 const SizedBox(height: 8),
                 Text(

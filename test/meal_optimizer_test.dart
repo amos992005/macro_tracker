@@ -266,5 +266,20 @@ void main() {
       // 600 גרם שניצל נותן 1380 קלוריות, שזה בטווח התחתון (1350-1500)
       expect(result!.totalCalories, closeTo(1380, 5.0));
     });
+
+    test('14. חישוב ב-Isolate מחזיר תוצאה עם ערכים פשוטים להעברה', () async {
+      final result = await MealOptimizer.optimizeWithFixedInIsolate(
+        allFoods: [schnitzel],
+        fixedWeights: {},
+        targets: [1500, 120, 100, 50],
+        preferences: [5],
+        settings: standardSettings,
+      );
+
+      expect(result, isNotNull, reason: 'ה-worker צריך להחזיר תוצאה תקינה');
+      expect(result!.totalCalories, greaterThanOrEqualTo(1350));
+      expect(result.totalCalories, lessThanOrEqualTo(1500));
+      expect(result.weights[1], isNotNull);
+    });
   });
 }

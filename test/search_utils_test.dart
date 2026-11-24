@@ -105,5 +105,65 @@ void main() {
       final results = SearchUtils.filterAndSortFoods(allFoods, 'קורנפלקס עוף');
       expect(results, isEmpty, reason: 'אין מוצר שמכיל גם קורנפלקס וגם עוף');
     });
+
+    test('מאכל בסוף מאגר של 10,000 רשומות נמצא ראשון בחיפוש מדויק', () {
+      final foods = List<Food>.generate(
+        9999,
+        (index) => Food(
+          id: index + 1,
+          name: 'מאכל בדיקה $index',
+          caloriesPer100g: 100,
+          proteinPer100g: 10,
+          carbsPer100g: 10,
+          fatPer100g: 5,
+        ),
+      )..add(
+          Food(
+            id: 10000,
+            name: 'אבקת חלבון שוקולד',
+            caloriesPer100g: 400,
+            proteinPer100g: 70,
+            carbsPer100g: 15,
+            fatPer100g: 8,
+          ),
+        );
+
+      final results = SearchUtils.filterAndSortFoods(foods, 'אבקת חלבון שוקולד');
+
+      expect(results, isNotEmpty);
+      expect(results.first.id, 10000);
+      expect(results.first.name, 'אבקת חלבון שוקולד');
+    });
+
+    test('ניקוד, מקפים ופיסוק מנורמלים בלי תעתיק פונטי', () {
+      expect(SearchUtils.normalize('אָבְקַת-חלבון, שוקולד!'), 'אבקת חלבון שוקולד');
+      expect(SearchUtils.normalize('חלבון'), 'חלבון');
+    });
+
+    test('התאמה מלאה של כל המילים מדורגת לפני התאמה חלקית', () {
+      final exactAllWords = Food(
+        id: 8,
+        name: 'אבקת חלבון שוקולד',
+        caloriesPer100g: 400,
+        proteinPer100g: 70,
+        carbsPer100g: 15,
+        fatPer100g: 8,
+      );
+      final partialWords = Food(
+        id: 9,
+        name: 'אבקת חלבון וניל',
+        caloriesPer100g: 400,
+        proteinPer100g: 70,
+        carbsPer100g: 15,
+        fatPer100g: 8,
+      );
+      final results = SearchUtils.filterAndSortFoods(
+        [partialWords, exactAllWords],
+        'אבקת חלבון שוקולד',
+      );
+
+      expect(results.first.id, exactAllWords.id);
+      expect(results.any((food) => food.id == partialWords.id), isTrue);
+    });
   });
 }
