@@ -135,9 +135,26 @@ void main() {
       expect(results.first.name, 'אבקת חלבון שוקולד');
     });
 
-    test('ניקוד, מקפים ופיסוק מנורמלים בלי תעתיק פונטי', () {
+    test('ניקוד, מקפים, פיסוק ואותיות סופיות מנורמלים בלי תעתיק פונטי', () {
       expect(SearchUtils.normalize('אָבְקַת-חלבון, שוקולד!'), 'אבקת חלבון שוקולד');
+      expect(SearchUtils.normalize('ךםןףץ'), 'כמנפצ');
+      expect(SearchUtils.normalize('קורן'), 'קורנ');
       expect(SearchUtils.normalize('חלבון'), 'חלבון');
+    });
+
+    test('חיפוש שתי מילים מוצא גם שם מאכל שמחבר אותן', () {
+      final compoundFood = Food(
+        id: 10,
+        name: 'חזהעוף',
+        caloriesPer100g: 165,
+        proteinPer100g: 31,
+        carbsPer100g: 0,
+        fatPer100g: 3.6,
+      );
+      final results = SearchUtils.filterAndSortFoods([compoundFood], 'חזה עוף');
+
+      expect(results, isNotEmpty);
+      expect(results.first.id, compoundFood.id);
     });
 
     test('התאמה מלאה של כל המילים מדורגת לפני התאמה חלקית', () {

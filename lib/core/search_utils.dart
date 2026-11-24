@@ -61,9 +61,10 @@ class SearchUtils {
     for (final rune in text.toLowerCase().runes) {
       if (_isHebrewMark(rune)) continue;
 
-      if (_isLetterOrDigit(rune)) {
+      final normalizedRune = _normalizeFinalLetter(rune);
+      if (_isLetterOrDigit(normalizedRune)) {
         if (needsSpace && output.length > 0) output.write(' ');
-        output.writeCharCode(rune);
+        output.writeCharCode(normalizedRune);
         needsSpace = false;
       } else {
         // Treat hyphens, punctuation, symbols and whitespace as separators.
@@ -80,6 +81,17 @@ class SearchUtils {
         (rune >= 0x05C1 && rune <= 0x05C2) ||
         (rune >= 0x05C4 && rune <= 0x05C5) ||
         rune == 0x05C7;
+  }
+
+  static int _normalizeFinalLetter(int rune) {
+    return switch (rune) {
+      0x05DA => 0x05DB, // ך -> כ
+      0x05DD => 0x05DE, // ם -> מ
+      0x05DF => 0x05E0, // ן -> נ
+      0x05E3 => 0x05E4, // ף -> פ
+      0x05E5 => 0x05E6, // ץ -> צ
+      _ => rune,
+    };
   }
 
   static bool _isLetterOrDigit(int rune) {
@@ -168,6 +180,41 @@ class SearchUtils {
     return null;
   }
 
+  /// Allows consecutive query words to be covered by a single food token,
+  /// e.g. "קורן פלקס" matching the compound token "קורנפלקס".
+  static bool _matchesAllTokensWithCompounds(
+    List<String> queryTokens,
+    List<String> foodTokens,
+  ) {
+    final memo = <int, bool>{};
+
+    bool matchFrom(int queryIndex) {
+      if (queryIndex == queryTokens.length) return true;
+      if (memo.containsKey(queryIndex)) return memo[queryIndex]!;
+
+      final tokenMatch = _matchToken(queryTokens[queryIndex], foodTokens);
+      if (tokenMatch?.isDirect == true && matchFrom(queryIndex + 1)) {
+        memo[queryIndex] = true;
+        return true;
+      }
+
+      for (int end = queryIndex + 2; end <= queryTokens.length; end++) {
+        final compound = queryTokens.sublist(queryIndex, end).join();
+        if (foodTokens.any((foodToken) {
+          return _tokenForms(foodToken).any((foodForm) => foodForm.contains(compound));
+        }) && matchFrom(end)) {
+          memo[queryIndex] = true;
+          return true;
+        }
+      }
+
+      memo[queryIndex] = false;
+      return false;
+    }
+
+    return queryTokens.length > 1 && matchFrom(0);
+  }
+
   static bool _levenshteinAtMostOne(String a, String b) {
     if (a == b) return true;
     if ((a.length - b.length).abs() > 1) return false;
@@ -236,6 +283,23 @@ class SearchUtils {
       );
     }
 
+    // Tier 2b: allow word boundaries to differ when the same phrase is
+    // stored as one compound word (or searched with missing spaces).
+    if (queryTokens.length > 1) {
+      final compactQuery = normalizedQuery.replaceAll(' ', '');
+      final compactName = name.replaceAll(' ', '');
+      if (compactName.contains(compactQuery)) {
+        return _ScoredFood(
+          food: food,
+          normalizedName: name,
+          score: compactName.startsWith(compactQuery)
+              ? 250000 + favoriteBonus
+              : 200000 + favoriteBonus,
+          matchesAllTokens: true,
+        );
+      }
+    }
+
     final foodTokens = foodData.tokens;
     int directMatches = 0;
     int matchedTokens = 0;
@@ -250,10 +314,13 @@ class SearchUtils {
     }
 
     if (totalScore == 0) return null;
-    final matchesAllTokens = matchedTokens == queryTokens.length;
+    final compoundMatch = matchedTokens < queryTokens.length &&
+        _matchesAllTokensWithCompounds(queryTokens, foodTokens);
+    final matchesAllTokens =
+        matchedTokens == queryTokens.length || compoundMatch;
 
     int score;
-    if (directMatches == queryTokens.length) {
+    if (directMatches == queryTokens.length || compoundMatch) {
       // Tier 3: every query word matches directly. Exact word and prefix
       // matches score above substrings; focused names receive a length bonus.
       final lengthDifference = (name.length - normalizedQuery.length).abs();
