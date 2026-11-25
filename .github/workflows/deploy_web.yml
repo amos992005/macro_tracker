@@ -36,7 +36,20 @@ jobs:
         run: flutter pub get
 
       - name: Analyze Flutter code
-        run: flutter analyze
+        run: |
+          set +e
+          flutter analyze > /tmp/flutter-analyze.log 2>&1
+          analyze_status=$?
+          cat /tmp/flutter-analyze.log
+          if [ "$analyze_status" -ne 0 ]; then
+            python3 - <<'PY'
+          from pathlib import Path
+          output = Path('/tmp/flutter-analyze.log').read_text(errors='replace')
+          escaped = output.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+          print(f'::error title=flutter analyze diagnostics::{escaped[:6000]}')
+          PY
+          fi
+          exit "$analyze_status"
 
       - name: Run Flutter tests
         run: flutter test
