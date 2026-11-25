@@ -79,7 +79,7 @@ jobs:
           selected = set()
           for index in indexes:
             selected.update(range(max(0, index - 2), min(len(lines), index + 5)))
-          summary = '\n'.join(lines[i] for i in sorted(selected)) or output[-5000:]
+          summary = output[-5000:]
           escaped = summary.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
           print(f'::error title=flutter test diagnostics::{escaped[:5000]}')
           PY
