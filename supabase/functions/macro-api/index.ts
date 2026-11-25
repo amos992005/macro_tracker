@@ -359,17 +359,19 @@ async function dataApi(
   return json({ error: "פעולה לא מוכרת." }, 400);
 }
 
-const AI_SYSTEM_INSTRUCTION = `אתה דיאטן קליני ישראלי בכיר ומומחה לראייה ממוחשבת וכימות מזון. נתח ארוחה/מתכון או תווית תזונה והחזר JSON תקין בלבד.
-
-מבנה הפלט הנדרש: {"meal_title":"שם קצר בעברית","servings":1,"confidence_note":"הערה קצרה על הנחות ואי-ודאות","items":[{"name":"שם רכיב בעברית","search_query":"שם בסיסי קצר לחיפוש","grams":100,"is_liquid":false,"is_assumed_addition":false,"calories_per_100g":130,"protein_per_100g":2.5,"carbs_per_100g":28,"fat_per_100g":0.3,"variants":[{"label":"אפשרות","calories_per_100g":130,"protein_per_100g":2.5,"carbs_per_100g":28,"fat_per_100g":0.3}]}]}. variants אופציונלי; כל שאר שדות הפריט ושדות השורש חובה. החזר מספרים ולא מחרוזות לערכים תזונתיים.
-
-כללי ניתוח תמונה: כייל קנה מידה מול צלחת עיקרית ישראלית 26–28 ס"מ, צלחת קטנה 20 ס"מ, מזלג/כף 19 ס"מ, קופסת אוכל, כוס או כף יד. הערך שטח פנים כפול גובה/עומק לקבלת נפח בסמ"ק והכפל בצפיפות משוערת: אורז/קוסקוס מבושל כ-0.8 g/cm³, בשר/דג/עוף כ-1.05, חומוס/טחינה/גבינה כ-1.1, סלט קצוץ כ-0.5, עלים כ-0.2. אלה אומדנים; ציין אי-ודאות ואל תציג דיוק מזויף.
-
-לעולם אל תכלול שמן בישול/טיגון בערכי המזון הבסיסי. החזר אורז/עוף/חביתה/ירקות נקיים והוסף שמן או רוטב בנפרד כ-is_assumed_addition=true עם כמות והסבר. אם המשתמש אומר שאין שמן, אל תניח שמן. השערות ניתנות להסרה.
-
-כשיש שונות משמעותית לפי מותג/הכנה (חומוס תעשייתי/ביתי, שניצל אפוי/מטוגן, טחינה מוכנה/גולמית, אחוזי גבינה או לחם קל/רגיל), ספק 2–3 וריאציות בעברית עם ערכים ל-100 גרם, בלי להמציא מותג.
-
-במתכון מסיר/תבנית חשב רכיבים ומשקל אכיל לאחר בישול. אם צוין מספר מנות או חלק שנאכל, התאם grams לכל רכיב והחזר servings מתאים; אחרת אמוד מנה אחת. בתווית חלץ ערכים ל-100 גרם/מ"ל. שם מוצר בלבד יקבל אומדן שמרני. כל שמות/הערות בעברית ו-search_query נקי וקצר.`;
+const AI_SYSTEM_INSTRUCTION = `You are a careful nutrition analyst. Return valid JSON only, without Markdown.
+Required root: meal_title, servings, confidence_note, items.
+Each item must include name, search_query, grams, is_liquid, is_assumed_addition, calories_per_100g, protein_per_100g, carbs_per_100g, fat_per_100g.
+Use numeric nutrition values and estimate edible portion weights in grams; explain uncertainty briefly.
+Separate cooking oil and sauces from base foods; never include assumed oil in the base food values.
+If oil or sauce is not explicitly confirmed, return it separately with is_assumed_addition=true; never assume oil when user says none.
+For recipes, estimate cooked edible amounts and scale grams to the stated servings or portion.
+For labels, extract nutrition per 100 g or ml; for product names alone, provide a cautious estimate.
+Add variants only for a genuinely ambiguous ingredient or preparation, such as hummus or schnitzel.
+Provide at most two short variants for that ambiguous item; omit variants for all other items.
+Use concise Hebrew names and confidence_note; use a short clean search_query.
+Return one item per distinct food component, with 1 to 40 items.
+Example shape: {"meal_title":"ארוחה","servings":1,"confidence_note":"הערכה","items":[{"name":"אורז מבושל","search_query":"אורז מבושל","grams":150,"is_liquid":false,"is_assumed_addition":false,"calories_per_100g":130,"protein_per_100g":2.5,"carbs_per_100g":28,"fat_per_100g":0.3}]}`;
 
 function isNonNegativeNumber(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value) && value >= 0;
@@ -536,7 +538,7 @@ async function listGeminiModels(apiKey: string): Promise<string[]> {
   const fetchModels = async (): Promise<string[]> => {
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(apiKey)}&pageSize=100`,
-      { signal: AbortSignal.timeout(4000) },
+      { signal: AbortSignal.timeout(2000) },
     );
     if (!response.ok) throw new Error(`ListModels HTTP ${response.status}`);
     const data = await response.json();
@@ -548,10 +550,8 @@ async function listGeminiModels(apiKey: string): Promise<string[]> {
           model.supportedGenerationMethods?.includes("generateContent"),
       )
       .map((model: GeminiModel) => String(model.name).replace(/^models\//, ""))
-      .filter((name: string) =>
-        /^gemini-[a-z0-9.-]*flash[a-z0-9.-]*$/i.test(name),
-      )
-      .sort((a: string, b: string) => b.localeCompare(a));
+      .filter((name: string) => /^gemini-[a-z0-9.-]+$/i.test(name))
+      .sort((a: string, b: string) => a.localeCompare(b));
   };
   cachedGeminiModels ??= fetchModels().catch((error) => {
     cachedGeminiModels = undefined;
@@ -572,6 +572,28 @@ function recommendedGeminiModel(message: string): string | null {
 }
 
 let cachedGeminiModels: Promise<string[]> | undefined;
+let modelDiscoveryLogged = false;
+
+async function logAvailableModelsOnce(input: {
+  requestId: string;
+  userId: string;
+  mode: string;
+  apiKey: string;
+  models: string[];
+}): Promise<void> {
+  if (modelDiscoveryLogged) return;
+  modelDiscoveryLogged = true;
+  await recordAiFailure({
+    requestId: input.requestId,
+    userId: input.userId,
+    mode: input.mode,
+    model: "ListModels",
+    status: 200,
+    type: "model_discovery",
+    message: `Callable Gemini models: ${input.models.join(", ") || "none returned"}`,
+    apiKey: input.apiKey,
+  });
+}
 
 async function analyzeMeal(
   body: Json,
@@ -629,10 +651,37 @@ async function analyzeMeal(
   if (image) parts.push({ inline_data: { mime_type: mimeType, data: image } });
 
   const preferPro = body.pro === true;
+  let availableModels: string[] = [];
+  try {
+    availableModels = await listGeminiModels(apiKey);
+    await logAvailableModelsOnce({
+      requestId,
+      userId: user.id,
+      mode,
+      apiKey,
+      models: availableModels,
+    });
+  } catch (error) {
+    console.warn(
+      "[macro-ai] ListModels discovery failed",
+      safeAiText(error, apiKey),
+    );
+  }
+  const liteModel = availableModels.find((name) =>
+    /flash-lite(?:-|$)/i.test(name),
+  );
+  const primaryModel = preferPro
+    ? "gemini-3.8-flash"
+    : (liteModel ?? "gemini-3.8-flash");
   const queue: Array<{ model: string; thinkingBudget?: number }> = [
-    { model: "gemini-3.8-flash", thinkingBudget: preferPro ? 512 : 0 },
+    { model: primaryModel, thinkingBudget: preferPro ? 512 : 0 },
   ];
-  const queued = new Set([`gemini-3.8-flash|${preferPro ? 512 : 0}`]);
+  if (!preferPro && primaryModel !== "gemini-3.8-flash") {
+    queue.push({ model: "gemini-3.8-flash", thinkingBudget: 0 });
+  }
+  const queued = new Set(
+    queue.map(({ model, thinkingBudget }) => `${model}|${thinkingBudget}`),
+  );
   const tried = new Set<string>();
   let modelDiscoveryUsed = false;
   let lastStatus = 502;
@@ -659,11 +708,11 @@ async function analyzeMeal(
     tried.add(attemptKey);
     lastModel = model;
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 15_000);
+    const timer = setTimeout(() => controller.abort(), 45_000);
     try {
       const generationConfig: Json = {
         responseMimeType: "application/json",
-        maxOutputTokens: 4096,
+        maxOutputTokens: 2048,
         temperature: 0.2,
       };
       if (thinkingBudget !== undefined) {
@@ -794,7 +843,7 @@ async function analyzeMeal(
       lastType = lastStatus === 504 ? "gemini_timeout" : "gemini_network_error";
       lastMessage =
         lastStatus === 504
-          ? "Gemini request timed out after 15000ms"
+          ? "Gemini request timed out after 45000ms"
           : safeAiText(error, apiKey);
       await recordAiFailure({
         requestId,

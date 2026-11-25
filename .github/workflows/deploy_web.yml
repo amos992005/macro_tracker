@@ -39,7 +39,6 @@ jobs:
         run: flutter test
 
       - name: Verify live Gemini meal analysis through Supabase
-        continue-on-error: true
         timeout-minutes: 1
         env:
           GITHUB_RUN_ID: ${{ github.run_id }}
@@ -108,7 +107,7 @@ jobs:
                   'text': text,
                   'image_base64': base64.b64encode(image).decode(),
                   'mime_type': 'image/png',
-              }, token, timeout=35)
+              }, token, timeout=45)
               if status != 200:
                   raise SystemExit(f'Live analyze_meal failed: HTTP {status}: {response}')
               result = response.get('result')

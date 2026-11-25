@@ -155,10 +155,10 @@ class MacroSyncService {
     try {
       response = await http
           .post(_endpoint, headers: headers, body: jsonEncode(body))
-          .timeout(const Duration(seconds: 25));
+          .timeout(const Duration(seconds: 50));
     } on TimeoutException {
       throw const MacroApiException(
-        'הבקשה נמשכה יותר מ-25 שניות. בדקו את החיבור ונסו שוב.',
+        'הבקשה נמשכה יותר מ-50 שניות. בדקו את החיבור ונסו שוב.',
         statusCode: 408,
       );
     }
