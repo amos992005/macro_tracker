@@ -561,14 +561,18 @@ async function listGeminiModels(apiKey: string): Promise<string[]> {
 }
 
 function recommendedGeminiModel(message: string): string | null {
+  const modelReferences = Array.from(
+    message.matchAll(/models\/(gemini-[a-z0-9.-]+)/gi),
+    (match) => match[1],
+  ).reverse();
   const candidates = [
-    message.match(/models\/(gemini-[a-z0-9.-]+)/i)?.[1],
-    message.match(/\b(gemini-[a-z0-9.-]*flash[a-z0-9.-]*)\b/i)?.[1],
+    ...modelReferences,
+    ...Array.from(
+      message.matchAll(/\b(gemini-[a-z0-9.-]*flash[a-z0-9.-]*)\b/gi),
+      (match) => match[1],
+    ).reverse(),
   ];
-  return (
-    candidates.find((name) => name && /^gemini-[a-z0-9.-]+$/i.test(name)) ??
-    null
-  );
+  return candidates.find((name) => /^gemini-[a-z0-9.-]+$/i.test(name)) ?? null;
 }
 
 let cachedGeminiModels: Promise<string[]> | undefined;
@@ -667,23 +671,37 @@ async function analyzeMeal(
       safeAiText(error, apiKey),
     );
   }
-  const liteModel = availableModels.find((name) =>
-    /flash-lite(?:-|$)/i.test(name),
-  );
-  const primaryModel = preferPro
-    ? "gemini-3.8-flash"
-    : (liteModel ?? "gemini-3.8-flash");
-  const queue: Array<{ model: string; thinkingBudget?: number }> = [
-    { model: primaryModel, thinkingBudget: preferPro ? 512 : 0 },
-  ];
-  if (!preferPro && primaryModel !== "gemini-3.8-flash") {
-    queue.push({ model: "gemini-3.8-flash", thinkingBudget: 0 });
+
+  const queue: Array<{ model: string; thinkingBudget?: number }> = [];
+  const listModelsSet = new Set(availableModels);
+  const addInitialModel = (model: string, thinkingBudget?: number) => {
+    if (availableModels.length > 0 && !listModelsSet.has(model)) return;
+    queue.push({ model, thinkingBudget });
+  };
+  if (preferPro) {
+    addInitialModel("gemini-3.8-flash", 512);
+  } else {
+    addInitialModel("gemini-3.5-flash-lite");
+    addInitialModel("gemini-3.1-flash-lite");
+    addInitialModel("gemini-3.8-flash", 0);
+  }
+  const initialModels = new Set(queue.map(({ model }) => model));
+  for (const model of availableModels) {
+    if (!initialModels.has(model)) queue.push({ model });
+  }
+  if (queue.length === 0) {
+    queue.push({
+      model: "gemini-3.8-flash",
+      thinkingBudget: preferPro ? 512 : 0,
+    });
   }
   const queued = new Set(
-    queue.map(({ model, thinkingBudget }) => `${model}|${thinkingBudget}`),
+    queue.map(
+      ({ model, thinkingBudget }) => `${model}|${thinkingBudget ?? "none"}`,
+    ),
   );
   const tried = new Set<string>();
-  let modelDiscoveryUsed = false;
+  const requestDeadline = Date.now() + 38_000;
   let lastStatus = 502;
   let lastModel = "gemini-3.8-flash";
   let lastMessage = "No Gemini response";
@@ -700,7 +718,7 @@ async function analyzeMeal(
     else queue.push(next);
   };
 
-  while (queue.length > 0 && tried.size < 8) {
+  while (queue.length > 0 && Date.now() < requestDeadline) {
     const attempt = queue.shift()!;
     const { model, thinkingBudget } = attempt;
     const attemptKey = `${model}|${thinkingBudget ?? "none"}`;
@@ -708,7 +726,8 @@ async function analyzeMeal(
     tried.add(attemptKey);
     lastModel = model;
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 45_000);
+    const attemptTimeout = Math.min(12_000, requestDeadline - Date.now());
+    const timer = setTimeout(() => controller.abort(), attemptTimeout);
     try {
       const generationConfig: Json = {
         responseMimeType: "application/json",
@@ -754,20 +773,8 @@ async function analyzeMeal(
         }
         if (response.status === 404) {
           const recommended = recommendedGeminiModel(lastMessage);
-          if (recommended && recommended !== model) enqueue(recommended);
-          enqueue("gemini-flash-latest");
-          if (!modelDiscoveryUsed) {
-            modelDiscoveryUsed = true;
-            try {
-              const available = await listGeminiModels(apiKey);
-              for (const candidate of available.slice(0, 3)) enqueue(candidate);
-            } catch (error) {
-              console.warn(
-                "[macro-ai] Cached ListModels fallback failed",
-                safeAiText(error, apiKey),
-              );
-            }
-          }
+          if (recommended && recommended !== model)
+            enqueue(recommended, undefined, true);
         }
         continue;
       }
