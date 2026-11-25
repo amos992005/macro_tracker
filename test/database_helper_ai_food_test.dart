@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:macro_tracker/core/meal_optimizer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -66,7 +68,12 @@ void main() {
   };
 
   test('saving and loading preserves each tolerance setting', () async {
-    await helper.saveSettings(settings);
+    try {
+      await helper.saveSettings(settings);
+    } catch (error) {
+      stderr.writeln('TOLERANCE_DIAGNOSTIC save exception: $error');
+      rethrow;
+    }
     final loaded = await helper.getSettings();
     print('Error: TOLERANCE_DIAGNOSTIC loaded settings=$loaded');
     final mismatches = settings.entries
@@ -79,7 +86,12 @@ void main() {
   });
 
   test('reloaded tolerance settings are accepted by MealOptimizer', () async {
-    await helper.saveSettings(settings);
+    try {
+      await helper.saveSettings(settings);
+    } catch (error) {
+      stderr.writeln('OPTIMIZER_DIAGNOSTIC save exception: $error');
+      rethrow;
+    }
     final loaded = await helper.getSettings();
     print('Error: OPTIMIZER_DIAGNOSTIC settings=$loaded');
     final food = Food(
