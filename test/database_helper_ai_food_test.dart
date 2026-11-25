@@ -68,8 +68,12 @@ void main() {
   test('saving and loading preserves each tolerance setting', () async {
     await helper.saveSettings(settings);
     final loaded = await helper.getSettings();
-    for (final entry in settings.entries) {
-      expect(loaded[entry.key], entry.value, reason: 'incorrect ${entry.key}');
+    final mismatches = settings.entries
+        .where((entry) => loaded[entry.key] != entry.value)
+        .map((entry) => '${entry.key}: expected ${entry.value}, got ${loaded[entry.key]}')
+        .toList();
+    if (mismatches.isNotEmpty) {
+      throw StateError('Tolerance settings did not persist: ${mismatches.join('; ')}');
     }
   });
 
@@ -90,6 +94,8 @@ void main() {
       preferences: const [3],
       settings: loaded,
     );
-    expect(result, isNotNull, reason: MealOptimizer.lastErrorMessage);
+    if (result == null) {
+      throw StateError('Optimizer rejected the reloaded tolerances: ${MealOptimizer.lastErrorMessage}');
+    }
   });
 }
