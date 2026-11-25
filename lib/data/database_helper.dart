@@ -608,6 +608,13 @@ class DatabaseHelper {
 
   Future<void> saveSettings(Map<String, dynamic> settings) async {
     final db = await database;
+    // Ensure the singleton row exists even after a partial upgrade or an empty
+    // Web database; an UPDATE against zero rows otherwise silently drops saves.
+    await db.insert(
+      'app_settings',
+      {'id': 1},
+      conflictAlgorithm: ConflictAlgorithm.ignore,
+    );
     await db.update('app_settings', settings, where: 'id = 1');
     final row = await getSettings()..remove('id');
     await _sync(() async => MacroSyncService.instance.mutate(entity: 'settings', operation: 'upsert', row: row));
