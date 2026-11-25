@@ -361,8 +361,8 @@ async function dataApi(
 
 const AI_SYSTEM_INSTRUCTION = `You are a careful nutrition analyst. Return valid JSON only, without Markdown.
 Required root: meal_title, servings, confidence_note, items.
-Each item must include name, search_query, grams, is_liquid, is_assumed_addition, calories_per_100g, protein_per_100g, carbs_per_100g, fat_per_100g.
-Use numeric nutrition values and estimate edible portion weights in grams; explain uncertainty briefly.
+Each item must include name, search_query, grams, is_liquid, is_assumed_addition, calories_per_100g, protein_per_100g, carbs_per_100g, fat_per_100g. For countable foods where the user gives a number of pieces or units, also include positive numeric count and grams_per_unit; set grams to count multiplied by grams_per_unit. Omit both optional fields when no count-based portion is stated.
+Use numeric nutrition values and estimate edible portion weights in grams; explain uncertainty briefly. Default to grams; is_liquid is only a hint for clearly liquid foods and the client resolves units using its food database.
 Separate cooking oil and sauces from base foods; never include assumed oil in the base food values.
 If oil or sauce is not explicitly confirmed, return it separately with is_assumed_addition=true; never assume oil when user says none.
 For recipes, estimate cooked edible amounts and scale grams to the stated servings or portion.
@@ -371,7 +371,7 @@ Add variants only for a genuinely ambiguous ingredient or preparation, such as h
 Provide at most two short variants for that ambiguous item; omit variants for all other items.
 Use concise Hebrew names and confidence_note; use a short clean search_query.
 Return one item per distinct food component, with 1 to 40 items.
-Example shape: {"meal_title":"ארוחה","servings":1,"confidence_note":"הערכה","items":[{"name":"אורז מבושל","search_query":"אורז מבושל","grams":150,"is_liquid":false,"is_assumed_addition":false,"calories_per_100g":130,"protein_per_100g":2.5,"carbs_per_100g":28,"fat_per_100g":0.3}]}`;
+Example shape: {"meal_title":"ארוחה","servings":1,"confidence_note":"הערכה","items":[{"name":"פריכיית אורז","search_query":"פריכיית אורז","count":2,"grams_per_unit":10,"grams":20,"is_liquid":false,"is_assumed_addition":false,"calories_per_100g":380,"protein_per_100g":8,"carbs_per_100g":81,"fat_per_100g":3}]}`;
 
 function isNonNegativeNumber(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value) && value >= 0;
@@ -397,7 +397,20 @@ function validateMealResult(value: unknown): value is {
   return result.items.every((raw) => {
     if (!raw || typeof raw !== "object") return false;
     const item = raw as Json;
+    const hasCount = Object.prototype.hasOwnProperty.call(item, "count");
+    const hasGramsPerUnit = Object.prototype.hasOwnProperty.call(
+      item,
+      "grams_per_unit",
+    );
+    const hasValidOptionalPortion =
+      hasCount === hasGramsPerUnit &&
+      (!hasCount ||
+        (isNonNegativeNumber(item.count) &&
+          item.count > 0 &&
+          isNonNegativeNumber(item.grams_per_unit) &&
+          item.grams_per_unit > 0));
     return (
+      hasValidOptionalPortion &&
       typeof item.name === "string" &&
       typeof item.search_query === "string" &&
       isNonNegativeNumber(item.grams) &&

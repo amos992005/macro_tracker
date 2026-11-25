@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../core/ai_meal_utils.dart';
 import '../../core/search_utils.dart';
 import '../../data/macro_sync_service.dart';
 import '../../data/models/food.dart';
@@ -57,7 +58,7 @@ class _AiMealEditorState extends State<AiMealEditor> {
     super.initState();
     _title.text = widget.initialTitle ?? '';
     for (final item in widget.initialItems ?? const []) {
-      _items.add(_AiItem.fromMap(item));
+      _items.add(_AiItem.fromMap(item, foods: widget.foods, preserveStoredUnit: true));
     }
   }
 
@@ -119,7 +120,10 @@ class _AiMealEditorState extends State<AiMealEditor> {
       final rawItems = (result['items'] as List? ?? const []).whereType<Map>();
       _items
         ..clear()
-        ..addAll(rawItems.map((item) => _AiItem.fromMap(Map<String, dynamic>.from(item))));
+        ..addAll(rawItems.map((item) => _AiItem.fromMap(
+              Map<String, dynamic>.from(item),
+              foods: widget.foods,
+            )));
       _title.text = result['meal_title']?.toString() ?? 'ארוחה מפוענחת';
       setState(() {
         _error = null;
@@ -179,6 +183,7 @@ class _AiMealEditorState extends State<AiMealEditor> {
         liquid: selected.isLiquid,
         assumed: false,
         calories: selected.caloriesPer100g,
+        matchedFood: selected,
         protein: selected.proteinPer100g,
         carbs: selected.carbsPer100g,
         fat: selected.fatPer100g,
@@ -371,12 +376,48 @@ class _AiMealEditorState extends State<AiMealEditor> {
                 controller: item.gramsController,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 decoration: InputDecoration(labelText: item.liquid ? 'כמות מ״ל' : 'גרמים', isDense: true),
-                onChanged: (value) => setState(() => item.grams = double.tryParse(value) ?? 0),
+                onChanged: (value) => setState(() => item.updateTotalGrams(value)),
               ),
+            ),
+            const SizedBox(width: 6),
+            OutlinedButton(
+              onPressed: () => setState(() => item.liquid = !item.liquid),
+              child: Text(item.liquid ? 'הצג בגרם' : 'הצג במ״ל'),
             ),
             const SizedBox(width: 8),
             Expanded(child: Text('קל׳ ${_itemMacro(item, item.calories).toStringAsFixed(0)} · חלבון ${_itemMacro(item, item.protein).toStringAsFixed(1)}ג׳\nפחמ׳ ${_itemMacro(item, item.carbs).toStringAsFixed(1)}ג׳ · שומן ${_itemMacro(item, item.fat).toStringAsFixed(1)}ג׳', style: const TextStyle(fontSize: 12))),
           ]),
+          if (item.count != null && item.gramsPerUnit != null) ...[
+            const SizedBox(height: 6),
+            Row(children: [
+              const Text('הנחה: '),
+              SizedBox(
+                width: 90,
+                child: TextField(
+                  controller: item.countController,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  decoration: const InputDecoration(labelText: 'יחידות', isDense: true),
+                  onChanged: (value) => setState(() => item.updateCount(value)),
+                ),
+              ),
+              const Padding(padding: EdgeInsets.symmetric(horizontal: 6), child: Text('×')),
+              SizedBox(
+                width: 120,
+                child: TextField(
+                  controller: item.gramsPerUnitController,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  decoration: const InputDecoration(labelText: 'גרם ליחידה', isDense: true),
+                  onChanged: (value) => setState(() => item.updateGramsPerUnit(value)),
+                ),
+              ),
+              const Text(' גרם'),
+            ]),
+          ],
+          const SizedBox(height: 4),
+          Text(
+            '${item.matchedFood == null ? 'הערכת AI' : 'מאגר: ${item.matchedFood!.name}'} · ל-100 גרם: ${item.calories.toStringAsFixed(0)} קל׳, חלבון ${item.protein.toStringAsFixed(1)}ג׳, פחמ׳ ${item.carbs.toStringAsFixed(1)}ג׳, שומן ${item.fat.toStringAsFixed(1)}ג׳',
+            style: const TextStyle(fontSize: 11, color: Colors.white70),
+          ),
           TextButton.icon(
             onPressed: () => _replaceFromFood(item),
             icon: const Icon(Icons.search, size: 18),
@@ -403,21 +444,73 @@ class _AiItem {
     required this.protein,
     required this.carbs,
     required this.fat,
+    this.count,
+    this.gramsPerUnit,
+    this.matchedFood,
     List<Map<String, dynamic>>? variants,
-  }) : variants = variants ?? [], gramsController = TextEditingController(text: grams.toStringAsFixed(1));
+  })  : variants = variants ?? [],
+        gramsController = TextEditingController(text: grams.toStringAsFixed(1)),
+        countController = TextEditingController(text: count?.toString() ?? ''),
+        gramsPerUnitController =
+            TextEditingController(text: gramsPerUnit?.toString() ?? '');
 
-  factory _AiItem.fromMap(Map<String, dynamic> map) => _AiItem(
-    name: map['name']?.toString() ?? 'מאכל',
-    searchQuery: map['search_query']?.toString() ?? map['name']?.toString() ?? '',
-    grams: (map['grams'] as num?)?.toDouble() ?? 100,
-    liquid: map['is_liquid'] == true,
-    assumed: map['is_assumed_addition'] == true,
-    calories: (map['calories_per_100g'] as num?)?.toDouble() ?? 0,
-    protein: (map['protein_per_100g'] as num?)?.toDouble() ?? 0,
-    carbs: (map['carbs_per_100g'] as num?)?.toDouble() ?? 0,
-    fat: (map['fat_per_100g'] as num?)?.toDouble() ?? 0,
-    variants: (map['variants'] as List? ?? const []).whereType<Map>().map((entry) => Map<String, dynamic>.from(entry)).toList(),
-  );
+  factory _AiItem.fromMap(
+    Map<String, dynamic> map, {
+    required List<Food> foods,
+    bool preserveStoredUnit = false,
+  }) {
+    final name = map['name']?.toString() ?? 'מאכל';
+    final searchQuery =
+        map['search_query']?.toString() ?? name;
+    final matchedFood = findExactAiFoodMatch(
+      foods: foods,
+      name: name,
+      searchQuery: searchQuery,
+    );
+    final rawCount = map['count'];
+    final rawGramsPerUnit = map['grams_per_unit'];
+    final hasPortionAssumption = rawCount is num && rawGramsPerUnit is num;
+    final count = hasPortionAssumption ? rawCount.toDouble() : null;
+    final gramsPerUnit =
+        hasPortionAssumption ? rawGramsPerUnit.toDouble() : null;
+    final amount = hasPortionAssumption
+        ? gramsFromUnitCount(count: count!, gramsPerUnit: gramsPerUnit!)
+        : (map['grams'] as num?)?.toDouble() ?? 100;
+    final aiSaysLiquid = map['is_liquid'] == true;
+    final liquid = preserveStoredUnit && map['is_liquid'] is bool
+        ? aiSaysLiquid
+        : shouldUseMilliliters(
+            aiSaysLiquid: aiSaysLiquid,
+            matchedFoodIsLiquid: matchedFood?.isLiquid,
+          );
+
+    return _AiItem(
+      name: name,
+      searchQuery: searchQuery,
+      grams: amount,
+      liquid: liquid,
+      assumed: map['is_assumed_addition'] == true,
+      calories: matchedFood?.caloriesPer100g ??
+          (map['calories_per_100g'] as num?)?.toDouble() ??
+          0,
+      protein: matchedFood?.proteinPer100g ??
+          (map['protein_per_100g'] as num?)?.toDouble() ??
+          0,
+      carbs: matchedFood?.carbsPer100g ??
+          (map['carbs_per_100g'] as num?)?.toDouble() ??
+          0,
+      fat: matchedFood?.fatPer100g ??
+          (map['fat_per_100g'] as num?)?.toDouble() ??
+          0,
+      count: count,
+      gramsPerUnit: gramsPerUnit,
+      matchedFood: matchedFood,
+      variants: (map['variants'] as List? ?? const [])
+          .whereType<Map>()
+          .map((entry) => Map<String, dynamic>.from(entry))
+          .toList(),
+    );
+  }
 
   String name;
   String searchQuery;
@@ -429,8 +522,46 @@ class _AiItem {
   double protein;
   double carbs;
   double fat;
+  double? count;
+  double? gramsPerUnit;
+  final TextEditingController countController;
+  final TextEditingController gramsPerUnitController;
+  Food? matchedFood;
   List<Map<String, dynamic>> variants;
   String? activeVariant;
+
+  void _updateDerivedGrams() {
+    if (count == null || gramsPerUnit == null) return;
+    grams = gramsFromUnitCount(count: count!, gramsPerUnit: gramsPerUnit!);
+    gramsController.text = grams.toStringAsFixed(1);
+  }
+
+  void updateCount(String value) {
+    final parsed = double.tryParse(value);
+    if (parsed == null || !parsed.isFinite || parsed < 0) return;
+    count = parsed;
+    _updateDerivedGrams();
+  }
+
+  void updateGramsPerUnit(String value) {
+    final parsed = double.tryParse(value);
+    if (parsed == null || !parsed.isFinite || parsed < 0) return;
+    gramsPerUnit = parsed;
+    _updateDerivedGrams();
+  }
+
+  void updateTotalGrams(String value) {
+    final parsed = double.tryParse(value);
+    if (parsed == null || !parsed.isFinite) {
+      grams = 0;
+      return;
+    }
+    grams = parsed;
+    if (count != null && count! > 0) {
+      gramsPerUnit = grams / count!;
+      gramsPerUnitController.text = gramsPerUnit!.toStringAsFixed(1);
+    }
+  }
 
   void applyVariant(Map<String, dynamic> variant) {
     activeVariant = variant['label']?.toString();
@@ -448,22 +579,31 @@ class _AiItem {
     protein = food.proteinPer100g;
     carbs = food.carbsPer100g;
     fat = food.fatPer100g;
+    matchedFood = food;
     variants = [];
     activeVariant = null;
   }
 
   Map<String, dynamic> toMap() => {
-    'name': name,
-    'search_query': searchQuery,
-    'grams': grams,
-    'is_liquid': liquid,
-    'is_assumed_addition': assumed,
-    'calories_per_100g': calories,
-    'protein_per_100g': protein,
-    'carbs_per_100g': carbs,
-    'fat_per_100g': fat,
-    if (variants.isNotEmpty) 'variants': variants,
-  };
+        'name': name,
+        'search_query': searchQuery,
+        'grams': grams,
+        'is_liquid': liquid,
+        'is_assumed_addition': assumed,
+        'calories_per_100g': calories,
+        'protein_per_100g': protein,
+        'carbs_per_100g': carbs,
+        'fat_per_100g': fat,
+        if (count != null && gramsPerUnit != null) ...{
+          'count': count,
+          'grams_per_unit': gramsPerUnit,
+        },
+        if (variants.isNotEmpty) 'variants': variants,
+      };
 
-  void dispose() => gramsController.dispose();
+  void dispose() {
+    gramsController.dispose();
+    countController.dispose();
+    gramsPerUnitController.dispose();
+  }
 }

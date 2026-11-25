@@ -448,6 +448,10 @@ class DatabaseHelper {
     'protein_per_100g': (item['protein_per_100g'] as num?)?.toDouble() ?? 0,
     'carbs_per_100g': (item['carbs_per_100g'] as num?)?.toDouble() ?? 0,
     'fat_per_100g': (item['fat_per_100g'] as num?)?.toDouble() ?? 0,
+    if (item['count'] is num && item['grams_per_unit'] is num) ...{
+      'count': (item['count'] as num).toDouble(),
+      'grams_per_unit': (item['grams_per_unit'] as num).toDouble(),
+    },
     if (item['variants'] is List) 'variants': item['variants'],
   }).toList();
 
