@@ -79,7 +79,8 @@ jobs:
           selected = set()
           for index in indexes:
             selected.update(range(max(0, index - 2), min(len(lines), index + 5)))
-          summary = output[-5000:]
+          diagnostic_lines = [line for line in lines if any(marker in line for marker in ('TOLERANCE_DIAGNOSTIC', 'OPTIMIZER_DIAGNOSTIC', 'Tolerance settings did not persist', 'Optimizer rejected'))]
+          summary = '\n'.join(diagnostic_lines) or output[-5000:]
           escaped = summary.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
           print(f'::error title=flutter test diagnostics::{escaped[:5000]}')
           PY
