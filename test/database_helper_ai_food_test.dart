@@ -68,6 +68,7 @@ void main() {
   test('saving and loading preserves each tolerance setting', () async {
     await helper.saveSettings(settings);
     final loaded = await helper.getSettings();
+    print('Error: TOLERANCE_DIAGNOSTIC loaded settings=$loaded');
     final mismatches = settings.entries
         .where((entry) => loaded[entry.key] != entry.value)
         .map((entry) => '${entry.key}: expected ${entry.value}, got ${loaded[entry.key]}')
@@ -80,6 +81,7 @@ void main() {
   test('reloaded tolerance settings are accepted by MealOptimizer', () async {
     await helper.saveSettings(settings);
     final loaded = await helper.getSettings();
+    print('Error: OPTIMIZER_DIAGNOSTIC settings=$loaded');
     final food = Food(
       id: 701,
       name: 'בדיקת יחס מאקרו',
