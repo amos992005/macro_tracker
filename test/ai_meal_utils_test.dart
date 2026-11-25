@@ -13,6 +13,37 @@ Food makeFood({required String name, required bool isLiquid}) => Food(
     );
 
 void main() {
+  group('AI Hebrew search query', () {
+    test('English-only query falls back to Hebrew words in the name', () {
+      expect(
+        effectiveAiSearchQuery(
+          name: 'דבש יד מרדכי',
+          searchQuery: 'honey',
+        ),
+        'דבש יד מרדכי',
+      );
+    });
+
+    test('a valid Hebrew query is preserved', () {
+      expect(
+        effectiveAiSearchQuery(name: 'דבש יד מרדכי', searchQuery: 'דבש'),
+        'דבש',
+      );
+    });
+
+    test('exact food matching falls back to the Hebrew name', () {
+      final honey = makeFood(name: 'דבש יד מרדכי', isLiquid: false);
+      expect(
+        findExactAiFoodMatch(
+          foods: [honey],
+          name: 'דבש יד מרדכי',
+          searchQuery: 'honey',
+        ),
+        same(honey),
+      );
+    });
+  });
+
   group('AI unit mapping', () {
     test('AI mL hint is ignored when exact database match is not liquid', () {
       final foods = [makeFood(name: 'דבש', isLiquid: false)];

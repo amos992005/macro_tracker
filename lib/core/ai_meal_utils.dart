@@ -1,21 +1,39 @@
 import '../data/models/food.dart';
 
-/// Finds a database entry only when the AI's name or search query matches it
-/// exactly after whitespace/case normalization. Approximate matches are unsafe
-/// for choosing a unit or replacing nutrition values.
+/// Uses a Hebrew name as the fallback for searches when the AI sends a
+/// non-Hebrew query. Hebrew queries from the AI are preserved as-is.
+String effectiveAiSearchQuery({
+  required String name,
+  required String searchQuery,
+}) {
+  final query = searchQuery.trim().replaceAll(RegExp(r'\s+'), ' ');
+  if (_containsHebrew(query)) return query;
+
+  final hebrewName = RegExp(r'[\u05D0-\u05EA]+')
+      .allMatches(name)
+      .map((match) => match.group(0)!)
+      .join(' ');
+  return hebrewName.isNotEmpty ? hebrewName : query;
+}
+
+/// Finds exact local database entries, preferring the effective search query
+/// and then trying the Hebrew item name. No approximate brand matching is used.
 Food? findExactAiFoodMatch({
   required Iterable<Food> foods,
   required String name,
   required String searchQuery,
 }) {
-  final candidates = {
+  final queries = <String>[
+    _normalizeFoodName(
+      effectiveAiSearchQuery(name: name, searchQuery: searchQuery),
+    ),
     _normalizeFoodName(name),
-    _normalizeFoodName(searchQuery),
-  }..remove('');
-  if (candidates.isEmpty) return null;
+  ].where((value) => value.isNotEmpty).toSet();
 
-  for (final food in foods) {
-    if (candidates.contains(_normalizeFoodName(food.name))) return food;
+  for (final query in queries) {
+    for (final food in foods) {
+      if (_normalizeFoodName(food.name) == query) return food;
+    }
   }
   return null;
 }
@@ -36,6 +54,9 @@ double gramsFromUnitCount({
   required double count,
   required double gramsPerUnit,
 }) => count * gramsPerUnit;
+
+bool _containsHebrew(String value) =>
+    RegExp(r'[\u05D0-\u05EA]').hasMatch(value);
 
 String _normalizeFoodName(String value) =>
     value.trim().toLowerCase().replaceAll(RegExp(r'\s+'), ' ');

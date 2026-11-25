@@ -206,7 +206,7 @@ class _AiMealEditorState extends State<AiMealEditor> {
               TextField(
                 controller: queryController,
                 autofocus: true,
-                decoration: const InputDecoration(prefixIcon: Icon(Icons.search), hintText: 'חיפוש במאגר'),
+                decoration: const InputDecoration(prefixIcon: Icon(Icons.search), hintText: 'חיפוש בעברית במאגר המזונות'),
                 onChanged: (value) => setState(() => results = SearchUtils.filterAndSortFoods(widget.foods, value).take(30).toList()),
               ),
               const SizedBox(height: 8),
@@ -460,8 +460,10 @@ class _AiItem {
     bool preserveStoredUnit = false,
   }) {
     final name = map['name']?.toString() ?? 'מאכל';
-    final searchQuery =
-        map['search_query']?.toString() ?? name;
+    final searchQuery = effectiveAiSearchQuery(
+      name: name,
+      searchQuery: map['search_query']?.toString() ?? '',
+    );
     final matchedFood = findExactAiFoodMatch(
       foods: foods,
       name: name,

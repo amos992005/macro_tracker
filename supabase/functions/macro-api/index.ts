@@ -369,9 +369,17 @@ For recipes, estimate cooked edible amounts and scale grams to the stated servin
 For labels, extract nutrition per 100 g or ml; for product names alone, provide a cautious estimate.
 Add variants only for a genuinely ambiguous ingredient or preparation, such as hummus or schnitzel.
 Provide at most two short variants for that ambiguous item; omit variants for all other items.
-Use concise Hebrew names and confidence_note; use a short clean search_query.
+Use concise Hebrew names and confidence_note. The search_query must be a short, clean Hebrew food term, preferably copied from the Hebrew name; never return an English-only search_query when the name contains Hebrew.
 Return one item per distinct food component, with 1 to 40 items.
 Example shape: {"meal_title":"ארוחה","servings":1,"confidence_note":"הערכה","items":[{"name":"פריכיית אורז","search_query":"פריכיית אורז","count":2,"grams_per_unit":10,"grams":20,"is_liquid":false,"is_assumed_addition":false,"calories_per_100g":380,"protein_per_100g":8,"carbs_per_100g":81,"fat_per_100g":3}]}`;
+
+function normalizeHebrewSearchQuery(name: string, searchQuery: string): string {
+  const query = searchQuery.trim().replace(/\s+/g, " ");
+  if (/[\u05D0-\u05EA]/.test(query)) return query;
+
+  const hebrewName = (name.match(/[\u05D0-\u05EA]+/g) ?? []).join(" ");
+  return hebrewName || query;
+}
 
 function isNonNegativeNumber(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value) && value >= 0;
@@ -846,6 +854,13 @@ async function analyzeMeal(
           apiKey,
         });
         continue;
+      }
+      for (const rawItem of result.items) {
+        const item = rawItem as Json;
+        item.search_query = normalizeHebrewSearchQuery(
+          String(item.name),
+          String(item.search_query),
+        );
       }
       await recordAiSuccess({
         requestId,
