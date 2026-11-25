@@ -79,7 +79,7 @@ void main() {
       fatPer100g: 3,
     );
     expect(nutrition.calories, 76);
-    expect(nutrition.carbs, 16.2);
+    expect(nutrition.carbs, closeTo(16.2, 1e-9));
 
     expect(
       gramsFromUnitCount(count: 2.5, gramsPerUnit: 8),
