@@ -63,9 +63,17 @@ jobs:
           if [ "$test_status" -ne 0 ]; then
             python3 - <<'PY'
           from pathlib import Path
+          import re
           output = Path('/tmp/flutter-test.log').read_text(errors='replace')
-          escaped = output[-5000:].replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
-          print(f'::error title=flutter test diagnostics::{escaped}')
+          lines = output.splitlines()
+          markers = re.compile(r'\(E\)|Expected:|Actual:|Which:|Exception|Error|Some tests failed|Test failed', re.I)
+          indexes = [i for i, line in enumerate(lines) if markers.search(line)]
+          selected = set()
+          for index in indexes:
+            selected.update(range(max(0, index - 2), min(len(lines), index + 5)))
+          summary = '\n'.join(lines[i] for i in sorted(selected)) or output[-5000:]
+          escaped = summary.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+          print(f'::error title=flutter test diagnostics::{escaped[:5000]}')
           PY
           fi
           exit "$test_status"
