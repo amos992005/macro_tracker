@@ -650,7 +650,6 @@ class _TrackerScreenState extends State<TrackerScreen> {
               if (result == null || selectedFoodIds.isEmpty) return;
               setDialogState(() => isSaving = true);
               for (var id in selectedFoodIds) {
-                final food = _foods.firstWhere((f) => f.id == id);
                 final weight = result!.weights[id] ?? 0;
                 if (weight > 0.1) await _dbHelper.insertMealEntry(id, weight, _todayDate);
               }
