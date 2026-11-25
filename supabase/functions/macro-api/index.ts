@@ -530,6 +530,49 @@ function extractJsonObject(candidateText: string): unknown {
   throw new Error("No complete valid JSON object in Gemini response");
 }
 
+type GeminiModel = { name?: string; supportedGenerationMethods?: string[] };
+
+async function listGeminiModels(apiKey: string): Promise<string[]> {
+  const fetchModels = async (): Promise<string[]> => {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(apiKey)}&pageSize=100`,
+      { signal: AbortSignal.timeout(4000) },
+    );
+    if (!response.ok) throw new Error(`ListModels HTTP ${response.status}`);
+    const data = await response.json();
+    if (!Array.isArray(data?.models)) return [];
+    return data.models
+      .filter(
+        (model: GeminiModel) =>
+          typeof model.name === "string" &&
+          model.supportedGenerationMethods?.includes("generateContent"),
+      )
+      .map((model: GeminiModel) => String(model.name).replace(/^models\//, ""))
+      .filter((name: string) =>
+        /^gemini-[a-z0-9.-]*flash[a-z0-9.-]*$/i.test(name),
+      )
+      .sort((a: string, b: string) => b.localeCompare(a));
+  };
+  cachedGeminiModels ??= fetchModels().catch((error) => {
+    cachedGeminiModels = undefined;
+    throw error;
+  });
+  return await cachedGeminiModels;
+}
+
+function recommendedGeminiModel(message: string): string | null {
+  const candidates = [
+    message.match(/models\/(gemini-[a-z0-9.-]+)/i)?.[1],
+    message.match(/\b(gemini-[a-z0-9.-]*flash[a-z0-9.-]*)\b/i)?.[1],
+  ];
+  return (
+    candidates.find((name) => name && /^gemini-[a-z0-9.-]+$/i.test(name)) ??
+    null
+  );
+}
+
+let cachedGeminiModels: Promise<string[]> | undefined;
+
 async function analyzeMeal(
   body: Json,
   user: { id: string },
@@ -586,17 +629,34 @@ async function analyzeMeal(
   if (image) parts.push({ inline_data: { mime_type: mimeType, data: image } });
 
   const preferPro = body.pro === true;
-  const attempts = [
-    { model: "gemini-2.5-flash", thinkingBudget: preferPro ? 512 : 0 },
-    { model: "gemini-2.0-flash", thinkingBudget: undefined },
+  const queue: Array<{ model: string; thinkingBudget?: number }> = [
+    { model: "gemini-3.8-flash", thinkingBudget: preferPro ? 512 : 0 },
   ];
+  const queued = new Set([`gemini-3.8-flash|${preferPro ? 512 : 0}`]);
+  const tried = new Set<string>();
+  let modelDiscoveryUsed = false;
   let lastStatus = 502;
-  let lastModel = "gemini-2.5-flash";
+  let lastModel = "gemini-3.8-flash";
   let lastMessage = "No Gemini response";
   let lastType = "gemini_error";
 
-  for (const attempt of attempts) {
-    const { model } = attempt;
+  const enqueue = (model: string, thinkingBudget?: number, front = false) => {
+    const normalized = model.replace(/^models\//, "");
+    if (!/^gemini-[a-z0-9.-]+$/i.test(normalized)) return;
+    const key = `${normalized}|${thinkingBudget ?? "none"}`;
+    if (queued.has(key)) return;
+    queued.add(key);
+    const next = { model: normalized, thinkingBudget };
+    if (front) queue.unshift(next);
+    else queue.push(next);
+  };
+
+  while (queue.length > 0 && tried.size < 8) {
+    const attempt = queue.shift()!;
+    const { model, thinkingBudget } = attempt;
+    const attemptKey = `${model}|${thinkingBudget ?? "none"}`;
+    if (tried.has(attemptKey)) continue;
+    tried.add(attemptKey);
     lastModel = model;
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 15_000);
@@ -606,10 +666,8 @@ async function analyzeMeal(
         maxOutputTokens: 4096,
         temperature: 0.2,
       };
-      if (attempt.thinkingBudget !== undefined) {
-        generationConfig.thinkingConfig = {
-          thinkingBudget: attempt.thinkingBudget,
-        };
+      if (thinkingBudget !== undefined) {
+        generationConfig.thinkingConfig = { thinkingBudget };
       }
       const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
       const response = await fetch(endpoint, {
@@ -624,7 +682,8 @@ async function analyzeMeal(
       });
       if (!response.ok) {
         lastStatus = response.status;
-        lastMessage = geminiErrorMessage(await response.text(), apiKey);
+        const rawDetail = await response.text();
+        lastMessage = geminiErrorMessage(rawDetail, apiKey);
         lastType =
           response.status === 429 ? "gemini_rate_limit" : "gemini_http_error";
         await recordAiFailure({
@@ -635,8 +694,32 @@ async function analyzeMeal(
           status: response.status,
           type: lastType,
           message: lastMessage,
+          detail: rawDetail,
           apiKey,
         });
+
+        // Retry the same primary model without thinking parameters on a config-related 400.
+        if (response.status === 400 && thinkingBudget !== undefined) {
+          enqueue(model, undefined, true);
+          continue;
+        }
+        if (response.status === 404) {
+          const recommended = recommendedGeminiModel(lastMessage);
+          if (recommended && recommended !== model) enqueue(recommended);
+          enqueue("gemini-flash-latest");
+          if (!modelDiscoveryUsed) {
+            modelDiscoveryUsed = true;
+            try {
+              const available = await listGeminiModels(apiKey);
+              for (const candidate of available.slice(0, 3)) enqueue(candidate);
+            } catch (error) {
+              console.warn(
+                "[macro-ai] Cached ListModels fallback failed",
+                safeAiText(error, apiKey),
+              );
+            }
+          }
+        }
         continue;
       }
 
@@ -695,7 +778,6 @@ async function analyzeMeal(
         });
         continue;
       }
-
       await recordAiSuccess({
         requestId,
         userId: user.id,
