@@ -523,6 +523,46 @@ async function recordAiSuccess(input: {
   }
 }
 
+export function repairCountPortionPairs(value: unknown): unknown {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return value;
+  const result = value as Record<string, unknown>;
+  if (!Array.isArray(result.items)) return value;
+
+  return {
+    ...result,
+    items: result.items.map((raw) => {
+      if (!raw || typeof raw !== "object" || Array.isArray(raw)) return raw;
+      const item = { ...(raw as Record<string, unknown>) };
+      const hasCount = Object.prototype.hasOwnProperty.call(item, "count");
+      const hasGramsPerUnit = Object.prototype.hasOwnProperty.call(item, "grams_per_unit");
+      if (!hasCount && !hasGramsPerUnit) return item;
+
+      const grams = finitePositive(item.grams) ? item.grams : undefined;
+      let count = finitePositive(item.count) ? item.count : undefined;
+      let gramsPerUnit = finitePositive(item.grams_per_unit)
+        ? item.grams_per_unit
+        : undefined;
+
+      if (count !== undefined && gramsPerUnit === undefined && grams !== undefined) {
+        gramsPerUnit = grams / count;
+      } else if (count === undefined && gramsPerUnit !== undefined && grams !== undefined) {
+        count = grams / gramsPerUnit;
+      }
+
+      if (count !== undefined && gramsPerUnit !== undefined) {
+        item.count = count;
+        item.grams_per_unit = gramsPerUnit;
+        item.grams = count * gramsPerUnit;
+      }
+      return item;
+    }),
+  };
+}
+
+function finitePositive(value: unknown): value is number {
+  return typeof value === "number" && Number.isFinite(value) && value > 0;
+}
+
 function extractJsonObject(candidateText: string): unknown {
   // Gemini may wrap the JSON in prose or Markdown fences. Find balanced object
   // boundaries while respecting braces inside quoted strings and escaped quotes.
@@ -571,14 +611,24 @@ async function listGeminiModels(apiKey: string): Promise<string[]> {
           model.supportedGenerationMethods?.includes("generateContent"),
       )
       .map((model: GeminiModel) => String(model.name).replace(/^models\//, ""))
-      .filter((name: string) => /^gemini-[a-z0-9.-]+$/i.test(name))
+      .filter((name: string) =>
+        /^gemini-[a-z0-9.-]+$/i.test(name) &&
+        !/(?:tts|image|computer-use|embedding|robotics)/i.test(name)
+      )
       .sort((a: string, b: string) => a.localeCompare(b));
   };
-  cachedGeminiModels ??= fetchModels().catch((error) => {
-    cachedGeminiModels = undefined;
-    throw error;
-  });
-  return await cachedGeminiModels;
+  if (!cachedGeminiModels || Date.now() >= cachedGeminiModels.expiresAt) {
+    const entry = {
+      expiresAt: Date.now() + 10 * 60 * 1000,
+      promise: Promise.resolve<string[]>([]),
+    };
+    entry.promise = fetchModels().catch((error) => {
+      if (cachedGeminiModels === entry) cachedGeminiModels = undefined;
+      throw error;
+    });
+    cachedGeminiModels = entry;
+  }
+  return await cachedGeminiModels.promise;
 }
 
 function recommendedGeminiModel(message: string): string | null {
@@ -596,7 +646,9 @@ function recommendedGeminiModel(message: string): string | null {
   return candidates.find((name) => /^gemini-[a-z0-9.-]+$/i.test(name)) ?? null;
 }
 
-let cachedGeminiModels: Promise<string[]> | undefined;
+let cachedGeminiModels:
+  | { expiresAt: number; promise: Promise<string[]> }
+  | undefined;
 let modelDiscoveryLogged = false;
 
 async function logAvailableModelsOnce(input: {
@@ -783,7 +835,7 @@ async function analyzeMeal(
     ),
   );
   const tried = new Set<string>();
-  const requestDeadline = Date.now() + 38_000;
+  const requestDeadline = Date.now() + (preferPro ? 38_000 : 28_000);
   let lastStatus = 502;
   let lastModel = "gemini-3.8-flash";
   let lastMessage = "No Gemini response";
@@ -808,7 +860,10 @@ async function analyzeMeal(
     tried.add(attemptKey);
     lastModel = model;
     const controller = new AbortController();
-    const attemptTimeout = Math.min(12_000, requestDeadline - Date.now());
+    const attemptTimeout = Math.min(
+      preferPro ? 12_000 : 8_000,
+      requestDeadline - Date.now(),
+    );
     const timer = setTimeout(() => controller.abort(), attemptTimeout);
     try {
       const generationConfig: Json = {
@@ -878,7 +933,7 @@ async function analyzeMeal(
               : `Gemini returned no text (finishReason=${candidate?.finishReason ?? "unknown"})`;
           throw new Error(reason);
         }
-        result = extractJsonObject(candidateText);
+        result = repairCountPortionPairs(extractJsonObject(candidateText));
       } catch (error) {
         lastStatus = 502;
         lastType =
@@ -974,7 +1029,7 @@ async function analyzeMeal(
     502,
   );
 }
-Deno.serve(async (request: Request) => {
+if (import.meta.main) Deno.serve(async (request: Request) => {
   if (request.method === "OPTIONS")
     return new Response("ok", { headers: corsHeaders });
   if (request.method !== "POST")

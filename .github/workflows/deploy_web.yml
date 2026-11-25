@@ -26,6 +26,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Test macro-api count/portion repair
+        run: deno test --allow-env supabase/functions/macro-api/meal_result_repair_test.ts
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:

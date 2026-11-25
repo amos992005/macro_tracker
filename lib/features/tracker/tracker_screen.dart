@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import '../../core/calculator.dart';
 import '../../core/composite_meal_utils.dart';
 import '../../core/meal_optimizer.dart';
+import '../../core/meal_rule_settings.dart';
 import '../../core/search_utils.dart';
 import '../../data/database_helper.dart';
 import '../../data/models/food.dart';
@@ -417,97 +418,125 @@ class _TrackerScreenState extends State<TrackerScreen> {
     );
   }
 
-  void _showRuleSettingsDialog() {
-    String calMode = _settings['cal_mode'] ?? 'down';
-    double calPct = _settings['cal_pct'] ?? 10.0;
-    String proMode = _settings['pro_mode'] ?? 'up';
-    double proPct = _settings['pro_pct'] ?? 10.0;
-    String carbMode = _settings['carb_mode'] ?? 'both';
-    double carbPct = _settings['carb_pct'] ?? 10.0;
-    String fatMode = _settings['fat_mode'] ?? 'free';
-    double fatPct = _settings['fat_pct'] ?? 0.0;
+  Future<void> _showRuleSettingsDialog() async {
+    String calMode = _settings['cal_mode'] as String? ?? 'down';
+    double calPct = (_settings['cal_pct'] as num?)?.toDouble() ?? 10.0;
+    String proMode = _settings['pro_mode'] as String? ?? 'up';
+    double proPct = (_settings['pro_pct'] as num?)?.toDouble() ?? 10.0;
+    String carbMode = _settings['carb_mode'] as String? ?? 'both';
+    double carbPct = (_settings['carb_pct'] as num?)?.toDouble() ?? 10.0;
+    String fatMode = _settings['fat_mode'] as String? ?? 'free';
+    double fatPct = (_settings['fat_pct'] as num?)?.toDouble() ?? 0.0;
+    final controllers = <String, TextEditingController>{
+      'cal_pct': TextEditingController(text: calPct.toString()),
+      'pro_pct': TextEditingController(text: proPct.toString()),
+      'carb_pct': TextEditingController(text: carbPct.toString()),
+      'fat_pct': TextEditingController(text: fatPct.toString()),
+    };
 
-    showDialog(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            Widget buildRuleRow(String title, String currentMode, double currentPct, Function(String) onModeChange, Function(double) onPctChange) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-                  Row(
-                    children: [
-                      DropdownButton<String>(
-                        value: currentMode,
-                        items: const [
-                          DropdownMenuItem(value: 'free', child: Text('ללא הגבלה (גמיש)')),
-                          DropdownMenuItem(value: 'up', child: Text('למעלה בלבד')),
-                          DropdownMenuItem(value: 'down', child: Text('למטה בלבד')),
-                          DropdownMenuItem(value: 'both', child: Text('שני הכיוונים')),
-                        ],
-                        onChanged: (val) {
-                          if (val != null) setDialogState(() => onModeChange(val));
-                        },
-                      ),
-                      if (currentMode != 'free') ...[
-                        const SizedBox(width: 16),
-                        SizedBox(
-                          width: 60,
-                          child: TextField(
-                            controller: TextEditingController(text: currentPct.toStringAsFixed(0)),
-                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                            decoration: const InputDecoration(labelText: '%', isDense: true),
-                            onChanged: (val) {
-                              double pct = double.tryParse(val) ?? 0;
-                              onPctChange(pct);
-                            },
-                          ),
+    try {
+      await showDialog<void>(
+        context: context,
+        builder: (dialogContext) {
+          return StatefulBuilder(
+            builder: (context, setDialogState) {
+              Widget buildRuleRow(String title, String mode, TextEditingController controller, ValueChanged<String> onModeChange) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+                    Row(
+                      children: [
+                        DropdownButton<String>(
+                          value: mode,
+                          items: const [
+                            DropdownMenuItem(value: 'free', child: Text('ללא הגבלה (גמיש)')),
+                            DropdownMenuItem(value: 'up', child: Text('למעלה בלבד')),
+                            DropdownMenuItem(value: 'down', child: Text('למטה בלבד')),
+                            DropdownMenuItem(value: 'both', child: Text('שני הכיוונים')),
+                          ],
+                          onChanged: (value) {
+                            if (value != null) setDialogState(() => onModeChange(value));
+                          },
                         ),
-                      ]
+                        if (mode != 'free') ...[
+                          const SizedBox(width: 16),
+                          SizedBox(
+                            width: 76,
+                            child: TextField(
+                              controller: controller,
+                              keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: false),
+                              decoration: const InputDecoration(labelText: '%', isDense: true),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                  ],
+                );
+              }
+
+              return AlertDialog(
+                title: const Text('חוקי הברזל (סטייה מהיעד)'),
+                content: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      buildRuleRow('קלוריות:', calMode, controllers['cal_pct']!, (value) => calMode = value),
+                      buildRuleRow('חלבון:', proMode, controllers['pro_pct']!, (value) => proMode = value),
+                      buildRuleRow('פחמימות:', carbMode, controllers['carb_pct']!, (value) => carbMode = value),
+                      buildRuleRow('שומן:', fatMode, controllers['fat_pct']!, (value) => fatMode = value),
                     ],
                   ),
-                  const SizedBox(height: 12),
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(dialogContext),
+                    child: const Text('ביטול'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      final newSettings = <String, dynamic>{
+                        'cal_mode': calMode,
+                        'cal_pct': MealRuleSettings.parsePercent(controllers['cal_pct']!.text, fallback: calPct),
+                        'pro_mode': proMode,
+                        'pro_pct': MealRuleSettings.parsePercent(controllers['pro_pct']!.text, fallback: proPct),
+                        'carb_mode': carbMode,
+                        'carb_pct': MealRuleSettings.parsePercent(controllers['carb_pct']!.text, fallback: carbPct),
+                        'fat_mode': fatMode,
+                        'fat_pct': MealRuleSettings.parsePercent(controllers['fat_pct']!.text, fallback: fatPct),
+                      };
+                      try {
+                        await _dbHelper.saveSettings(newSettings);
+                        if (!mounted) return;
+                        setState(() => _settings = {..._settings, ...newSettings});
+                        if (dialogContext.mounted) Navigator.pop(dialogContext);
+                        ScaffoldMessenger.of(this.context).showSnackBar(
+                          const SnackBar(content: Text('הגדרות חוקי הברזל נשמרו.')),
+                        );
+                        await _loadData();
+                      } catch (error) {
+                        if (mounted) {
+                          ScaffoldMessenger.of(this.context).showSnackBar(
+                            SnackBar(content: Text('שמירת ההגדרות נכשלה: $error')),
+                          );
+                        }
+                      }
+                    },
+                    child: const Text('שמור'),
+                  ),
                 ],
               );
-            }
-
-            return AlertDialog(
-              title: const Text('חוקי הברזל (סטייה מהיעד)'),
-              content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    buildRuleRow('קלוריות:', calMode, calPct, (v) => calMode = v, (v) => calPct = v),
-                    buildRuleRow('חלבון:', proMode, proPct, (v) => proMode = v, (v) => proPct = v),
-                    buildRuleRow('פחמימות:', carbMode, carbPct, (v) => carbMode = v, (v) => carbPct = v),
-                    buildRuleRow('שומן:', fatMode, fatPct, (v) => fatMode = v, (v) => fatPct = v),
-                  ],
-                ),
-              ),
-              actions: [
-                TextButton(onPressed: () => Navigator.pop(context), child: const Text('ביטול')),
-                ElevatedButton(
-                  onPressed: () async {
-                    Map<String, dynamic> newSettings = {
-                      'cal_mode': calMode, 'cal_pct': calPct,
-                      'pro_mode': proMode, 'pro_pct': proPct,
-                      'carb_mode': carbMode, 'carb_pct': carbPct,
-                      'fat_mode': fatMode, 'fat_pct': fatPct,
-                    };
-                    await _dbHelper.saveSettings(newSettings);
-                    if (context.mounted) Navigator.pop(context);
-                    _loadData();
-                  },
-                  child: const Text('שמור'),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
+            },
+          );
+        },
+      );
+    } finally {
+      for (final controller in controllers.values) {
+        controller.dispose();
+      }
+    }
   }
 
   void _showMealBuilderDialog() {
