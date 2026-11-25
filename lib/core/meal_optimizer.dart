@@ -357,7 +357,7 @@ class MealOptimizer {
       final weights = <int, double>{};
       for (final entry in Map<String, dynamic>.from(rawWeights as Map).entries) {
         final weight = entry.value as num;
-        weights[int.parse(entry.key as String)] = weight.toDouble();
+        weights[int.parse(entry.key)] = weight.toDouble();
       }
 
       return OptimizationResult(
