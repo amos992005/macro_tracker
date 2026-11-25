@@ -616,7 +616,7 @@ class DatabaseHelper {
       conflictAlgorithm: ConflictAlgorithm.ignore,
     );
     await db.update('app_settings', settings, where: 'id = 1');
-    final row = await getSettings()..remove('id');
+    final row = Map<String, dynamic>.from(await getSettings())..remove('id');
     await _sync(() async => MacroSyncService.instance.mutate(entity: 'settings', operation: 'upsert', row: row));
   }
 
@@ -744,7 +744,7 @@ class DatabaseHelper {
     await _uploadRows('meals', meals);
     final targets = (await db.query('daily_targets')).map((row) => Map<String, dynamic>.from(row)).toList();
     await _uploadRows('targets', targets);
-    final settings = await getSettings()..remove('id');
+    final settings = Map<String, dynamic>.from(await getSettings())..remove('id');
     await _uploadRows('settings', [settings]);
   }
 }

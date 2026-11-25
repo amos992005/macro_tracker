@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:macro_tracker/core/meal_optimizer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -68,32 +66,16 @@ void main() {
   };
 
   test('saving and loading preserves each tolerance setting', () async {
-    try {
-      await helper.saveSettings(settings);
-    } catch (error) {
-      stderr.writeln('TOLERANCE_DIAGNOSTIC save exception: $error');
-      rethrow;
-    }
+    await helper.saveSettings(settings);
     final loaded = await helper.getSettings();
-    print('Error: TOLERANCE_DIAGNOSTIC loaded settings=$loaded');
-    final mismatches = settings.entries
-        .where((entry) => loaded[entry.key] != entry.value)
-        .map((entry) => '${entry.key}: expected ${entry.value}, got ${loaded[entry.key]}')
-        .toList();
-    if (mismatches.isNotEmpty) {
-      throw StateError('Tolerance settings did not persist: ${mismatches.join('; ')}');
+    for (final entry in settings.entries) {
+      expect(loaded[entry.key], entry.value, reason: 'incorrect ${entry.key}');
     }
   });
 
   test('reloaded tolerance settings are accepted by MealOptimizer', () async {
-    try {
-      await helper.saveSettings(settings);
-    } catch (error) {
-      stderr.writeln('OPTIMIZER_DIAGNOSTIC save exception: $error');
-      rethrow;
-    }
+    await helper.saveSettings(settings);
     final loaded = await helper.getSettings();
-    print('Error: OPTIMIZER_DIAGNOSTIC settings=$loaded');
     final food = Food(
       id: 701,
       name: 'בדיקת יחס מאקרו',
