@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import '../../core/calculator.dart';
+import '../../core/composite_meal_utils.dart';
 import '../../core/meal_optimizer.dart';
 import '../../core/search_utils.dart';
 import '../../data/database_helper.dart';
@@ -649,16 +650,37 @@ class _TrackerScreenState extends State<TrackerScreen> {
             Future<void> saveToDiary() async {
               if (result == null || selectedFoodIds.isEmpty) return;
               setDialogState(() => isSaving = true);
-              for (var id in selectedFoodIds) {
-                final weight = result!.weights[id] ?? 0;
-                if (weight > 0.1) await _dbHelper.insertMealEntry(id, weight, _todayDate);
+              final selectedFoods = _foods
+                  .where((food) => selectedFoodIds.contains(food.id))
+                  .toList();
+              final components = buildCompositeMealComponents(
+                foods: selectedFoods,
+                weights: result!.weights,
+              );
+              if (components.isEmpty) {
+                setDialogState(() => isSaving = false);
+                return;
               }
-              if (context.mounted) {
-                Navigator.pop(mainDialogContext);
-                _loadData();
-                ScaffoldMessenger.of(this.context).showSnackBar(
-                  const SnackBar(content: Text('הארוחה נוספה ליומן בהצלחה!')),
+              try {
+                await _dbHelper.insertCompositeMeal(
+                  title: mealBuilderCompositeTitle,
+                  components: components,
+                  date: _todayDate,
                 );
+                if (context.mounted) {
+                  Navigator.pop(mainDialogContext);
+                  _loadData();
+                  ScaffoldMessenger.of(this.context).showSnackBar(
+                    const SnackBar(content: Text('הארוחה נוספה ליומן בהצלחה!')),
+                  );
+                }
+              } catch (error) {
+                if (context.mounted) {
+                  setDialogState(() => isSaving = false);
+                  ScaffoldMessenger.of(this.context).showSnackBar(
+                    SnackBar(content: Text('שמירת הארוחה נכשלה: $error')),
+                  );
+                }
               }
             }
 

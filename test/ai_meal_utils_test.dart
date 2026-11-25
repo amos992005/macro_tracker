@@ -44,6 +44,56 @@ void main() {
     });
   });
 
+  group('AI catalog suggestions and save eligibility', () {
+    test('unmatched AI foods receive up to three nearby suggestions', () {
+      final suggestions = suggestAiFoodMatches(
+        foods: [
+          makeFood(name: 'דבש טהור מפרחי בר', isLiquid: false),
+          makeFood(name: 'דבש', isLiquid: false),
+          makeFood(name: 'ריבה', isLiquid: false),
+          makeFood(name: 'דבש פרחי בר', isLiquid: false),
+        ],
+        name: 'דבש יד מרדכי',
+        searchQuery: 'דבש יד מרדכי',
+      );
+
+      expect(suggestions, hasLength(3));
+      expect(suggestions.map((food) => food.name), contains('דבש'));
+      expect(
+        suggestions.map((food) => food.name),
+        contains('דבש טהור מפרחי בר'),
+      );
+    });
+
+    test('exact existing name blocks saving a duplicate AI food', () {
+      final existing = makeFood(name: 'דבש', isLiquid: false);
+      expect(
+        shouldOfferAiFoodSave(
+          name: 'דבש',
+          matchedFood: null,
+          foods: [existing],
+        ),
+        isFalse,
+      );
+      expect(
+        shouldOfferAiFoodSave(
+          name: 'דבש חדש',
+          matchedFood: null,
+          foods: [existing],
+        ),
+        isTrue,
+      );
+      expect(
+        shouldOfferAiFoodSave(
+          name: 'דבש חדש',
+          matchedFood: existing,
+          foods: [],
+        ),
+        isFalse,
+      );
+    });
+  });
+
   group('AI unit mapping', () {
     test('AI mL hint is ignored when exact database match is not liquid', () {
       final foods = [makeFood(name: 'דבש', isLiquid: false)];

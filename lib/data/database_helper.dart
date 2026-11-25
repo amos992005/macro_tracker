@@ -334,6 +334,44 @@ class DatabaseHelper {
     await _uploadRows('favorites', favorites);
   }
 
+  /// Inserts a custom food once by exact name, returning the existing active
+  /// row instead when another save already created it.
+  Future<({Food food, bool inserted})> insertFoodIfAbsent(Food food) async {
+    if (food.name.trim().isEmpty) {
+      throw ArgumentError('A food name is required.');
+    }
+    final db = await database;
+    final values = {
+      ...food.toMap(),
+      'name': food.name.trim(),
+      'is_custom': 1,
+      'is_deleted': 0,
+    }..remove('id');
+    final insertion = await db.transaction((txn) async {
+      final existing = await txn.query(
+        'foods',
+        where: 'name = ? AND is_deleted = 0',
+        whereArgs: [food.name.trim()],
+        limit: 1,
+      );
+      if (existing.isNotEmpty) {
+        return (id: existing.first['id'] as int, inserted: false);
+      }
+      final id = await txn.insert('foods', values);
+      return (id: id, inserted: true);
+    });
+    final rows = await db.query(
+      'foods',
+      where: 'id = ?',
+      whereArgs: [insertion.id],
+      limit: 1,
+    );
+    if (rows.isEmpty) throw StateError('Saved food could not be loaded.');
+    final savedFood = Food.fromMap(rows.first);
+    if (insertion.inserted) await _upsertFood(savedFood);
+    return (food: savedFood, inserted: insertion.inserted);
+  }
+
   Future<int> insertFood(Food food) async {
     final db = await database;
     final id = await db.insert('foods', {...food.toMap(), 'is_custom': 1, 'is_deleted': 0});

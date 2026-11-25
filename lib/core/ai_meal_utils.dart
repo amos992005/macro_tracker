@@ -1,4 +1,5 @@
 import '../data/models/food.dart';
+import 'search_utils.dart';
 
 /// Uses a Hebrew name as the fallback for searches when the AI sends a
 /// non-Hebrew query. Hebrew queries from the AI are preserved as-is.
@@ -37,6 +38,62 @@ Food? findExactAiFoodMatch({
   }
   return null;
 }
+
+/// Returns a few nearby catalog choices for an unmatched AI item. Search is
+/// intentionally performed by the caller during item initialization or after
+/// a replacement—not from a widget build method.
+List<Food> suggestAiFoodMatches({
+  required Iterable<Food> foods,
+  required String name,
+  required String searchQuery,
+  int limit = 3,
+}) {
+  final maximum = limit > 3 ? 3 : limit;
+  final catalog = foods.toList();
+  if (maximum <= 0 ||
+      findExactAiFoodMatch(
+            foods: catalog,
+            name: name,
+            searchQuery: searchQuery,
+          ) !=
+          null) {
+    return const [];
+  }
+
+  final effectiveQuery = effectiveAiSearchQuery(
+    name: name,
+    searchQuery: searchQuery,
+  );
+  final queries = <String>{
+    effectiveQuery,
+    name,
+    ...SearchUtils.normalize(effectiveQuery).split(' '),
+  }.where((query) => query.trim().isNotEmpty);
+  final seen = <String>{};
+  final suggestions = <Food>[];
+  for (final query in queries) {
+    for (final food in SearchUtils.filterAndSortFoods(catalog, query)) {
+      if (food.name.trim() == name.trim()) continue;
+      final key = SearchUtils.normalize(food.name);
+      if (!seen.add(key)) continue;
+      suggestions.add(food);
+      if (suggestions.length == maximum) return suggestions;
+    }
+  }
+  return suggestions;
+}
+
+bool hasExactFoodName(Iterable<Food> foods, String name) =>
+    foods.any((food) => food.name.trim() == name.trim());
+
+bool shouldOfferAiFoodSave({
+  required String name,
+  required Food? matchedFood,
+  required Iterable<Food> foods,
+}) =>
+    name.trim().isNotEmpty &&
+    matchedFood == null &&
+    !hasExactFoodName(foods, name);
 
 /// Database classification is authoritative for AI item units. An AI-provided
 /// liquid flag is only a hint and never turns an unknown/solid food into mL.

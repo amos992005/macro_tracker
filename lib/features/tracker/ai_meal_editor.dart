@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../core/ai_meal_utils.dart';
 import '../../core/search_utils.dart';
+import '../../data/database_helper.dart';
 import '../../data/macro_sync_service.dart';
 import '../../data/models/food.dart';
 
@@ -41,6 +42,7 @@ class AiMealEditor extends StatefulWidget {
 }
 
 class _AiMealEditorState extends State<AiMealEditor> {
+  final _dbHelper = DatabaseHelper();
   final _description = TextEditingController();
   final _title = TextEditingController();
   final _picker = ImagePicker();
@@ -232,6 +234,50 @@ class _AiMealEditorState extends State<AiMealEditor> {
     setState(() => item.replaceWith(selected));
   }
 
+  Future<void> _saveItemToMyFoods(_AiItem item) async {
+    if (item.isSavingToMyFoods || item.matchedFood != null) return;
+    setState(() => item.isSavingToMyFoods = true);
+    try {
+      final result = await _dbHelper.insertFoodIfAbsent(
+        Food(
+          name: item.name.trim(),
+          caloriesPer100g: item.calories,
+          proteinPer100g: item.protein,
+          carbsPer100g: item.carbs,
+          fatPer100g: item.fat,
+          isLiquid: item.liquid,
+        ),
+      );
+      if (!mounted) return;
+      setState(() {
+        item.replaceWith(result.food);
+        for (final other in _items) {
+          if (!identical(other, item) &&
+              other.name.trim() == result.food.name.trim()) {
+            other.replaceWith(result.food);
+          }
+        }
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            result.inserted
+                ? 'המזון נשמר למאגר שלי'
+                : 'המזון כבר קיים במאגר וקושר לרכיב',
+          ),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('לא ניתן לשמור למאגר: $error')),
+      );
+    } finally {
+      if (mounted) setState(() => item.isSavingToMyFoods = false);
+    }
+  }
+
   double _total(String nutrient) => _items.fold<double>(0, (sum, item) {
     final value = switch (nutrient) {
       'calories' => item.calories,
@@ -418,6 +464,36 @@ class _AiMealEditorState extends State<AiMealEditor> {
             '${item.matchedFood == null ? 'הערכת AI' : 'מאגר: ${item.matchedFood!.name}'} · ל-100 גרם: ${item.calories.toStringAsFixed(0)} קל׳, חלבון ${item.protein.toStringAsFixed(1)}ג׳, פחמ׳ ${item.carbs.toStringAsFixed(1)}ג׳, שומן ${item.fat.toStringAsFixed(1)}ג׳',
             style: const TextStyle(fontSize: 11, color: Colors.white70),
           ),
+          if (item.matchedFood == null && item.suggestions.isNotEmpty) ...[
+            const SizedBox(height: 4),
+            const Text('התאמות מהמאגר:', style: TextStyle(fontSize: 11)),
+            Wrap(
+              spacing: 5,
+              runSpacing: 2,
+              children: item.suggestions.map((food) => ActionChip(
+                visualDensity: VisualDensity.compact,
+                label: Text(
+                  '${food.name} · ${food.caloriesPer100g.toStringAsFixed(0)} קק״ל/100ג׳',
+                  overflow: TextOverflow.ellipsis,
+                ),
+                onPressed: () => setState(() => item.replaceWith(food)),
+              )).toList(),
+            ),
+          ],
+          if (item.canSaveToMyFoods && item.matchedFood == null)
+            TextButton.icon(
+              onPressed: item.isSavingToMyFoods
+                  ? null
+                  : () => _saveItemToMyFoods(item),
+              icon: item.isSavingToMyFoods
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.bookmark_add_outlined, size: 18),
+              label: const Text('שמור למאגר שלי'),
+            ),
           TextButton.icon(
             onPressed: () => _replaceFromFood(item),
             icon: const Icon(Icons.search, size: 18),
@@ -447,8 +523,11 @@ class _AiItem {
     this.count,
     this.gramsPerUnit,
     this.matchedFood,
+    List<Food>? suggestions,
+    this.canSaveToMyFoods = false,
     List<Map<String, dynamic>>? variants,
-  })  : variants = variants ?? [],
+  })  : suggestions = suggestions ?? [],
+        variants = variants ?? [],
         gramsController = TextEditingController(text: grams.toStringAsFixed(1)),
         countController = TextEditingController(text: count?.toString() ?? ''),
         gramsPerUnitController =
@@ -468,6 +547,18 @@ class _AiItem {
       foods: foods,
       name: name,
       searchQuery: searchQuery,
+    );
+    final suggestions = matchedFood == null
+        ? suggestAiFoodMatches(
+            foods: foods,
+            name: name,
+            searchQuery: searchQuery,
+          )
+        : const <Food>[];
+    final canSaveToMyFoods = shouldOfferAiFoodSave(
+      name: name,
+      matchedFood: matchedFood,
+      foods: foods,
     );
     final rawCount = map['count'];
     final rawGramsPerUnit = map['grams_per_unit'];
@@ -507,6 +598,8 @@ class _AiItem {
       count: count,
       gramsPerUnit: gramsPerUnit,
       matchedFood: matchedFood,
+      suggestions: suggestions,
+      canSaveToMyFoods: canSaveToMyFoods,
       variants: (map['variants'] as List? ?? const [])
           .whereType<Map>()
           .map((entry) => Map<String, dynamic>.from(entry))
@@ -529,6 +622,9 @@ class _AiItem {
   final TextEditingController countController;
   final TextEditingController gramsPerUnitController;
   Food? matchedFood;
+  List<Food> suggestions;
+  bool canSaveToMyFoods;
+  bool isSavingToMyFoods = false;
   List<Map<String, dynamic>> variants;
   String? activeVariant;
 
@@ -582,6 +678,8 @@ class _AiItem {
     carbs = food.carbsPer100g;
     fat = food.fatPer100g;
     matchedFood = food;
+    suggestions = [];
+    canSaveToMyFoods = false;
     variants = [];
     activeVariant = null;
   }
