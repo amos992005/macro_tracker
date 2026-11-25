@@ -1029,7 +1029,8 @@ async function analyzeMeal(
     502,
   );
 }
-if (import.meta.main) Deno.serve(async (request: Request) => {
+export function serveMacroApi(): void {
+  Deno.serve(async (request: Request) => {
   if (request.method === "OPTIONS")
     return new Response("ok", { headers: corsHeaders });
   if (request.method !== "POST")
@@ -1060,4 +1061,7 @@ if (import.meta.main) Deno.serve(async (request: Request) => {
     console.error("macro-api request failed:", error);
     return json({ error: "אירעה שגיאה זמנית בשרת." }, 500);
   }
-});
+  });
+}
+
+if (import.meta.main) serveMacroApi();
