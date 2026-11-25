@@ -14,7 +14,7 @@ void main() {
     sqfliteFfiInit();
     sqflite.databaseFactory = databaseFactoryFfi;
     SharedPreferences.setMockInitialValues({});
-    await helper.activateProfile('ai-food-save-test');
+    await helper.activateProfile('ai-food-save-test-${DateTime.now().microsecondsSinceEpoch}');
   });
 
   tearDownAll(() async {
