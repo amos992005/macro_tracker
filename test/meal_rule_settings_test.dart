@@ -30,20 +30,24 @@ void main() {
     expect(MealRuleSettings.parsePercent('-1', fallback: 4), 4);
   });
 
-  test('saves and reloads every tolerance and passes them to MealOptimizer', () async {
-    const settings = <String, dynamic>{
-      'cal_mode': 'both', 'cal_pct': 2.5,
-      'pro_mode': 'both', 'pro_pct': 3.5,
-      'carb_mode': 'both', 'carb_pct': 4.5,
-      'fat_mode': 'both', 'fat_pct': 5.5,
-    };
+  const settings = <String, dynamic>{
+    'cal_mode': 'both', 'cal_pct': 2.5,
+    'pro_mode': 'both', 'pro_pct': 3.5,
+    'carb_mode': 'both', 'carb_pct': 4.5,
+    'fat_mode': 'both', 'fat_pct': 5.5,
+  };
 
+  test('saves and reloads all four tolerance modes and percentages', () async {
     await database.saveSettings(settings);
     final loaded = await database.getSettings();
     for (final entry in settings.entries) {
-      expect(loaded[entry.key], entry.value);
+      expect(loaded[entry.key], entry.value, reason: 'incorrect ${entry.key}');
     }
+  });
 
+  test('passes reloaded tolerance settings to MealOptimizer', () async {
+    await database.saveSettings(settings);
+    final loaded = await database.getSettings();
     final food = Food(
       id: 701,
       name: 'בדיקת יחס מאקרו',
