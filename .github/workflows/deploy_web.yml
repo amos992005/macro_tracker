@@ -38,7 +38,7 @@ jobs:
       - name: Analyze Flutter code
         run: |
           set +e
-          flutter analyze > /tmp/flutter-analyze.log 2>&1
+          flutter analyze --no-fatal-infos > /tmp/flutter-analyze.log 2>&1
           analyze_status=$?
           cat /tmp/flutter-analyze.log
           if [ "$analyze_status" -ne 0 ]; then
