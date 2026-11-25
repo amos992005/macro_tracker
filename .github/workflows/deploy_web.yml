@@ -55,7 +55,20 @@ jobs:
           exit "$analyze_status"
 
       - name: Run Flutter tests
-        run: flutter test
+        run: |
+          set +e
+          flutter test --reporter expanded > /tmp/flutter-test.log 2>&1
+          test_status=$?
+          cat /tmp/flutter-test.log
+          if [ "$test_status" -ne 0 ]; then
+            python3 - <<'PY'
+          from pathlib import Path
+          output = Path('/tmp/flutter-test.log').read_text(errors='replace')
+          escaped = output[-5000:].replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+          print(f'::error title=flutter test diagnostics::{escaped}')
+          PY
+          fi
+          exit "$test_status"
 
       - name: Verify live Gemini meal analysis through Supabase
         continue-on-error: true
