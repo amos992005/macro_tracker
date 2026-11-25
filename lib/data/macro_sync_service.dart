@@ -88,12 +88,16 @@ class MacroSyncService {
     String? mimeType,
     String mode = 'meal',
     bool pro = false,
+    Map<String, dynamic>? currentMeal,
+    String? correctionPrompt,
   }) async {
     final result = await _request({
       'action': 'analyze_meal',
       'text': text,
       'mode': mode,
       'pro': pro,
+      if (currentMeal != null) 'current_meal': currentMeal,
+      if (correctionPrompt != null) 'correction_prompt': correctionPrompt,
       if (imageBytes != null) 'image_base64': base64Encode(imageBytes),
       if (mimeType != null) 'mime_type': mimeType,
     }, authenticated: true);

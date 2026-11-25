@@ -148,6 +148,108 @@ void main() {
     });
   });
 
+  group('conversational meal correction', () {
+    test('builds a correction payload from the current editable meal', () {
+      final payload = buildMealCorrectionPayload(
+        mealTitle: '  ארוחת צהריים  ',
+        correctionPrompt: '  הוסף כף טחינה  ',
+        pro: true,
+        items: [
+          {
+            'name': 'אורז',
+            'search_query': 'אורז מבושל',
+            'grams': 150.0,
+            'count': 3.0,
+            'grams_per_unit': 50.0,
+            'calories_per_100g': 130.0,
+            'protein_per_100g': 2.7,
+            'carbs_per_100g': 28.0,
+            'fat_per_100g': 0.3,
+            'is_liquid': false,
+            'is_assumed_addition': false,
+            'ui_only_field': 'not sent',
+          },
+        ],
+      );
+
+      expect(payload['correction_prompt'], 'הוסף כף טחינה');
+      expect(payload['pro'], isTrue);
+      final meal = payload['current_meal'] as Map<String, dynamic>;
+      expect(meal['meal_title'], 'ארוחת צהריים');
+      final item = (meal['items'] as List).single as Map<String, dynamic>;
+      expect(item['grams'], 150.0);
+      expect(item['count'], 3.0);
+      expect(item['grams_per_unit'], 50.0);
+      expect(item['calories_per_100'], 130.0);
+      expect(item['protein_per_100'], 2.7);
+      expect(item.containsKey('calories_per_100g'), isFalse);
+      expect(item.containsKey('ui_only_field'), isFalse);
+    });
+
+    test('preserves linked catalog nutrition but keeps corrected quantity', () {
+      final selected = Food(
+        name: 'לחם כוסמין',
+        caloriesPer100g: 245,
+        proteinPer100g: 9,
+        carbsPer100g: 43,
+        fatPer100g: 3.5,
+        isLiquid: false,
+      );
+      final merged = mergeAiMealCorrectionItems(
+        previousItems: [
+          {
+            'name': 'לחם כוסמין',
+            'search_query': 'לחם כוסמין מלא',
+            'grams': 30.0,
+            'is_liquid': false,
+            'calories_per_100g': 999.0,
+            'protein_per_100g': 99.0,
+            'carbs_per_100g': 99.0,
+            'fat_per_100g': 99.0,
+          },
+        ],
+        matchedFoodsByName: {'לחם כוסמין': selected},
+        correctedItems: [
+          {
+            'name': ' לחם   כוסמין ',
+            'search_query': 'other query',
+            'grams': 45.0,
+            'count': 3.0,
+            'grams_per_unit': 15.0,
+            'is_liquid': true,
+            'calories_per_100g': 500.0,
+            'protein_per_100g': 50.0,
+            'carbs_per_100g': 50.0,
+            'fat_per_100g': 50.0,
+          },
+          {
+            'name': 'טחינה',
+            'search_query': 'טחינה',
+            'grams': 15.0,
+            'is_liquid': false,
+            'calories_per_100g': 600.0,
+            'protein_per_100g': 17.0,
+            'carbs_per_100g': 20.0,
+            'fat_per_100g': 53.0,
+          },
+        ],
+      );
+
+      final bread = merged.first;
+      expect(bread['name'], 'לחם כוסמין');
+      expect(bread['search_query'], 'לחם כוסמין מלא');
+      expect(bread['grams'], 45.0);
+      expect(bread['count'], 3.0);
+      expect(bread['grams_per_unit'], 15.0);
+      expect(bread['calories_per_100g'], selected.caloriesPer100g);
+      expect(bread['protein_per_100g'], selected.proteinPer100g);
+      expect(bread['carbs_per_100g'], selected.carbsPer100g);
+      expect(bread['fat_per_100g'], selected.fatPer100g);
+      expect(bread['is_liquid'], selected.isLiquid);
+      expect(merged.last['calories_per_100g'], 600.0);
+    });
+  });
+
   test('count times grams per unit updates grams and nutrition totals', () {
     final totalGrams = gramsFromUnitCount(count: 2, gramsPerUnit: 10);
     expect(totalGrams, 20);

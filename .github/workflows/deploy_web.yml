@@ -80,7 +80,7 @@ jobs:
 
       - name: Verify live Gemini meal analysis through Supabase
         continue-on-error: true
-        timeout-minutes: 1
+        timeout-minutes: 2
         env:
           GITHUB_RUN_ID: ${{ github.run_id }}
           GITHUB_RUN_ATTEMPT: ${{ github.run_attempt }}
@@ -159,6 +159,27 @@ jobs:
                   if not isinstance(item, dict) or not required.issubset(item):
                       raise SystemExit(f'Invalid item #{index} in Gemini JSON: {item}')
               print(f"Live Gemini E2E passed: HTTP 200, model={response.get('model')}, items={len(result['items'])}, request_id={response.get('request_id')}")
+
+              current_meal = {
+                  'meal_title': result.get('meal_title', 'ארוחה'),
+                  'items': result['items'],
+              }
+              status, corrected = post({
+                  'action': 'analyze_meal',
+                  'mode': 'meal',
+                  'pro': False,
+                  'current_meal': current_meal,
+                  'correction_prompt': 'הוסף 15 גרם טחינה',
+              }, token, timeout=45)
+              if status != 200:
+                  raise SystemExit(f'Live meal correction failed: HTTP {status}: {corrected}')
+              corrected_result = corrected.get('result')
+              if not isinstance(corrected_result, dict) or not isinstance(corrected_result.get('items'), list) or not corrected_result['items']:
+                  raise SystemExit('Gemini correction returned no parsed meal items')
+              for index, item in enumerate(corrected_result['items']):
+                  if not isinstance(item, dict) or not required.issubset(item):
+                      raise SystemExit(f'Invalid corrected item #{index} in Gemini JSON')
+              print(f"Live meal correction E2E passed: HTTP 200, items={len(corrected_result['items'])}, request_id={corrected.get('request_id')}")
           finally:
               post({'action': 'logout'}, token)
           PY

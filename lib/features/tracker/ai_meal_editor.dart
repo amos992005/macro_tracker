@@ -45,6 +45,7 @@ class _AiMealEditorState extends State<AiMealEditor> {
   final _dbHelper = DatabaseHelper();
   final _description = TextEditingController();
   final _title = TextEditingController();
+  final _correction = TextEditingController();
   final _picker = ImagePicker();
   final List<_AiItem> _items = [];
   Uint8List? _imageBytes;
@@ -68,6 +69,7 @@ class _AiMealEditorState extends State<AiMealEditor> {
   void dispose() {
     _description.dispose();
     _title.dispose();
+    _correction.dispose();
     for (final item in _items) {
       item.dispose();
     }
@@ -133,6 +135,78 @@ class _AiMealEditorState extends State<AiMealEditor> {
       });
     } catch (error) {
       setState(() => _error = error.toString());
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _correctMeal() async {
+    final correctionPrompt = _correction.text.trim();
+    if (correctionPrompt.isEmpty) {
+      setState(() => _error = 'כתבו מה תרצו לדייק או לתקן בארוחה.');
+      return;
+    }
+    if (_items.isEmpty) return;
+
+    final previousItems = _items.map((item) => item.toMap()).toList();
+    final matchedFoodsByName = <String, Food>{
+      for (final item in _items)
+        if (item.matchedFood != null) item.name: item.matchedFood!,
+    };
+    final payload = buildMealCorrectionPayload(
+      mealTitle: _title.text,
+      items: previousItems,
+      correctionPrompt: correctionPrompt,
+      pro: _pro,
+    );
+
+    setState(() {
+      _busy = true;
+      _error = null;
+    });
+    try {
+      final result = await MacroSyncService.instance.analyzeMeal(
+        text: '',
+        pro: _pro,
+        currentMeal: Map<String, dynamic>.from(payload['current_meal'] as Map),
+        correctionPrompt: payload['correction_prompt'] as String,
+      );
+      final correctedItems = (result['items'] as List? ?? const [])
+          .whereType<Map>()
+          .map((item) => Map<String, dynamic>.from(item))
+          .toList();
+      if (correctedItems.isEmpty) {
+        throw StateError('לא התקבלה ארוחה מעודכנת מה-AI.');
+      }
+      final mergedItems = mergeAiMealCorrectionItems(
+        previousItems: previousItems,
+        correctedItems: correctedItems,
+        matchedFoodsByName: matchedFoodsByName,
+      );
+      final replacementItems = mergedItems
+          .map((item) => _AiItem.fromMap(item, foods: widget.foods))
+          .toList();
+      if (!mounted) {
+        for (final item in replacementItems) {
+          item.dispose();
+        }
+        return;
+      }
+
+      for (final item in _items) {
+        item.dispose();
+      }
+      _items
+        ..clear()
+        ..addAll(replacementItems);
+      _title.text = result['meal_title']?.toString() ?? _title.text;
+      _correction.clear();
+      setState(() {
+        _confidenceNote = result['confidence_note']?.toString();
+        _error = null;
+      });
+    } catch (error) {
+      if (mounted) setState(() => _error = 'עדכון הארוחה נכשל: $error');
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -353,32 +427,71 @@ class _AiMealEditorState extends State<AiMealEditor> {
             ],
             if (_items.isNotEmpty) ...[
               const Divider(height: 24),
-              TextField(controller: _title, decoration: const InputDecoration(labelText: 'שם הארוחה')),
+              TextField(
+                controller: _title,
+                enabled: !_busy,
+                decoration: const InputDecoration(labelText: 'שם הארוחה'),
+              ),
               const SizedBox(height: 8),
-              ..._items.asMap().entries.map((entry) => _buildItemCard(entry.key, entry.value)),
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton.icon(onPressed: _addManualItem, icon: const Icon(Icons.add), label: const Text('הוספת רכיב מהמאגר')),
-              ),
-              CheckboxListTile(
-                contentPadding: EdgeInsets.zero,
-                value: _saveAsRecipe,
-                onChanged: (value) => setState(() => _saveAsRecipe = value ?? false),
-                title: const Text('שמור גם כמתכון במאגר המזונות'),
-                subtitle: const Text('הערכים יישמרו למנה אחת כפי שנערכה כאן.'),
-                controlAffinity: ListTileControlAffinity.leading,
-              ),
-              Card(
-                color: Colors.black26,
-                child: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Wrap(alignment: WrapAlignment.spaceAround, spacing: 12, runSpacing: 8, children: [
-                    _totalLabel('קלוריות', _total('calories'), 'קק״ל'),
-                    _totalLabel('חלבון', _total('protein'), 'ג׳'),
-                    _totalLabel('פחמימות', _total('carbs'), 'ג׳'),
-                    _totalLabel('שומן', _total('fat'), 'ג׳'),
-                  ]),
+              Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Expanded(
+                  child: TextField(
+                    controller: _correction,
+                    enabled: !_busy,
+                    minLines: 1,
+                    maxLines: 2,
+                    textDirection: TextDirection.rtl,
+                    decoration: const InputDecoration(
+                      labelText: 'דייק או תקן עם AI',
+                      hintText: 'למשל: בלי שמן, הוסף כף טחינה',
+                      isDense: true,
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
                 ),
+                const SizedBox(width: 8),
+                FilledButton.tonalIcon(
+                  onPressed: _busy ? null : _correctMeal,
+                  icon: _busy
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.auto_fix_high, size: 18),
+                  label: Text(_busy ? 'מעדכן…' : 'עדכן'),
+                ),
+              ]),
+              const SizedBox(height: 8),
+              AbsorbPointer(
+                absorbing: _busy,
+                child: Column(children: [
+                  ..._items.asMap().entries.map((entry) => _buildItemCard(entry.key, entry.value)),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton.icon(onPressed: _addManualItem, icon: const Icon(Icons.add), label: const Text('הוספת רכיב מהמאגר')),
+                  ),
+                  CheckboxListTile(
+                    contentPadding: EdgeInsets.zero,
+                    value: _saveAsRecipe,
+                    onChanged: (value) => setState(() => _saveAsRecipe = value ?? false),
+                    title: const Text('שמור גם כמתכון במאגר המזונות'),
+                    subtitle: const Text('הערכים יישמרו למנה אחת כפי שנערכה כאן.'),
+                    controlAffinity: ListTileControlAffinity.leading,
+                  ),
+                  Card(
+                    color: Colors.black26,
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Wrap(alignment: WrapAlignment.spaceAround, spacing: 12, runSpacing: 8, children: [
+                        _totalLabel('קלוריות', _total('calories'), 'קק״ל'),
+                        _totalLabel('חלבון', _total('protein'), 'ג׳'),
+                        _totalLabel('פחמימות', _total('carbs'), 'ג׳'),
+                        _totalLabel('שומן', _total('fat'), 'ג׳'),
+                      ]),
+                    ),
+                  ),
+                ]),
               ),
             ],
           ]),

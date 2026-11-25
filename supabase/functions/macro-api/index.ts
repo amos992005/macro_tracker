@@ -620,6 +620,40 @@ async function logAvailableModelsOnce(input: {
   });
 }
 
+function validateCurrentMeal(value: unknown): value is Json {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const meal = value as Json;
+  if (
+    typeof meal.meal_title !== "string" ||
+    !Array.isArray(meal.items) ||
+    meal.items.length < 1 ||
+    meal.items.length > 40
+  ) return false;
+
+  return meal.items.every((raw) => {
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) return false;
+    const item = raw as Json;
+    const hasCount = Object.prototype.hasOwnProperty.call(item, "count");
+    const hasGramsPerUnit = Object.prototype.hasOwnProperty.call(
+      item,
+      "grams_per_unit",
+    );
+    return typeof item.name === "string" &&
+      typeof item.search_query === "string" &&
+      isNonNegativeNumber(item.grams) &&
+      typeof item.is_liquid === "boolean" &&
+      isNonNegativeNumber(item.calories_per_100g ?? item.calories_per_100) &&
+      isNonNegativeNumber(item.protein_per_100g ?? item.protein_per_100) &&
+      isNonNegativeNumber(item.carbs_per_100g ?? item.carbs_per_100) &&
+      isNonNegativeNumber(item.fat_per_100g ?? item.fat_per_100) &&
+      hasCount === hasGramsPerUnit &&
+      (!hasCount || (
+        isNonNegativeNumber(item.count) && item.count > 0 &&
+        isNonNegativeNumber(item.grams_per_unit) && item.grams_per_unit > 0
+      ));
+  });
+}
+
 async function analyzeMeal(
   body: Json,
   user: { id: string },
@@ -627,6 +661,28 @@ async function analyzeMeal(
   const requestId = crypto.randomUUID();
   const startedAt = Date.now();
   const mode = body.mode === "nutrition_label" ? "nutrition_label" : "meal";
+  const hasCurrentMeal = Object.prototype.hasOwnProperty.call(
+    body,
+    "current_meal",
+  );
+  const hasCorrectionPrompt = Object.prototype.hasOwnProperty.call(
+    body,
+    "correction_prompt",
+  );
+  const isCorrection = hasCurrentMeal || hasCorrectionPrompt;
+  const currentMeal = body.current_meal;
+  const correctionPrompt = typeof body.correction_prompt === "string"
+    ? body.correction_prompt.trim().slice(0, 2000)
+    : "";
+  if (isCorrection && (
+    mode !== "meal" ||
+    !hasCurrentMeal ||
+    !hasCorrectionPrompt ||
+    !validateCurrentMeal(currentMeal) ||
+    correctionPrompt.length === 0
+  )) {
+    return json({ error: "יש לצרף ארוחה קיימת תקינה והוראת תיקון." }, 400);
+  }
   const apiKey = Deno.env.get("GEMINI_API_KEY")?.trim();
   if (!apiKey) {
     await recordAiFailure({
@@ -656,7 +712,8 @@ async function analyzeMeal(
       : "";
   const mimeType =
     typeof body.mime_type === "string" ? body.mime_type.toLowerCase() : "";
-  if (!text && !image) return json({ error: "יש להוסיף תיאור או תמונה." }, 400);
+  if (!text && !image && !isCorrection)
+    return json({ error: "יש להוסיף תיאור או תמונה." }, 400);
   if (
     image &&
     (!["image/jpeg", "image/png", "image/webp"].includes(mimeType) ||
@@ -668,10 +725,14 @@ async function analyzeMeal(
     );
   }
 
-  const prompt =
-    mode === "nutrition_label"
+  const prompt = isCorrection
+    ? `מצב: תיקון ארוחה קיימת בשיחה. מצב הארוחה הנוכחי (JSON): ${JSON.stringify(currentMeal)}. הוראת התיקון של המשתמש: ${correctionPrompt}. עדכן את הארוחה הקיימת בהתאם להוראה זו בלבד: הוסף/הסר רכיב או הנחת בישול, שנה כמות, או החלף מזון רק אם התבקש. עבור כל רכיב שלא התבקש לשנות, שמור בדיוק על name, search_query, grams, count, grams_per_unit, is_liquid וערכי התזונה ל-100 גרם שמופיעים במצב הנוכחי; אל תחשב או תמציא אותם מחדש. שמור כמות, יחידות ודגלי נוזל כפי שהם, אלא אם ההוראה מבקשת שינוי. החזר את כל הארוחה המעודכנת בפורמט JSON המוגדר בהנחיות.`
+    : mode === "nutrition_label"
       ? `מצב: חילוץ תווית תזונה. חלץ ערכים ל-100 גרם או מ"ל. אם התמונה כוללת תווית, קרא ממנה. תיאור/שם המוצר: ${text || "אין תיאור נוסף"}. החזר meal_title, confidence_note, servings=1 ופריט יחיד עם ערכים ל-100 גרם.`
       : `מצב: ניתוח ארוחה או מתכון. תיאור והערות המשתמש: ${text || "נתח את המזון שבתמונה בלבד."}. החזר את כל הרכיבים בנפרד.`;
+  const systemInstruction = isCorrection
+    ? `${AI_SYSTEM_INSTRUCTION}\n\nFor a meal correction, only apply the user's explicit correction. Preserve every unmentioned existing item's name, search_query, grams, count/grams_per_unit pair, is_liquid, is_assumed_addition, and all per-100g nutrients exactly as provided in the current meal JSON. Do not recalculate or invent unchanged values. Keep all normal output schema rules. Every search_query in a correction result must be a short Hebrew food term.`
+    : AI_SYSTEM_INSTRUCTION;
   const parts: Json[] = [{ text: prompt }];
   if (image) parts.push({ inline_data: { mime_type: mimeType, data: image } });
 
@@ -764,7 +825,7 @@ async function analyzeMeal(
         headers: { "Content-Type": "application/json" },
         signal: controller.signal,
         body: JSON.stringify({
-          system_instruction: { parts: [{ text: AI_SYSTEM_INSTRUCTION }] },
+          system_instruction: { parts: [{ text: systemInstruction }] },
           contents: [{ role: "user", parts }],
           generationConfig,
         }),
@@ -838,11 +899,18 @@ async function analyzeMeal(
         });
         continue;
       }
-      if (!validateMealResult(result)) {
+      if (
+        !validateMealResult(result) ||
+        (isCorrection &&
+          result.items.some(
+            (item) => !/[\u05D0-\u05EA]/.test(String(item.search_query)),
+          ))
+      ) {
         lastStatus = 502;
         lastType = "json_validation_error";
-        lastMessage =
-          "JSON validation error: response does not match meal result fields";
+        lastMessage = isCorrection
+          ? "JSON validation error: correction result must use Hebrew search queries and valid meal fields"
+          : "JSON validation error: response does not match meal result fields";
         await recordAiFailure({
           requestId,
           userId: user.id,

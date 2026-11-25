@@ -112,6 +112,82 @@ double gramsFromUnitCount({
   required double gramsPerUnit,
 }) => count * gramsPerUnit;
 
+/// Builds the authenticated API payload from the live, editable card state.
+/// Only nutrition and portion fields needed to reconstruct the meal are sent.
+Map<String, dynamic> buildMealCorrectionPayload({
+  required String mealTitle,
+  required Iterable<Map<String, dynamic>> items,
+  required String correctionPrompt,
+  required bool pro,
+}) {
+  const itemFields = <String>[
+    'name',
+    'search_query',
+    'grams',
+    'count',
+    'grams_per_unit',
+    'calories_per_100',
+    'protein_per_100',
+    'carbs_per_100',
+    'fat_per_100',
+    'is_liquid',
+    'is_assumed_addition',
+  ];
+  return {
+    'current_meal': {
+      'meal_title': mealTitle.trim(),
+      'items': items
+          .map((item) => <String, dynamic>{
+                for (final field in itemFields)
+                  if (item.containsKey(field))
+                    field: item[field]
+                  else if (item.containsKey('${field}g'))
+                    field: item['${field}g'],
+              })
+          .toList(),
+    },
+    'correction_prompt': correctionPrompt.trim(),
+    'pro': pro,
+  };
+}
+
+/// Merges a corrected AI response while retaining trusted catalog nutrition
+/// and unit classification for items whose names did not change.
+List<Map<String, dynamic>> mergeAiMealCorrectionItems({
+  required Iterable<Map<String, dynamic>> previousItems,
+  required Iterable<Map<String, dynamic>> correctedItems,
+  required Map<String, Food> matchedFoodsByName,
+}) {
+  final previousByName = <String, Map<String, dynamic>>{
+    for (final item in previousItems)
+      if (_normalizeFoodName(item['name']?.toString() ?? '').isNotEmpty)
+        _normalizeFoodName(item['name']!.toString()): item,
+  };
+  final linkedFoods = <String, Food>{
+    for (final entry in matchedFoodsByName.entries)
+      _normalizeFoodName(entry.key): entry.value,
+  };
+
+  return correctedItems.map((raw) {
+    final item = Map<String, dynamic>.from(raw);
+    final key = _normalizeFoodName(item['name']?.toString() ?? '');
+    final previous = previousByName[key];
+    final food = linkedFoods[key];
+    if (previous == null || food == null) return item;
+
+    // Keep the selected catalog identity/query and authoritative per-100g
+    // values; quantity and count fields remain those returned by the AI.
+    item['name'] = previous['name'];
+    item['search_query'] = previous['search_query'] ?? food.name;
+    item['calories_per_100g'] = food.caloriesPer100g;
+    item['protein_per_100g'] = food.proteinPer100g;
+    item['carbs_per_100g'] = food.carbsPer100g;
+    item['fat_per_100g'] = food.fatPer100g;
+    item['is_liquid'] = food.isLiquid;
+    return item;
+  }).toList();
+}
+
 bool _containsHebrew(String value) =>
     RegExp(r'[\u05D0-\u05EA]').hasMatch(value);
 
