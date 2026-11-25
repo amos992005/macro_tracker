@@ -58,19 +58,24 @@ void main() {
     expect(rows, hasLength(1));
   });
 
-  test('saved tolerance settings reload into the meal optimizer', () async {
-    const settings = <String, dynamic>{
-      'cal_mode': 'both', 'cal_pct': 2.5,
-      'pro_mode': 'both', 'pro_pct': 3.5,
-      'carb_mode': 'both', 'carb_pct': 4.5,
-      'fat_mode': 'both', 'fat_pct': 5.5,
-    };
+  const settings = <String, dynamic>{
+    'cal_mode': 'both', 'cal_pct': 2.5,
+    'pro_mode': 'both', 'pro_pct': 3.5,
+    'carb_mode': 'both', 'carb_pct': 4.5,
+    'fat_mode': 'both', 'fat_pct': 5.5,
+  };
+
+  test('saving and loading preserves each tolerance setting', () async {
     await helper.saveSettings(settings);
     final loaded = await helper.getSettings();
     for (final entry in settings.entries) {
       expect(loaded[entry.key], entry.value, reason: 'incorrect ${entry.key}');
     }
+  });
 
+  test('reloaded tolerance settings are accepted by MealOptimizer', () async {
+    await helper.saveSettings(settings);
+    final loaded = await helper.getSettings();
     final food = Food(
       id: 701,
       name: 'בדיקת יחס מאקרו',
